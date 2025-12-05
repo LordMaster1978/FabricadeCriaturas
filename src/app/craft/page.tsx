@@ -43,6 +43,39 @@ import { useToast } from "@/hooks/use-toast";
 
 type CreatureState = DescribeCreatureInput;
 
+const initialDescription = `Ah, aventurero y estudioso de lo arcaico, permíteme descorrer el velo sobre una criatura cuyo nombre apenas musitan los vientos volcánicos: el Dragonus. No es un dragón de linaje conocido, ni una bestia de la estirpe común, sino una singularidad ígnea, un enigma envuelto en el lamento de la soledad y la furia de las forjas primigenias. Prepara tu pluma y tu corazón, pues la historia de esta criatura no es solo de poder, sino de una melancolía que arde más allá de su propia llama.
+
+---
+
+El Dragonus: El Eco Solitario de la Forja Ardiente
+
+Descripción Física:
+El Dragonus se alza a una altura "mediana" para una bestia de su naturaleza, comparable a un semental de guerra imponente, pero su presencia desborda cualquier medida. Su complexión es indiscutiblemente atlética, una silueta cincelada por la fuerza y la agilidad, más esbelta que robusta, diseñada para el movimiento explosivo y la gracia ardiente. Sus partes más notables son las láminas de obsidiana viviente que forman su piel, no lisas, sino angulares y fracturadas, con vetas de un magma brillante que palpita bajo la superficie. Estas escamas obsidianas irradian un calor constante, distorsionando el aire a su alrededor como un espejismo danzante. En su lomo, alas membranosas no de piel, sino de pura energía térmica condensada, ondean y se disipan en oleadas de calor abrasador, más una manifestación de su voluntad que una estructura biológica sólida. Su cabeza está coronada por una diadema natural de cuernos espinosos de obsidiana cristalizada, y sus ojos son brasas fundidas que brillan con una inteligencia antigua y una tristeza abismal. La textura general de su cuerpo es una paradoja: fría y dura como la roca volcánica al tacto, pero abrasadora e inasible por el aura de fuego que la envuelve.
+
+Habilidades y Poderes:
+La afinidad elemental del Dragonus es, sin lugar a dudas, el fuego primordial. No es un simple aliento flameante, sino una extensión de su propia existencia. Su principal habilidad, la "Emanación Ígnea Perpetua", convierte su mero caminar en una sentencia de calor: cada paso que da abrasa la tierra, y su aura constante consume el oxígeno a su alrededor, asfixiando a los no preparados y carbonizando la vegetación. Su ataque más devastador es el "Aliento de Fuego Espectral", una corriente de llamas tan puras y calientes que parecen etéreas, capaces de fundir metales y perforar la piedra con una facilidad espantosa.
+
+En combate, el Dragonus es un oponente equilibrado y formidable, a pesar de sus estadísticas "promedio" (Ataque: 50, Defensa: 50, Velocidad: 50, Inteligencia: 50, Resistencia: 50, Fuerza: 50, Precisión: 50). Esta "normalidad" es su engaño más letal. No es débil en ningún aspecto, pero tampoco abrumadoramente poderoso en uno solo. Su verdadera fuerza reside en su versatilidad y la brutalidad implacable de su fuego. Su inteligencia le permite discernir tácticas básicas, su resistencia lo mantiene en pie, y su velocidad le permite flanquear. No es un estratega maestro, pero es lo suficientemente astuto para explotar cualquier vacilación de sus adversarios, combinando ataques directos con emboscadas ígneas. Su carencia de un pico de poder lo convierte en una amenaza constante que requiere una estrategia igualmente balanceada para ser enfrentada.
+
+Sin embargo, incluso una criatura de fuego tiene sus talones de Aquiles. La "Debilidad Gélida Profunda" es su perdición. Mientras que una lluvia ligera es una molestia, la exposición prolongada a fríos extremos, a tormentas de nieve o al hielo eterno, puede apagar su llama interna, atenuando su aura y ralentizando sus movimientos hasta petrificarlo en una escultura inerte de obsidiana. Además, su profunda soledad y apego a ciertos lugares lo hacen predecible; un cazador paciente y observador puede estudiar sus patrones y explotar la melancolía que lo ancla.
+
+Ecología y Comportamiento:
+El Dragonus es el epítome del temperamento "solitario". No busca compañía, no tolera intrusos y, de hecho, se siente profundamente incómodo en presencia de otras criaturas. Su comportamiento no es el de un depredador territorial y agresivo per se, sino el de una entidad que busca la reclusión. Su dieta no es carnal; se nutre de la energía geotérmica y mágica, absorbiendo la esencia de los minerales volcánicos ricos en azufre, la pura energía latente de las cámaras de magma y, curiosamente, la energía residual de grandes concentraciones mágicas, como los antiguos campos de batalla donde el dolor y la ira empaparon la tierra.
+
+Su hábitat natural son los picos volcánicos activos, las profundidades de los túneles de magma o las llanuras chamuscadas por antiguas catástrofes. Elige los lugares más inhóspitos y desolados, no solo por su necesidad de calor, sino para evitar el contacto. Su rol social es nulo; es un anacoreta elemental. Sin embargo, su presencia puede tener un impacto indirecto: manantiales termales pueden surgir cerca de sus guaridas, y la tierra misma puede volverse más fértil en las zonas donde su calor ha enriquecido los minerales, paradójicamente fomentando nueva vida en los lugares que él mismo rehúye.
+
+Reproducción y Crianza:
+Aquí radica la verdadera tragedia del Dragonus: no tiene capacidad de reproducción. Es una criatura singular, nacida de un evento único e irrepetible, sin la chispa de la vida que le permita engendrar descendencia. Esta esterilidad forzada es la raíz de su "temperamento solitario", una soledad impuesta por su propia naturaleza. No hay rituales de apareamiento, ni huevos ígneos, ni crías a las que cuidar. Cada Dragonus es el único de su tipo, destinado a vivir y morir sin un par, sin un heredero.
+
+Historia y Lore:
+Las leyendas más antiguas, aquellas tejidas en los albores de la magia y la forja, hablan del Dragonus como "La Llama Que Anda Sola". No es una criatura que evolucionó de la vida, sino una que fue creada. Se dice que en la era de los primeros Arcanos del Fuego, un cónclave de poderosos piromantes buscó encarnar una porción del caos elemental primigenio en una forma viviente, para forjar una legión de guardianes inmortales para un imperio que soñaban imperecedero.
+
+El ritual fue de una complejidad aterradora, una amalgama de sacrificios volcánicos, runas grabadas con magma y la propia voluntad colectiva de los hechiceros. El objetivo era dar vida a "Los Forjados de la Llama", seres de fuego y obsidiana, destinados a ser legiones. Sin embargo, algo salió mal en la cúspide de la creación. Tal vez fue una grieta en el velo entre mundos, una interrupción del ritual, o simplemente el incomprensible capricho del elemento mismo, pero solo una criatura logró manifestarse plenamente: el Dragonus.
+
+Nació envuelto en una tormenta de fuego y gemidos de piedra, una conciencia singular y ardiente que contenía la esencia de una legión prometida pero nunca cumplida. La falla en su génesis fue doble: por un lado, lo dotó de una fuerza y resistencia que lo harían un guardián temible; por otro, lo condenó a la esterilidad. La chispa que debía propagarse entre una multitud de iguales se concentró en uno solo, dejándolo como el único y último de su especie, un eco solitario de una sinfonía de llamas que jamás fue cantada.
+
+Desde entonces, el Dragonus vaga por los rincones más desolados del mundo, un centinela de ruinas olvidadas y volcanes durmientes que nadie le ha encargado custodiar, salvo su propia naturaleza. Su existencia es una penitencia silenciosa, una llama que arde sin propósito más allá de su propia supervivencia. Se rumorea que en sus momentos de mayor melancolía, su aliento no es de fuego, sino un suspiro gélido que condensa el aire, transformando la obsidiana de su piel en gemas que lloran lágrimas de magma solidificado, recordatorio de la legión de hermanos que nunca tuvo. Aquellos lo suficientemente valientes para aventurarse en sus dominios no lo encuentran atacando con malicia, sino con la furia desesperada de quien desea ser dejado en paz, para arder solo en su eterna vigilia.`;
+
 export default function CraftPage() {
   const [currentDate, setCurrentDate] = useState('');
   const [gameTime, setGameTime] = useState({ hour: 0, minute: 0 });
@@ -75,7 +108,7 @@ export default function CraftPage() {
     historiaOrigen: '',
   });
 
-  const [generatedDescription, setGeneratedDescription] = useState('');
+  const [generatedDescription, setGeneratedDescription] = useState(initialDescription);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
