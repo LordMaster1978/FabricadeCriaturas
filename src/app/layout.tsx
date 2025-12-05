@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'Forja de Criaturas',
+  title: 'Fábrica de Criaturas',
   description: 'Un juego de fabricación de criaturas',
 };
 

@@ -21,7 +21,7 @@ export function MainMenu() {
         </div>
 
         <h1 className="font-headline text-6xl md:text-8xl font-bold tracking-tighter text-primary drop-shadow-[0_0_1rem_hsl(var(--primary)/0.6)]">
-          Forja de Criaturas
+          Fábrica de Criaturas
         </h1>
         <p className="mt-2 text-lg text-foreground/70 max-w-md">
           Forja tu leyenda. Pieza por pieza.
