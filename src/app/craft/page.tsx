@@ -17,7 +17,7 @@ import {
   Mountain,
   FileText,
   BatteryCharging,
-  Flame,
+  Fist,
   Crosshair,
   Star,
   Users,
@@ -219,7 +219,7 @@ export default function CraftPage() {
                     <Slider defaultValue={[50]} max={100} step={1} />
                 </div>
                 <div className="space-y-2">
-                    <Label className="flex items-center gap-2"><Flame size={16}/> Maná</Label>
+                    <Label className="flex items-center gap-2"><Fist size={16}/> Fuerza</Label>
                     <Slider defaultValue={[50]} max={100} step={1} />
                 </div>
                 <div className="space-y-2">
@@ -312,5 +312,3 @@ export default function CraftPage() {
     </main>
   );
 }
-
-    
