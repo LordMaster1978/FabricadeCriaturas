@@ -24,7 +24,7 @@ export function MainMenu() {
           Fábrica de Criaturas
         </h1>
         <p className="mt-2 text-lg text-foreground/70 max-w-md">
-          Forja tu leyenda. Pieza por pieza.
+          Crea tu criatura tu limite es tu imaginación
         </p>
 
         <nav className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
