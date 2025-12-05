@@ -19,10 +19,10 @@ import {
   BatteryCharging,
   Dumbbell,
   Crosshair,
-  Star,
   Users,
   HeartHandshake,
-  Baby
+  Baby,
+  WandSparkles
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -37,13 +37,86 @@ import {
 } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
+import { Button } from '@/components/ui/button';
+import { describeCreature, type DescribeCreatureInput } from '@/ai/flows/describe-creature-flow';
+import { useToast } from "@/hooks/use-toast";
+
+type CreatureState = DescribeCreatureInput;
 
 export default function CraftPage() {
   const [currentDate, setCurrentDate] = useState('');
   const [gameTime, setGameTime] = useState({ hour: 0, minute: 0 });
+  const [isGenerating, setIsGenerating] = useState(false);
+  const { toast } = useToast();
+
+  const [creature, setCreature] = useState<CreatureState>({
+    nombre: '',
+    composicion: '',
+    tamano: 'medium',
+    complexion: 'athletic',
+    partesCuerpo: '',
+    apariencia: '',
+    afinidadElemental: 'fire',
+    habilidadesUnicas: '',
+    debilidades: '',
+    ataque: 50,
+    defensa: 50,
+    velocidad: 50,
+    inteligencia: 50,
+    resistencia: 50,
+    fuerza: 50,
+    precision: 50,
+    temperamento: 'lonely',
+    dieta: '',
+    habitat: '',
+    rolSocial: '',
+    aptoReproduccion: false,
+    habilidadesCrianza: '',
+    historiaOrigen: '',
+  });
+
+  const [generatedDescription, setGeneratedDescription] = useState('');
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setCreature(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleSelectChange = (id: keyof CreatureState) => (value: string) => {
+    setCreature(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleSliderChange = (id: keyof CreatureState) => (value: number[]) => {
+    setCreature(prev => ({ ...prev, [id]: value[0] }));
+  };
+
+  const handleSwitchChange = (id: keyof CreatureState) => (checked: boolean) => {
+    setCreature(prev => ({ ...prev, [id]: checked }));
+  };
+  
+  const handleGenerateDescription = async () => {
+    setIsGenerating(true);
+    setGeneratedDescription('');
+    try {
+      const description = await describeCreature(creature);
+      setGeneratedDescription(description);
+      toast({
+        title: "¡Descripción generada!",
+        description: "La IA ha tejido una historia para tu criatura.",
+      });
+    } catch (error) {
+      console.error("Error generating description:", error);
+      toast({
+        variant: "destructive",
+        title: "Error de la IA",
+        description: "No se pudo generar la descripción. Inténtalo de nuevo.",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   useEffect(() => {
-    // Establecer la fecha actual en el cliente para evitar errores de hidratación
     setCurrentDate(new Date().toLocaleDateString('es-ES', {
       weekday: 'long',
       year: 'numeric',
@@ -56,7 +129,7 @@ export default function CraftPage() {
         const newHour = (prevTime.hour + 1) % 24;
         return { hour: newHour, minute: 0 };
       });
-    }, 1000);
+    }, 60000); // Update every minute for realism
 
     return () => clearInterval(timer);
   }, []);
@@ -95,15 +168,17 @@ export default function CraftPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="creature-name">Nombre</Label>
-                <Input id="creature-name" placeholder="Ej: Dragonus, Golemech..." />
+                <Label htmlFor="nombre">Nombre</Label>
+                <Input id="nombre" placeholder="Ej: Dragonus, Golemech..." value={creature.nombre} onChange={handleInputChange} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="materials">Composición y Materiales</Label>
+                <Label htmlFor="composicion">Composición y Materiales</Label>
                 <Textarea 
-                  id="materials" 
+                  id="composicion" 
                   placeholder="Ej: Escamas de obsidiana, núcleo de magma..." 
                   className="min-h-[80px]"
+                  value={creature.composicion}
+                  onChange={handleInputChange}
                 />
               </div>
             </CardContent>
@@ -120,9 +195,9 @@ export default function CraftPage() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="size">Tamaño</Label>
-                  <Select>
-                    <SelectTrigger id="size"><SelectValue placeholder="Selecciona..." /></SelectTrigger>
+                  <Label htmlFor="tamano">Tamaño</Label>
+                  <Select value={creature.tamano} onValueChange={handleSelectChange('tamano')}>
+                    <SelectTrigger id="tamano"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="small">Pequeño</SelectItem>
                       <SelectItem value="medium">Mediano</SelectItem>
@@ -132,9 +207,9 @@ export default function CraftPage() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="build">Complexión</Label>
-                   <Select>
-                    <SelectTrigger id="build"><SelectValue placeholder="Selecciona..." /></SelectTrigger>
+                  <Label htmlFor="complexion">Complexión</Label>
+                   <Select value={creature.complexion} onValueChange={handleSelectChange('complexion')}>
+                    <SelectTrigger id="complexion"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="slim">Delgado</SelectItem>
                       <SelectItem value="athletic">Atlético</SelectItem>
@@ -145,12 +220,12 @@ export default function CraftPage() {
                 </div>
               </div>
                <div className="space-y-2">
-                <Label htmlFor="body-parts">Partes del Cuerpo</Label>
-                <Textarea id="body-parts" placeholder="Ej: Alas de cuero, cuernos retorcidos..." className="min-h-[50px]"/>
+                <Label htmlFor="partesCuerpo">Partes del Cuerpo</Label>
+                <Textarea id="partesCuerpo" placeholder="Ej: Alas de cuero, cuernos retorcidos..." className="min-h-[50px]" value={creature.partesCuerpo} onChange={handleInputChange}/>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="appearance">Apariencia y Textura</Label>
-                <Textarea id="appearance" placeholder="Ej: Piel escamosa y brillante, pelaje metálico..." className="min-h-[50px]" />
+                <Label htmlFor="apariencia">Apariencia y Textura</Label>
+                <Textarea id="apariencia" placeholder="Ej: Piel escamosa y brillante, pelaje metálico..." className="min-h-[50px]" value={creature.apariencia} onChange={handleInputChange} />
               </div>
             </CardContent>
           </Card>
@@ -165,9 +240,9 @@ export default function CraftPage() {
             </CardHeader>
             <CardContent className="space-y-4">
                <div className="space-y-2">
-                <Label htmlFor="element">Afinidad Elemental</Label>
-                <Select>
-                  <SelectTrigger id="element"><SelectValue placeholder="Selecciona un elemento..." /></SelectTrigger>
+                <Label htmlFor="afinidadElemental">Afinidad Elemental</Label>
+                <Select value={creature.afinidadElemental} onValueChange={handleSelectChange('afinidadElemental')}>
+                  <SelectTrigger id="afinidadElemental"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="fire">Fuego</SelectItem>
                     <SelectItem value="water">Agua</SelectItem>
@@ -179,12 +254,12 @@ export default function CraftPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="unique-abilities">Habilidades Únicas</Label>
-                <Textarea id="unique-abilities" placeholder="Ej: Puede volverse invisible, grito sónico..." className="min-h-[50px]" />
+                <Label htmlFor="habilidadesUnicas">Habilidades Únicas</Label>
+                <Textarea id="habilidadesUnicas" placeholder="Ej: Puede volverse invisible, grito sónico..." className="min-h-[50px]" value={creature.habilidadesUnicas} onChange={handleInputChange} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="weaknesses">Debilidades</Label>
-                <Textarea id="weaknesses" placeholder="Ej: Vulnerable al sonido agudo..." className="min-h-[50px]" />
+                <Label htmlFor="debilidades">Debilidades</Label>
+                <Textarea id="debilidades" placeholder="Ej: Vulnerable al sonido agudo..." className="min-h-[50px]" value={creature.debilidades} onChange={handleInputChange}/>
               </div>
             </CardContent>
           </Card>
@@ -199,36 +274,32 @@ export default function CraftPage() {
             </CardHeader>
             <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-6 pt-2">
                 <div className="space-y-2">
-                    <Label className="flex items-center gap-2"><Swords size={16}/> Ataque</Label>
-                    <Slider defaultValue={[50]} max={100} step={1} />
+                    <Label className="flex items-center gap-2"><Swords size={16}/> Ataque ({creature.ataque})</Label>
+                    <Slider value={[creature.ataque]} onValueChange={handleSliderChange('ataque')} max={100} step={1} />
                 </div>
                 <div className="space-y-2">
-                    <Label className="flex items-center gap-2"><ShieldAlert size={16}/> Defensa</Label>
-                    <Slider defaultValue={[50]} max={100} step={1} />
+                    <Label className="flex items-center gap-2"><ShieldAlert size={16}/> Defensa ({creature.defensa})</Label>
+                    <Slider value={[creature.defensa]} onValueChange={handleSliderChange('defensa')} max={100} step={1} />
                 </div>
                 <div className="space-y-2">
-                    <Label className="flex items-center gap-2"><Wind size={16}/> Velocidad</Label>
-                    <Slider defaultValue={[50]} max={100} step={1} />
+                    <Label className="flex items-center gap-2"><Wind size={16}/> Velocidad ({creature.velocidad})</Label>
+                    <Slider value={[creature.velocidad]} onValueChange={handleSliderChange('velocidad')} max={100} step={1} />
                 </div>
                 <div className="space-y-2">
-                    <Label className="flex items-center gap-2"><BrainCircuit size={16}/> Inteligencia</Label>
-                    <Slider defaultValue={[50]} max={100} step={1} />
+                    <Label className="flex items-center gap-2"><BrainCircuit size={16}/> Inteligencia ({creature.inteligencia})</Label>
+                    <Slider value={[creature.inteligencia]} onValueChange={handleSliderChange('inteligencia')} max={100} step={1} />
                 </div>
                  <div className="space-y-2">
-                    <Label className="flex items-center gap-2"><BatteryCharging size={16}/> Resistencia</Label>
-                    <Slider defaultValue={[50]} max={100} step={1} />
+                    <Label className="flex items-center gap-2"><BatteryCharging size={16}/> Resistencia ({creature.resistencia})</Label>
+                    <Slider value={[creature.resistencia]} onValueChange={handleSliderChange('resistencia')} max={100} step={1} />
                 </div>
                 <div className="space-y-2">
-                    <Label className="flex items-center gap-2"><Dumbbell size={16}/> Fuerza</Label>
-                    <Slider defaultValue={[50]} max={100} step={1} />
+                    <Label className="flex items-center gap-2"><Dumbbell size={16}/> Fuerza ({creature.fuerza})</Label>
+                    <Slider value={[creature.fuerza]} onValueChange={handleSliderChange('fuerza')} max={100} step={1} />
                 </div>
                 <div className="space-y-2">
-                    <Label className="flex items-center gap-2"><Crosshair size={16}/> Precisión</Label>
-                    <Slider defaultValue={[50]} max={100} step={1} />
-                </div>
-                <div className="space-y-2">
-                    <Label className="flex items-center gap-2"><Star size={16}/> Suerte</Label>
-                    <Slider defaultValue={[50]} max={100} step={1} />
+                    <Label className="flex items-center gap-2"><Crosshair size={16}/> Precisión ({creature.precision})</Label>
+                    <Slider value={[creature.precision]} onValueChange={handleSliderChange('precision')} max={100} step={1} />
                 </div>
             </CardContent>
           </Card>
@@ -243,9 +314,9 @@ export default function CraftPage() {
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="temperament">Temperamento</Label>
-                 <Select>
-                  <SelectTrigger id="temperament"><SelectValue placeholder="Selecciona..." /></SelectTrigger>
+                <Label htmlFor="temperamento">Temperamento</Label>
+                 <Select value={creature.temperamento} onValueChange={handleSelectChange('temperamento')}>
+                  <SelectTrigger id="temperamento"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="aggressive">Agresiva</SelectItem>
                     <SelectItem value="peaceful">Pacífica</SelectItem>
@@ -256,12 +327,12 @@ export default function CraftPage() {
                 </Select>
               </div>
                <div className="space-y-2">
-                <Label htmlFor="diet" className="flex items-center gap-2"><Apple size={16}/>Dieta</Label>
-                <Input id="diet" placeholder="Carnívoro, herbívoro..." />
+                <Label htmlFor="dieta" className="flex items-center gap-2"><Apple size={16}/>Dieta</Label>
+                <Input id="dieta" placeholder="Carnívoro, herbívoro..." value={creature.dieta} onChange={handleInputChange} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="habitat" className="flex items-center gap-2"><Mountain size={16}/>Hábitat Natural</Label>
-                <Input id="habitat" placeholder="Bosques, volcanes..." />
+                <Input id="habitat" placeholder="Bosques, volcanes..." value={creature.habitat} onChange={handleInputChange}/>
               </div>
             </CardContent>
           </Card>
@@ -276,16 +347,16 @@ export default function CraftPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="social-role">Rol Social</Label>
-                <Input id="social-role" placeholder="Ej: Líder de manada, explorador..." />
+                <Label htmlFor="rolSocial">Rol Social</Label>
+                <Input id="rolSocial" placeholder="Ej: Líder de manada, explorador..." value={creature.rolSocial} onChange={handleInputChange} />
               </div>
               <div className="flex items-center justify-between space-x-2">
-                <Label htmlFor="reproduction" className="flex items-center gap-2"><HeartHandshake size={16}/>Apto para Reproducción</Label>
-                <Switch id="reproduction" />
+                <Label htmlFor="aptoReproduccion" className="flex items-center gap-2"><HeartHandshake size={16}/>Apto para Reproducción</Label>
+                <Switch id="aptoReproduccion" checked={creature.aptoReproduccion} onCheckedChange={handleSwitchChange('aptoReproduccion')} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="parenting-skills" className="flex items-center gap-2"><Baby size={16}/>Habilidades de Crianza</Label>
-                <Textarea id="parenting-skills" placeholder="Ej: Construye nidos complejos, protector..." className="min-h-[50px]" />
+                <Label htmlFor="habilidadesCrianza" className="flex items-center gap-2"><Baby size={16}/>Habilidades de Crianza</Label>
+                <Textarea id="habilidadesCrianza" placeholder="Ej: Construye nidos complejos, protector..." className="min-h-[50px]" value={creature.habilidadesCrianza} onChange={handleInputChange}/>
               </div>
             </CardContent>
           </Card>
@@ -295,14 +366,40 @@ export default function CraftPage() {
              <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-primary" />
-                Historia de Origen
+                Historia de Origen (Tu Aporte)
               </CardTitle>
             </CardHeader>
             <CardContent>
                <Textarea 
-                  id="lore" 
+                  id="historiaOrigen" 
                   placeholder="Escribe una breve historia sobre cómo fue creada o descubierta tu criatura..." 
                   className="min-h-[120px]"
+                  value={creature.historiaOrigen}
+                  onChange={handleInputChange}
+                />
+            </CardContent>
+          </Card>
+
+          {/* Generador de Lore */}
+          <Card className="bg-card/50 border-border/50 lg:col-span-3">
+             <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle className="flex items-center gap-2">
+                  <WandSparkles className="h-5 w-5 text-primary" />
+                  Descripción Generada por IA
+                </CardTitle>
+                <Button onClick={handleGenerateDescription} disabled={isGenerating}>
+                  {isGenerating ? 'Generando...' : 'Generar Descripción'}
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+               <Textarea 
+                  id="generated-description" 
+                  placeholder="La historia y lore de tu criatura aparecerá aquí..." 
+                  className="min-h-[200px] bg-background/50"
+                  value={generatedDescription}
+                  readOnly
                 />
             </CardContent>
           </Card>
