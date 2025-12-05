@@ -17,7 +17,11 @@ import {
   BookOpen,
   Apple,
   Mountain,
-  FileText
+  FileText,
+  BatteryCharging,
+  Flame,
+  Crosshair,
+  Star
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -191,7 +195,7 @@ export default function CraftPage() {
                     Estadísticas de Combate
                 </CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-x-8 gap-y-4 pt-2">
+            <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-6 pt-2">
                 <div className="space-y-2">
                     <Label className="flex items-center gap-2"><Swords size={16}/> Ataque</Label>
                     <Slider defaultValue={[50]} max={100} step={1} />
@@ -206,6 +210,22 @@ export default function CraftPage() {
                 </div>
                 <div className="space-y-2">
                     <Label className="flex items-center gap-2"><BrainCircuit size={16}/> Inteligencia</Label>
+                    <Slider defaultValue={[50]} max={100} step={1} />
+                </div>
+                 <div className="space-y-2">
+                    <Label className="flex items-center gap-2"><BatteryCharging size={16}/> Resistencia</Label>
+                    <Slider defaultValue={[50]} max={100} step={1} />
+                </div>
+                <div className="space-y-2">
+                    <Label className="flex items-center gap-2"><Flame size={16}/> Maná</Label>
+                    <Slider defaultValue={[50]} max={100} step={1} />
+                </div>
+                <div className="space-y-2">
+                    <Label className="flex items-center gap-2"><Crosshair size={16}/> Precisión</Label>
+                    <Slider defaultValue={[50]} max={100} step={1} />
+                </div>
+                <div className="space-y-2">
+                    <Label className="flex items-center gap-2"><Star size={16}/> Suerte</Label>
                     <Slider defaultValue={[50]} max={100} step={1} />
                 </div>
             </CardContent>
