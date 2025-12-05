@@ -21,29 +21,29 @@ export function MainMenu() {
         </div>
 
         <h1 className="font-headline text-6xl md:text-8xl font-bold tracking-tighter text-primary drop-shadow-[0_0_1rem_hsl(var(--primary)/0.6)]">
-          Creature Forge
+          Forja de Criaturas
         </h1>
         <p className="mt-2 text-lg text-foreground/70 max-w-md">
-          Craft your legend. One part at a time.
+          Forja tu leyenda. Pieza por pieza.
         </p>
 
         <nav className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
           <Link href="/craft" passHref>
             <Button size="lg" className="w-64 justify-center bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/40 transition-all duration-300 transform hover:scale-105">
               <Hammer className="mr-2 h-5 w-5" />
-              Start Crafting
+              Empezar a Crear
             </Button>
           </Link>
           <Link href="/gallery" passHref>
             <Button size="lg" variant="outline" className="w-64 justify-center border-accent/50 text-accent/80 hover:border-accent hover:bg-accent hover:text-accent-foreground transition-all duration-300 transform hover:scale-105">
               <LayoutGrid className="mr-2 h-5 w-5" />
-              Gallery
+              Galería
             </Button>
           </Link>
           <Link href="/settings" passHref>
             <Button size="lg" variant="outline" className="w-64 justify-center border-accent/50 text-accent/80 hover:border-accent hover:bg-accent hover:text-accent-foreground transition-all duration-300 transform hover:scale-105">
               <Cog className="mr-2 h-5 w-5" />
-              Settings
+              Ajustes
             </Button>
           </Link>
         </nav>
