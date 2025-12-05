@@ -5,9 +5,7 @@ import {
   Calendar, 
   Clock, 
   Pencil, 
-  ShieldHalf,
   Scaling,
-  Sprout,
   Sparkles,
   HeartPulse,
   ShieldAlert,
@@ -21,7 +19,10 @@ import {
   BatteryCharging,
   Flame,
   Crosshair,
-  Star
+  Star,
+  Users,
+  HeartHandshake,
+  Baby
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -35,6 +36,7 @@ import {
   SelectValue 
 } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
 
 export default function CraftPage() {
   const [currentDate, setCurrentDate] = useState('');
@@ -188,14 +190,14 @@ export default function CraftPage() {
           </Card>
 
           {/* Estadísticas de Combate */}
-          <Card className="bg-card/50 border-border/50 lg:col-span-2">
+          <Card className="bg-card/50 border-border/50 lg:col-span-3">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <HeartPulse className="h-5 w-5 text-primary" />
                     Estadísticas de Combate
                 </CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-6 pt-2">
+            <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-6 pt-2">
                 <div className="space-y-2">
                     <Label className="flex items-center gap-2"><Swords size={16}/> Ataque</Label>
                     <Slider defaultValue={[50]} max={100} step={1} />
@@ -232,14 +234,14 @@ export default function CraftPage() {
           </Card>
 
           {/* Comportamiento y Lore */}
-          <Card className="bg-card/50 border-border/50 lg:col-span-1">
+          <Card className="bg-card/50 border-border/50 lg:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BookOpen className="h-5 w-5 text-primary" />
                 Comportamiento y Lore
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="temperament">Temperamento</Label>
                  <Select>
@@ -260,6 +262,30 @@ export default function CraftPage() {
               <div className="space-y-2">
                 <Label htmlFor="habitat" className="flex items-center gap-2"><Mountain size={16}/>Hábitat Natural</Label>
                 <Input id="habitat" placeholder="Bosques, volcanes..." />
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Social y Reproductivo */}
+          <Card className="bg-card/50 border-border/50 lg:col-span-1">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-primary" />
+                Social y Reproductivo
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="social-role">Rol Social</Label>
+                <Input id="social-role" placeholder="Ej: Líder de manada, explorador..." />
+              </div>
+              <div className="flex items-center justify-between space-x-2">
+                <Label htmlFor="reproduction" className="flex items-center gap-2"><HeartHandshake size={16}/>Apto para Reproducción</Label>
+                <Switch id="reproduction" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="parenting-skills" className="flex items-center gap-2"><Baby size={16}/>Habilidades de Crianza</Label>
+                <Textarea id="parenting-skills" placeholder="Ej: Construye nidos complejos, protector..." className="min-h-[50px]" />
               </div>
             </CardContent>
           </Card>
@@ -285,5 +311,6 @@ export default function CraftPage() {
       </div>
     </main>
   );
+}
 
     
