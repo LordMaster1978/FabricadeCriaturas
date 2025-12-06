@@ -337,12 +337,12 @@ export default function CraftPage() {
             </CardContent>
           </Card>
 
-          {/* Comportamiento y Lore */}
+          {/* Temperamento, Dieta y Hábitat Natural */}
           <Card className="bg-card/50 border-border/50 lg:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BookOpen className="h-5 w-5 text-primary" />
-                Comportamiento y Lore
+                Temperamento, Dieta y Hábitat Natural
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -360,11 +360,11 @@ export default function CraftPage() {
                 </Select>
               </div>
                <div className="space-y-2">
-                <Label htmlFor="dieta" className="flex items-center gap-2"><Apple size={16}/>Dieta</Label>
+                <Label htmlFor="dieta">Dieta</Label>
                 <Input id="dieta" placeholder="Carnívoro, herbívoro..." value={creature.dieta} onChange={handleInputChange} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="habitat" className="flex items-center gap-2"><Mountain size={16}/>Hábitat Natural</Label>
+                <Label htmlFor="habitat">Hábitat Natural</Label>
                 <Input id="habitat" placeholder="Bosques, volcanes..." value={creature.habitat} onChange={handleInputChange}/>
               </div>
             </CardContent>
