@@ -26,6 +26,7 @@ const DescribeCreatureInputSchema = z.object({
     habilidadesUnicas: z.string().describe('Las habilidades únicas de la criatura.'),
     debilidades: z.string().describe('Las debilidades de la criatura.'),
     temperamento: z.string().describe('El temperamento de la criatura.'),
+    vocalizaciones: z.string().optional().describe('Los sonidos o vocalizaciones que hace la criatura.'),
     dieta: z.string().describe('La dieta de la criatura.'),
     habitat: z.string().describe('El hábitat natural de la criatura.'),
     rolSocial: z.string().describe('El rol social de la criatura en su ecosistema.'),
@@ -78,7 +79,7 @@ const prompt = ai.definePrompt({
     1.  **Devuelve el Nombre:** El campo 'nombre' en la salida debe ser idéntico al de la entrada.
     2.  **Infiere y Genera Estadísticas de Combate (0-100):** Analiza TODOS los atributos proporcionados. Usa las medidas (altura, peso, envergadura), la composición (roca, carne, energía), y el comportamiento (agresivo, rápido) para asignar valores numéricos de 0 a 100 a Ataque, Defensa, Velocidad, Inteligencia, Resistencia, Fuerza y Precisión.
     3.  **Escribe la Descripción Narrativa (Lore Épico):** Crea una historia y descripción inmersiva. No te limites a listar los datos; intégralos en la narrativa. **Justifica sutilmente las estadísticas dentro del texto**. Por ejemplo, si tiene alta 'capacidadCarga' y 'resistenciaPiel', describe su musculatura masiva y su coraza impenetrable para justificar su alta Fuerza y Defensa. Si tiene alta 'velocidadVuelo', narra su agilidad aérea para justificar una Velocidad elevada.
-    4.  **Expande Creativamente:** Si un campo está vacío (ej. 'velocidadNado'), puedes omitirlo o inferir una debilidad (ej. "es torpe en el agua"). Usa los datos como trampolín para una descripción rica, añadiendo detalles sobre sus sentidos, su ciclo de vida o su impacto en el ecosistema. Presta especial atención a la descripción de la apariencia, colores y texturas para crear una imagen vívida.
+    4.  **Expande Creativamente:** Si un campo está vacío (ej. 'velocidadNado'), puedes omitirlo o inferir una debilidad (ej. "es torpe en el agua"). Usa los datos como trampolín para una descripción rica, añadiendo detalles sobre sus sentidos, su ciclo de vida o su impacto en el ecosistema. Presta especial atención a la descripción de la apariencia, colores, texturas y sonidos (vocalizaciones) para crear una imagen vívida.
     5.  **Determina la Rareza:** Clasifica la criatura como "Común", "Poco Común", "Raro", "Épico" o "Legendario" basándote en la combinación de su poder, origen, unicidad y debilidades.
     6.  **Redacta las Tres Reseñas:**
         *   **Valoración de Expertos:** Analítica y técnica. Un erudito discutiendo su biología, tácticas de combate y posibles usos o amenazas.
@@ -95,7 +96,7 @@ const prompt = ai.definePrompt({
     - **Movilidad:** Velocidad en tierra: {{{velocidadMaxima}}}, Velocidad de vuelo: {{{velocidadVuelo}}}, Velocidad de nado: {{{velocidadNado}}}, Capacidad de salto: {{{capacidadSalto}}}.
     - **Capacidades Físicas:** Fuerza de mordida: {{{fuerzaMordida}}}, Capacidad de carga: {{{capacidadCarga}}}, Resistencia de piel/coraza: {{{resistenciaPiel}}}.
     - **Poderes y Vulnerabilidades:** Afinidad elemental a {{{afinidadElemental}}}. Habilidades únicas: {{{habilidadesUnicas}}}. Debilidades: {{{debilidades}}}.
-    - **Comportamiento:** Temperamento: {{{temperamento}}}, dieta: {{{dieta}}}, hábitat: {{{habitat}}}, rol social: {{{rolSocial}}}.
+    - **Comportamiento:** Temperamento: {{{temperamento}}}, dieta: {{{dieta}}}, hábitat: {{{habitat}}}, rol social: {{{rolSocial}}}, Vocalizaciones: {{{vocalizaciones}}}.
     - **Ciclo de Vida:** Apto para reproducción: {{{aptoReproduccion_text}}}. Habilidades de crianza: {{{habilidadesCrianza}}}.
     - **Trasfondo:** Historia de origen sugerida: {{{historiaOrigen}}}.
   `,
@@ -132,3 +133,5 @@ export async function describeCreature(
 ): Promise<DescribeCreatureOutput> {
   return describeCreatureFlow(input);
 }
+
+    

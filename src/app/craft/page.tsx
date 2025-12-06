@@ -26,7 +26,8 @@ import {
   Hand,
   Maximize,
   MoveVertical,
-  Palette
+  Palette,
+  AudioLines
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -143,6 +144,7 @@ export default function CraftPage() {
     habilidadesUnicas: '',
     debilidades: '',
     temperamento: 'lonely',
+    vocalizaciones: '',
     dieta: '',
     habitat: '',
     rolSocial: '',
@@ -470,12 +472,12 @@ export default function CraftPage() {
             </CardContent>
           </Card>
 
-          {/* Temperamento, Dieta y Hábitat Natural */}
+          {/* Sonido y Comportamiento */}
           <Card className="bg-card/50 border-border/50 lg:col-span-1">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-primary" />
-                Temperamento, Dieta y Hábitat Natural
+                <AudioLines className="h-5 w-5 text-primary" />
+                Sonido y Comportamiento
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -506,6 +508,22 @@ export default function CraftPage() {
                   </SelectContent>
                 </Select>
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="vocalizaciones">Vocalizaciones</Label>
+                <Textarea id="vocalizaciones" placeholder="Ej: Rugido grave, canto melódico..." className="min-h-[50px]" value={creature.vocalizaciones} onChange={handleInputChange} />
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Dieta y Hábitat */}
+          <Card className="bg-card/50 border-border/50 lg:col-span-1">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Mountain className="h-5 w-5 text-primary" />
+                Dieta y Hábitat
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
                <div className="space-y-2">
                 <Label htmlFor="dieta">Dieta</Label>
                 <Input id="dieta" placeholder="Carnívoro, herbívoro..." value={creature.dieta} onChange={handleInputChange} />
@@ -687,3 +705,5 @@ export default function CraftPage() {
     </main>
   );
 }
+
+    
