@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { 
   Camera,
   Trash2,
@@ -34,7 +35,8 @@ import {
   Hourglass,
   Leaf,
   Recycle,
-  CircleDollarSign
+  CircleDollarSign,
+  Home
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -239,7 +241,7 @@ export default function CraftPage() {
         title: "¡Sonido generado!",
         description: "La IA ha creado el sonido de tu criatura.",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error generating sound:", error);
       toast({
         variant: "destructive",
@@ -326,7 +328,15 @@ export default function CraftPage() {
     <main className="flex min-h-screen w-full flex-col items-center bg-background p-4 md:p-8">
       <div className="w-full max-w-6xl">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-            <h1 className="text-4xl font-bold">Taller de Criaturas</h1>
+            <div className="flex items-center gap-4">
+              <h1 className="text-4xl font-bold">Taller de Criaturas</h1>
+              <Link href="/" passHref>
+                <Button variant="outline" size="icon">
+                    <Home className="h-5 w-5" />
+                    <span className="sr-only">Volver al Menú</span>
+                </Button>
+              </Link>
+            </div>
             <div className="flex items-center gap-6 text-sm md:text-lg">
               <div className="flex items-center gap-2">
                 <CircleDollarSign className="h-5 w-5 text-foreground/70" />
