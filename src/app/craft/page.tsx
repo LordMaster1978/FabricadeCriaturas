@@ -17,19 +17,16 @@ import {
   WandSparkles,
   Star,
   AreaChart,
-  MoveUp,
   Weight,
-  Gauge,
-  Maximize,
+  MoveHorizontal,
   Circle,
-  Ruler,
   Bird,
   Fish,
   Footprints,
-  RectangleHorizontal,
-  ChevronsLeftRight,
   Shield,
   Hand,
+  Maximize,
+  MoveVertical
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -310,18 +307,18 @@ export default function CraftPage() {
           <Card className="bg-card/50 border-border/50 lg:col-span-1">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Ruler className="h-5 w-5 text-primary" />
+                <Maximize className="h-5 w-5 text-primary" />
                 Medidas Detalladas
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-3 gap-2">
                 <div className="space-y-2">
-                  <Label htmlFor="envergadura" className="flex items-center gap-1 text-xs"><ChevronsLeftRight size={12}/>Envergadura</Label>
+                  <Label htmlFor="envergadura" className="flex items-center gap-1 text-xs"><MoveHorizontal size={12}/>Envergadura</Label>
                   <Input id="envergadura" placeholder="Ej: 15m" value={creature.envergadura} onChange={handleInputChange} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="longitud" className="flex items-center gap-1 text-xs"><RectangleHorizontal size={12}/>Longitud</Label>
+                  <Label htmlFor="longitud" className="flex items-center gap-1 text-xs"><MoveVertical size={12}/>Longitud</Label>
                   <Input id="longitud" placeholder="Ej: 10m" value={creature.longitud} onChange={handleInputChange} />
                 </div>
                 <div className="space-y-2">
@@ -456,7 +453,7 @@ export default function CraftPage() {
              <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-primary" />
-                Historia de Origen (Tu Aporte)
+                Historia de Origen
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -597,3 +594,5 @@ export default function CraftPage() {
     </main>
   );
 }
+
+    
