@@ -7,18 +7,10 @@ import {
   Pencil, 
   Scaling,
   Sparkles,
-  HeartPulse,
-  ShieldAlert,
-  BrainCircuit,
-  Swords,
-  Wind,
   BookOpen,
   Apple,
   Mountain,
   FileText,
-  BatteryCharging,
-  Dumbbell,
-  Crosshair,
   Users,
   HeartHandshake,
   Baby,
@@ -35,13 +27,12 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { describeCreature, type DescribeCreatureInput } from '@/ai/flows/describe-creature-flow';
 import { useToast } from "@/hooks/use-toast";
 
-type CreatureState = DescribeCreatureInput;
+type CreatureState = Omit<DescribeCreatureInput, 'ataque' | 'defensa' | 'velocidad' | 'inteligencia' | 'resistencia' | 'fuerza' | 'precision'>;
 
 const initialDescription = `Ah, aventurero y estudioso de lo arcaico, permíteme descorrer el velo sobre una criatura cuyo nombre apenas musitan los vientos volcánicos: el Dragonus. No es un dragón de linaje conocido, ni una bestia de la estirpe común, sino una singularidad ígnea, un enigma envuelto en el lamento de la soledad y la furia de las forjas primigenias. Prepara tu pluma y tu corazón, pues la historia de esta criatura no es solo de poder, sino de una melancolía que arde más allá de su propia llama.
 
@@ -92,13 +83,6 @@ export default function CraftPage() {
     afinidadElemental: 'fire',
     habilidadesUnicas: '',
     debilidades: '',
-    ataque: 50,
-    defensa: 50,
-    velocidad: 50,
-    inteligencia: 50,
-    resistencia: 50,
-    fuerza: 50,
-    precision: 50,
     temperamento: 'lonely',
     dieta: '',
     habitat: '',
@@ -119,10 +103,6 @@ export default function CraftPage() {
     setCreature(prev => ({ ...prev, [id]: value }));
   };
 
-  const handleSliderChange = (id: keyof CreatureState) => (value: number[]) => {
-    setCreature(prev => ({ ...prev, [id]: value[0] }));
-  };
-
   const handleSwitchChange = (id: keyof CreatureState) => (checked: boolean) => {
     setCreature(prev => ({ ...prev, [id]: checked }));
   };
@@ -131,7 +111,17 @@ export default function CraftPage() {
     setIsGenerating(true);
     setGeneratedDescription('');
     try {
-      const description = await describeCreature(creature);
+      const fullCreatureData = {
+        ...creature,
+        ataque: 0, // Placeholder, la IA los generará
+        defensa: 0,
+        velocidad: 0,
+        inteligencia: 0,
+        resistencia: 0,
+        fuerza: 0,
+        precision: 0,
+      };
+      const description = await describeCreature(fullCreatureData);
       setGeneratedDescription(description);
       toast({
         title: "¡Descripción generada!",
@@ -294,46 +284,6 @@ export default function CraftPage() {
                 <Label htmlFor="debilidades">Debilidades</Label>
                 <Textarea id="debilidades" placeholder="Ej: Vulnerable al sonido agudo..." className="min-h-[50px]" value={creature.debilidades} onChange={handleInputChange}/>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Estadísticas de Combate */}
-          <Card className="bg-card/50 border-border/50 lg:col-span-3">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <HeartPulse className="h-5 w-5 text-primary" />
-                    Estadísticas de Combate
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-6 pt-2">
-                <div className="space-y-2">
-                    <Label className="flex items-center gap-2"><Swords size={16}/> Ataque ({creature.ataque})</Label>
-                    <Slider value={[creature.ataque]} onValueChange={handleSliderChange('ataque')} max={100} step={1} />
-                </div>
-                <div className="space-y-2">
-                    <Label className="flex items-center gap-2"><ShieldAlert size={16}/> Defensa ({creature.defensa})</Label>
-                    <Slider value={[creature.defensa]} onValueChange={handleSliderChange('defensa')} max={100} step={1} />
-                </div>
-                <div className="space-y-2">
-                    <Label className="flex items-center gap-2"><Wind size={16}/> Velocidad ({creature.velocidad})</Label>
-                    <Slider value={[creature.velocidad]} onValueChange={handleSliderChange('velocidad')} max={100} step={1} />
-                </div>
-                <div className="space-y-2">
-                    <Label className="flex items-center gap-2"><BrainCircuit size={16}/> Inteligencia ({creature.inteligencia})</Label>
-                    <Slider value={[creature.inteligencia]} onValueChange={handleSliderChange('inteligencia')} max={100} step={1} />
-                </div>
-                 <div className="space-y-2">
-                    <Label className="flex items-center gap-2"><BatteryCharging size={16}/> Resistencia ({creature.resistencia})</Label>
-                    <Slider value={[creature.resistencia]} onValueChange={handleSliderChange('resistencia')} max={100} step={1} />
-                </div>
-                <div className="space-y-2">
-                    <Label className="flex items-center gap-2"><Dumbbell size={16}/> Fuerza ({creature.fuerza})</Label>
-                    <Slider value={[creature.fuerza]} onValueChange={handleSliderChange('fuerza')} max={100} step={1} />
-                </div>
-                <div className="space-y-2">
-                    <Label className="flex items-center gap-2"><Crosshair size={16}/> Precisión ({creature.precision})</Label>
-                    <Slider value={[creature.precision]} onValueChange={handleSliderChange('precision')} max={100} step={1} />
-                </div>
             </CardContent>
           </Card>
 

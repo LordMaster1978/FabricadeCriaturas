@@ -20,13 +20,6 @@ const DescribeCreatureInputSchema = z.object({
     afinidadElemental: z.string().describe('El elemento al que la criatura es afín.'),
     habilidadesUnicas: z.string().describe('Las habilidades únicas de la criatura.'),
     debilidades: z.string().describe('Las debilidades de la criatura.'),
-    ataque: z.number().describe('El nivel de ataque de la criatura (0-100).'),
-    defensa: z.number().describe('El nivel de defensa de la criatura (0-100).'),
-    velocidad: z.number().describe('El nivel de velocidad de la criatura (0-100).'),
-    inteligencia: z.number().describe('El nivel de inteligencia de la criatura (0-100).'),
-    resistencia: z.number().describe('El nivel de resistencia de la criatura (0-100).'),
-    fuerza: z.number().describe('El nivel de fuerza de la criatura (0-100).'),
-    precision: z.number().describe('El nivel de precisión de la criatura (0-100).'),
     temperamento: z.string().describe('El temperamento de la criatura.'),
     dieta: z.string().describe('La dieta de la criatura.'),
     habitat: z.string().describe('El hábitat natural de la criatura.'),
@@ -34,6 +27,14 @@ const DescribeCreatureInputSchema = z.object({
     aptoReproduccion: z.boolean().describe('Si la criatura es apta para la reproducción.'),
     habilidadesCrianza: z.string().describe('Las habilidades de crianza de la criatura.'),
     historiaOrigen: z.string().describe('La historia de origen o lore de la criatura.'),
+    // Las estadísticas ya no son entradas directas del usuario, pero las mantenemos para la lógica interna.
+    ataque: z.number().optional(),
+    defensa: z.number().optional(),
+    velocidad: z.number().optional(),
+    inteligencia: z.number().optional(),
+    resistencia: z.number().optional(),
+    fuerza: z.number().optional(),
+    precision: z.number().optional(),
   });
 
 export type DescribeCreatureInput = z.infer<typeof DescribeCreatureInputSchema>;
@@ -45,23 +46,26 @@ const prompt = ai.definePrompt({
   input: { schema: DescribeCreatureInputSchema },
   output: { format: 'text' },
   prompt: `
-    Eres un maestro narrador y cronista de bestias fantásticas. Tu tarea es escribir una descripción evocadora y una historia de origen (lore) para una nueva criatura. Utiliza todos los detalles proporcionados para crear un retrato vívido y coherente. La descripción debe ser atractiva, imaginativa y sentirse como parte de un universo fantástico más grande.
+    Eres un maestro narrador y un diseñador de juegos de rol. Tu tarea es escribir una descripción evocadora y una historia de origen (lore) para una nueva criatura. Además, debes **generar y justificar sus estadísticas de combate** basándote en sus atributos físicos y de comportamiento.
 
-    **Detalles de la Criatura:**
+    **Instrucciones:**
+    1.  **Genera Estadísticas de Combate (0-100):** Basándote en todos los detalles proporcionados (tamaño, complexión, composición, etc.), asigna valores numéricos de 0 a 100 para Ataque, Defensa, Velocidad, Inteligencia, Resistencia, Fuerza y Precisión. **No utilices los valores que se te pasan como {{{ataque}}}, etc., ignóralos y crea los tuyos.** Justifica brevemente por qué has elegido esos valores en la sección de Habilidades y Poderes. Por ejemplo, una criatura 'gigante' y 'robusta' debería tener alta Fuerza y Resistencia, pero probablemente baja Velocidad. Una criatura 'pequeña' y 'delgada' podría tener alta Velocidad pero baja Fuerza.
+    2.  **Introducción:** Comienza con una introducción cautivadora que presente a la criatura por su nombre.
+    3.  **Descripción Física:** Describe su apariencia basándote en su tamaño, complexión, materiales y partes del cuerpo.
+    4.  **Habilidades y Poderes:** Explica cómo su afinidad elemental y habilidades únicas se manifiestan. **Integra aquí la descripción de sus estadísticas de combate**, explicando cómo se reflejan en su comportamiento en una pelea y por qué tienen esos valores. No olvides tejer sus debilidades en la narrativa.
+    5.  **Ecología y Comportamiento:** Describe cómo vive en su hábitat, qué come y cómo interactúa con otras criaturas.
+    6.  **Reproducción y Crianza:** Si es apta, describe brevemente sus rituales o cómo cuida de sus crías.
+    7.  **Historia y Lore:** Expande la historia de origen proporcionada, o si está vacía, inventa una que encaje con todos los demás atributos.
+
+    **Tono:** Épico, descriptivo y narrativo, como si fuera una entrada en un bestiario legendario.
+
+    **Detalles de la Criatura a Describir:**
     - **Nombre:** {{{nombre}}}
     - **Composición y Materiales:** {{{composicion}}}
     - **Atributos Físicos:** Mide {{{tamano}}}, tiene una complexión {{{complexion}}}. Sus partes más notables son {{{partesCuerpo}}}. Su apariencia general y textura es {{{apariencia}}}.
     - **Afinidad Elemental:** {{{afinidadElemental}}}
     - **Habilidades Únicas:** {{{habilidadesUnicas}}}
     - **Debilidades:** {{{debilidades}}}
-    - **Estadísticas de Combate:**
-      - Ataque: {{{ataque}}}/100
-      - Defensa: {{{defensa}}}/100
-      - Velocidad: {{{velocidad}}}/100
-      - Inteligencia: {{{inteligencia}}}/100
-      - Resistencia: {{{resistencia}}}/100
-      - Fuerza: {{{fuerza}}}/100
-      - Precisión: {{{precision}}}/100
     - **Comportamiento y Lore:**
       - **Temperamento:** {{{temperamento}}}
       - **Dieta:** {{{dieta}}}
@@ -69,16 +73,6 @@ const prompt = ai.definePrompt({
       - **Rol Social:** {{{rolSocial}}}
       - **Reproducción:** {{{aptoReproduccion_text}}} (Habilidades de crianza: {{{habilidadesCrianza}}})
     - **Historia de Origen Sugerida por el Creador:** {{{historiaOrigen}}}
-
-    **Instrucciones:**
-    1.  **Introducción:** Comienza con una introducción cautivadora que presente a la criatura por su nombre.
-    2.  **Descripción Física:** Describe su apariencia basándote en su tamaño, complexión, materiales y partes del cuerpo. Haz que suene majestuosa, aterradora o misteriosa según corresponda.
-    3.  **Habilidades y Poderes:** Explica cómo su afinidad elemental y habilidades únicas se manifiestan. Menciona cómo sus estadísticas de combate se reflejan en su comportamiento en una pelea. No olvides tejer sus debilidades en la narrativa.
-    4.  **Ecología y Comportamiento:** Describe cómo vive en su hábitat, qué come, cómo interactúa con otras criaturas (su rol social y temperamento).
-    5.  **Reproducción y Crianza:** Si es apta, describe brevemente sus rituales o cómo cuida de sus crías.
-    6.  **Historia y Lore:** Expande la historia de origen proporcionada, o si está vacía, inventa una que encaje con todos los demás atributos. ¿Es una creación mágica, una especie ancestral, una mutación? ¿Qué leyendas se cuentan sobre ella?
-
-    **Tono:** Épico, descriptivo y narrativo, como si fuera una entrada en un bestiario legendario.
   `,
 });
 
