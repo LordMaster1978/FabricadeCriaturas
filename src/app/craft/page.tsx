@@ -28,7 +28,9 @@ import {
   MoveVertical,
   Palette,
   AudioLines,
-  Hourglass
+  Hourglass,
+  Leaf,
+  Recycle
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -166,6 +168,8 @@ export default function CraftPage() {
     capacidadCarga: '',
     resistenciaPiel: '',
     longevidad: '',
+    rolEcologico: '',
+    relacionesSimbioticas: '',
   });
 
   const [generatedValuation, setGeneratedValuation] = useState<DescribeCreatureOutput | null>(initialValuation);
@@ -584,6 +588,10 @@ export default function CraftPage() {
                 <Label htmlFor="habitat">Hábitat Natural</Label>
                 <Input id="habitat" placeholder="Bosques, volcanes..." value={creature.habitat} onChange={handleInputChange}/>
               </div>
+               <div className="space-y-2">
+                <Label htmlFor="rolEcologico" className="flex items-center gap-2"><Leaf size={14}/>Rol Ecológico</Label>
+                <Textarea id="rolEcologico" placeholder="Ej: Poliniza flores lunares, es un superdepredador..." className="min-h-[50px]" value={creature.rolEcologico} onChange={handleInputChange}/>
+              </div>
             </CardContent>
           </Card>
           
@@ -611,6 +619,10 @@ export default function CraftPage() {
               <div className="space-y-2">
                 <Label htmlFor="habilidadesCrianza" className="flex items-center gap-2"><Baby size={16}/>Habilidades de Crianza</Label>
                 <Textarea id="habilidadesCrianza" placeholder="Ej: Construye nidos complejos, protector..." className="min-h-[50px]" value={creature.habilidadesCrianza} onChange={handleInputChange}/>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="relacionesSimbioticas" className="flex items-center gap-2"><Recycle size={14}/>Relaciones Simbióticas</Label>
+                <Textarea id="relacionesSimbioticas" placeholder="Ej: Protege a los gnomos del bosque a cambio de gemas..." className="min-h-[50px]" value={creature.relacionesSimbioticas} onChange={handleInputChange}/>
               </div>
             </CardContent>
           </Card>

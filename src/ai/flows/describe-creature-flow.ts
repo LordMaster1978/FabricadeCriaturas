@@ -43,6 +43,8 @@ const DescribeCreatureInputSchema = z.object({
     capacidadCarga: z.string().optional().describe('La capacidad de carga de la criatura (ej: 2000kg).'),
     resistenciaPiel: z.string().optional().describe('La resistencia de la piel o coraza de la criatura (ej: 500 KPa).'),
     longevidad: z.string().optional().describe('La longevidad o esperanza de vida de la criatura.'),
+    rolEcologico: z.string().optional().describe('El rol ecológico de la criatura en su hábitat.'),
+    relacionesSimbioticas: z.string().optional().describe('Las relaciones simbióticas de la criatura con otras formas de vida.'),
   });
 
 export type DescribeCreatureInput = z.infer<typeof DescribeCreatureInputSchema>;
@@ -97,7 +99,7 @@ const prompt = ai.definePrompt({
     - **Movilidad:** Velocidad en tierra: {{{velocidadMaxima}}}, Velocidad de vuelo: {{{velocidadVuelo}}}, Velocidad de nado: {{{velocidadNado}}}, Capacidad de salto: {{{capacidadSalto}}}.
     - **Capacidades Físicas:** Fuerza de mordida: {{{fuerzaMordida}}}, Capacidad de carga: {{{capacidadCarga}}}, Resistencia de piel/coraza: {{{resistenciaPiel}}}.
     - **Poderes y Vulnerabilidades:** Afinidad elemental a {{{afinidadElemental}}}. Habilidades únicas: {{{habilidadesUnicas}}}. Debilidades: {{{debilidades}}}.
-    - **Comportamiento:** Temperamento: {{{temperamento}}}, dieta: {{{dieta}}}, hábitat: {{{habitat}}}, rol social: {{{rolSocial}}}, Vocalizaciones: {{{vocalizaciones}}}.
+    - **Comportamiento y Ecología:** Temperamento: {{{temperamento}}}, dieta: {{{dieta}}}, hábitat: {{{habitat}}}, rol social: {{{rolSocial}}}, Vocalizaciones: {{{vocalizaciones}}}. Rol ecológico: {{{rolEcologico}}}. Relaciones simbióticas: {{{relacionesSimbioticas}}}.
     - **Ciclo de Vida:** Longevidad: {{{longevidad}}}. Apto para reproducción: {{{aptoReproduccion_text}}}. Habilidades de crianza: {{{habilidadesCrianza}}}.
     - **Trasfondo:** Historia de origen sugerida: {{{historiaOrigen}}}.
   `,
