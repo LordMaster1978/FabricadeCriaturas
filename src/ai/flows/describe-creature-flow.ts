@@ -1,8 +1,8 @@
 'use server';
 /**
- * @fileOverview Un flujo de IA para generar descripciones narrativas de criaturas.
+ * @fileOverview Un flujo de IA para generar descripciones narrativas y valoraciones de criaturas.
  *
- * - describeCreature - Una función que genera una descripción basada en los atributos de una criatura.
+ * - describeCreature - Una función que genera una descripción y valoración basada en los atributos de una criatura.
  * - DescribeCreatureInput - El tipo de entrada para la función describeCreature.
  * - DescribeCreatureOutput - El tipo de retorno para la función describeCreature.
  */
@@ -27,52 +27,58 @@ const DescribeCreatureInputSchema = z.object({
     aptoReproduccion: z.boolean().describe('Si la criatura es apta para la reproducción.'),
     habilidadesCrianza: z.string().describe('Las habilidades de crianza de la criatura.'),
     historiaOrigen: z.string().describe('La historia de origen o lore de la criatura.'),
-    // Las estadísticas ya no son entradas directas del usuario, pero las mantenemos para la lógica interna.
-    ataque: z.number().optional(),
-    defensa: z.number().optional(),
-    velocidad: z.number().optional(),
-    inteligencia: z.number().optional(),
-    resistencia: z.number().optional(),
-    fuerza: z.number().optional(),
-    precision: z.number().optional(),
   });
 
 export type DescribeCreatureInput = z.infer<typeof DescribeCreatureInputSchema>;
 
-export type DescribeCreatureOutput = string;
+const DescribeCreatureOutputSchema = z.object({
+  narrativeDescription: z.string().describe("La descripción narrativa completa y el lore de la criatura, escrita en un tono épico de bestiario. Debe tener al menos 5 párrafos."),
+  combatStats: z.object({
+    Ataque: z.number().min(0).max(100),
+    Defensa: z.number().min(0).max(100),
+    Velocidad: z.number().min(0).max(100),
+    Inteligencia: z.number().min(0).max(100),
+    Resistencia: z.number().min(0).max(100),
+    Fuerza: z.number().min(0).max(100),
+    Precision: z.number().min(0).max(100),
+  }).describe("Las estadísticas de combate generadas para la criatura, con una justificación dentro de la descripción narrativa."),
+  rarity: z.enum(["Común", "Poco Común", "Raro", "Épico", "Legendario"]).describe("La clasificación de rareza de la criatura."),
+  expertValuation: z.string().describe("Una reseña desde la perspectiva de un experto o estudioso de criaturas, analizando sus fortalezas y debilidades de forma técnica."),
+  publicValuation: z.string().describe("Una reseña desde la perspectiva del público general o aventureros, con un tono más coloquial y basado en experiencias o rumores."),
+  aiValuation: z.string().describe("Una meta-reseña de la propia IA, comentando sobre el diseño y la coherencia de la criatura que ha ayudado a crear."),
+  starRating: z.number().min(1).max(5).describe("Una valoración final en formato de estrellas (1 a 5) basada en el poder, originalidad y coherencia general de la criatura."),
+});
+
+
+export type DescribeCreatureOutput = z.infer<typeof DescribeCreatureOutputSchema>;
 
 const prompt = ai.definePrompt({
   name: 'describeCreaturePrompt',
   input: { schema: DescribeCreatureInputSchema },
-  output: { format: 'text' },
+  output: { schema: DescribeCreatureOutputSchema },
   prompt: `
-    Eres un maestro narrador y un diseñador de juegos de rol. Tu tarea es escribir una descripción evocadora y una historia de origen (lore) para una nueva criatura. Además, debes **generar y justificar sus estadísticas de combate** basándote en sus atributos físicos y de comportamiento.
+    Eres un maestro narrador, un diseñador de juegos de rol y un crítico experto. Tu tarea es crear una ficha de valoración completa para una nueva criatura.
 
     **Instrucciones:**
-    1.  **Genera Estadísticas de Combate (0-100):** Basándote en todos los detalles proporcionados (tamaño, complexión, composición, etc.), asigna valores numéricos de 0 a 100 para Ataque, Defensa, Velocidad, Inteligencia, Resistencia, Fuerza y Precisión. **No utilices los valores que se te pasan como {{{ataque}}}, etc., ignóralos y crea los tuyos.** Justifica brevemente por qué has elegido esos valores en la sección de Habilidades y Poderes. Por ejemplo, una criatura 'gigante' y 'robusta' debería tener alta Fuerza y Resistencia, pero probablemente baja Velocidad. Una criatura 'pequeña' y 'delgada' podría tener alta Velocidad pero baja Fuerza.
-    2.  **Introducción:** Comienza con una introducción cautivadora que presente a la criatura por su nombre.
-    3.  **Descripción Física:** Describe su apariencia basándote en su tamaño, complexión, materiales y partes del cuerpo.
-    4.  **Habilidades y Poderes:** Explica cómo su afinidad elemental y habilidades únicas se manifiestan. **Integra aquí la descripción de sus estadísticas de combate**, explicando cómo se reflejan en su comportamiento en una pelea y por qué tienen esos valores. No olvides tejer sus debilidades en la narrativa.
-    5.  **Ecología y Comportamiento:** Describe cómo vive en su hábitat, qué come y cómo interactúa con otras criaturas.
-    6.  **Reproducción y Crianza:** Si es apta, describe brevemente sus rituales o cómo cuida de sus crías.
-    7.  **Historia y Lore:** Expande la historia de origen proporcionada, o si está vacía, inventa una que encaje con todos los demás atributos.
+    1.  **Genera Estadísticas de Combate (0-100):** Basándote en todos los detalles proporcionados (tamaño, complexión, composición, etc.), asigna valores numéricos de 0 a 100 para Ataque, Defensa, Velocidad, Inteligencia, Resistencia, Fuerza y Precisión.
+    2.  **Escribe la Descripción Narrativa:** Redacta una descripción evocadora y una historia de origen (lore) para la criatura. **Dentro de esta narrativa, justifica brevemente por qué has elegido los valores de las estadísticas**. Por ejemplo, una criatura 'gigante' y 'robusta' debería tener alta Fuerza y Resistencia.
+    3.  **Determina la Rareza:** Clasifica la criatura como "Común", "Poco Común", "Raro", "Épico" o "Legendario" basándote en su origen, poder y unicidad.
+    4.  **Escribe las Reseñas:**
+        *   **Valoración de Expertos:** Escribe una reseña desde la perspectiva de un erudito, analizando sus capacidades de forma técnica.
+        *   **Valoración del Público:** Escribe una reseña como si fueras un aventurero o un ciudadano común, basándote en rumores o encuentros.
+        *   **Valoración de la IA:** Escribe una breve autocrítica sobre el concepto de la criatura, comentando su originalidad y coherencia.
+    5.  **Asigna Puntuación de Estrellas:** Otorga una puntuación final de 1 a 5 estrellas, resumiendo su poder, originalidad y diseño general.
 
-    **Tono:** Épico, descriptivo y narrativo, como si fuera una entrada en un bestiario legendario.
+    **Tono:** Épico, descriptivo y como si fuera una entrada en un bestiario legendario para la descripción; analítico para los expertos; coloquial para el público; y objetivo para la IA.
 
-    **Detalles de la Criatura a Describir:**
+    **Detalles de la Criatura:**
     - **Nombre:** {{{nombre}}}
-    - **Composición y Materiales:** {{{composicion}}}
-    - **Atributos Físicos:** Mide {{{tamano}}}, tiene una complexión {{{complexion}}}. Sus partes más notables son {{{partesCuerpo}}}. Su apariencia general y textura es {{{apariencia}}}.
-    - **Afinidad Elemental:** {{{afinidadElemental}}}
-    - **Habilidades Únicas:** {{{habilidadesUnicas}}}
-    - **Debilidades:** {{{debilidades}}}
-    - **Comportamiento y Lore:**
-      - **Temperamento:** {{{temperamento}}}
-      - **Dieta:** {{{dieta}}}
-      - **Hábitat Natural:** {{{habitat}}}
-      - **Rol Social:** {{{rolSocial}}}
-      - **Reproducción:** {{{aptoReproduccion_text}}} (Habilidades de crianza: {{{habilidadesCrianza}}})
-    - **Historia de Origen Sugerida por el Creador:** {{{historiaOrigen}}}
+    - **Composición:** {{{composicion}}}
+    - **Físico:** Tamaño {{{tamano}}}, complexión {{{complexion}}}, partes notables {{{partesCuerpo}}}, apariencia {{{apariencia}}}.
+    - **Poderes:** Afinidad elemental a {{{afinidadElemental}}}, habilidades únicas {{{habilidadesUnicas}}}, debilidades {{{debilidades}}}.
+    - **Comportamiento:** Temperamento {{{temperamento}}}, dieta {{{dieta}}}, hábitat {{{habitat}}}, rol social {{{rolSocial}}}.
+    - **Reproducción:** Apto: {{{aptoReproduccion_text}}} (Habilidades de crianza: {{{habilidadesCrianza}}}).
+    - **Historia Sugerida:** {{{historiaOrigen}}}
   `,
 });
 
@@ -80,7 +86,7 @@ const describeCreatureFlow = ai.defineFlow(
   {
     name: 'describeCreatureFlow',
     inputSchema: DescribeCreatureInputSchema,
-    outputSchema: z.string(),
+    outputSchema: DescribeCreatureOutputSchema,
   },
   async (input) => {
     // Augment input with a textual representation of the boolean for the prompt
@@ -90,7 +96,12 @@ const describeCreatureFlow = ai.defineFlow(
     };
 
     const response = await prompt(augmentedInput);
-    return response.output || 'No se pudo generar una descripción.';
+    
+    if (!response.output) {
+      throw new Error("La IA no pudo generar una respuesta estructurada.");
+    }
+    
+    return response.output;
   }
 );
 

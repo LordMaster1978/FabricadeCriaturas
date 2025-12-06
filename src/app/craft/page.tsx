@@ -14,9 +14,11 @@ import {
   Users,
   HeartHandshake,
   Baby,
-  WandSparkles
+  WandSparkles,
+  Star,
+  AreaChart
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -29,43 +31,43 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { describeCreature, type DescribeCreatureInput } from '@/ai/flows/describe-creature-flow';
+import { describeCreature, type DescribeCreatureInput, type DescribeCreatureOutput } from '@/ai/flows/describe-creature-flow';
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartConfig,
+} from "@/components/ui/chart";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from "recharts";
 
-type CreatureState = Omit<DescribeCreatureInput, 'ataque' | 'defensa' | 'velocidad' | 'inteligencia' | 'resistencia' | 'fuerza' | 'precision'>;
 
-const initialDescription = `Ah, aventurero y estudioso de lo arcaico, permíteme descorrer el velo sobre una criatura cuyo nombre apenas musitan los vientos volcánicos: el Dragonus. No es un dragón de linaje conocido, ni una bestia de la estirpe común, sino una singularidad ígnea, un enigma envuelto en el lamento de la soledad y la furia de las forjas primigenias. Prepara tu pluma y tu corazón, pues la historia de esta criatura no es solo de poder, sino de una melancolía que arde más allá de su propia llama.
+const initialValuation: DescribeCreatureOutput = {
+  narrativeDescription: `Ah, aventurero y estudioso de lo arcaico, permíteme descorrer el velo sobre una criatura cuyo nombre apenas musitan los vientos volcánicos: el Dragonus. No es un dragón de linaje conocido, ni una bestia de la estirpe común, sino una singularidad ígnea, un enigma envuelto en el lamento de la soledad y la furia de las forjas primigenias. Prepara tu pluma y tu corazón, pues la historia de esta criatura no es solo de poder, sino de una melancolía que arde más allá de su propia llama.\n\nEl Dragonus: El Eco Solitario de la Forja Ardiente\n\nDescripción Física:\nEl Dragonus se alza a una altura "mediana" para una bestia de su naturaleza, comparable a un semental de guerra imponente, pero su presencia desborda cualquier medida. Su complexión es indiscutiblemente atlética, una silueta cincelada por la fuerza y la agilidad, más esbelta que robusta, diseñada para el movimiento explosivo y la gracia ardiente. Sus partes más notables son las láminas de obsidiana viviente que forman su piel, no lisas, sino angulares y fracturadas, con vetas de un magma brillante que palpita bajo la superficie. Estas escamas obsidianas irradian un calor constante, distorsionando el aire a su alrededor como un espejismo danzante. En su lomo, alas membranosas no de piel, sino de pura energía térmica condensada, ondean y se disipan en oleadas de calor abrasador, más una manifestación de su voluntad que una estructura biológica sólida. Su cabeza está coronada por una diadema natural de cuernos espinosos de obsidiana cristalizada, y sus ojos son brasas fundidas que brillan con una inteligencia antigua y una tristeza abismal. La textura general de su cuerpo es una paradoja: fría y dura como la roca volcánica al tacto, pero abrasadora e inasible por el aura de fuego que la envuelve.\n\nHabilidades y Poderes:\nLa afinidad elemental del Dragonus es, sin lugar a dudas, el fuego primordial. No es un simple aliento flameante, sino una extensión de su propia existencia. Su principal habilidad, la "Emanación Ígnea Perpetua", convierte su mero caminar en una sentencia de calor: cada paso que da abrasa la tierra, y su aura constante consume el oxígeno a su alrededor, asfixiando a los no preparados y carbonizando la vegetación. Su ataque más devastador es el "Aliento de Fuego Espectral", una corriente de llamas tan puras y calientes que parecen etéreas, capaces de fundir metales y perforar la piedra con una facilidad espantosa.\n\nEn combate, su Ataque (75) es potente, canalizando la furia del volcán. Su Defensa (65) proviene de sus duras escamas de obsidiana. Su Velocidad (60) es sorprendente para su tamaño, permitiéndole emboscadas ígneas. Su Inteligencia (70) le permite discernir tácticas, aunque no es un estratega maestro. La Resistencia (80) es monumental, nutrida por el calor geotérmico. Su Fuerza (70) es considerable, y su Precisión (50) es su punto más débil, ya que su poder es más abrumador que sutil. Sin embargo, incluso una criatura de fuego tiene sus talones de Aquiles. La "Debilidad Gélida Profunda" es su perdición.\n\nEcología y Comportamiento:\nEl Dragonus es el epítome del temperamento "solitario". Su dieta no es carnal; se nutre de la energía geotérmica y mágica. Su hábitat natural son los picos volcánicos activos. Su rol social es nulo; es un anacoreta elemental.\n\nReproducción y Crianza:\nAquí radica la verdadera tragedia del Dragonus: no tiene capacidad de reproducción. Es una criatura singular, nacida de un evento único e irrepetible.\n\nHistoria y Lore:\nLas leyendas más antiguas hablan del Dragonus como "La Llama Que Anda Sola". No es una criatura que evolucionó, sino que fue creada. Se dice que un cónclave de poderosos piromantes buscó encarnar el caos elemental en una forma viviente, pero solo una criatura logró manifestarse plenamente: el Dragonus.`,
+  combatStats: {
+    Ataque: 75,
+    Defensa: 65,
+    Velocidad: 60,
+    Inteligencia: 70,
+    Resistencia: 80,
+    Fuerza: 70,
+    Precision: 50,
+  },
+  rarity: "Legendario",
+  expertValuation: "El Dragonus representa un fascinante caso de singularidad elemental. Sus estadísticas de combate, aunque no alcanzan los picos de otras criaturas legendarias en áreas específicas, muestran una formidable base en Resistencia y Ataque, lo que lo convierte en un adversario desgastante. Su dependencia de fuentes de calor geotérmico es una debilidad logística explotable.",
+  publicValuation: "¡Ni se te ocurra acercarte a un Dragonus! Dicen que la tierra tiembla y el aire se convierte en ceniza a su paso. Un amigo de un primo mío vio uno y dice que casi se derrite la armadura solo por estar cerca. Si ves un volcán que parece más enfadado de lo normal, da media vuelta y corre.",
+  aiValuation: "El concepto del Dragonus es una interesante fusión de poder elemental y tragedia. La coherencia entre su origen, su naturaleza solitaria y su esterilidad crea un personaje convincente. Las estadísticas generadas reflejan adecuadamente sus atributos físicos y de comportamiento, resultando en un diseño equilibrado y creíble dentro de su propio lore.",
+  starRating: 5,
+};
 
----
-
-El Dragonus: El Eco Solitario de la Forja Ardiente
-
-Descripción Física:
-El Dragonus se alza a una altura "mediana" para una bestia de su naturaleza, comparable a un semental de guerra imponente, pero su presencia desborda cualquier medida. Su complexión es indiscutiblemente atlética, una silueta cincelada por la fuerza y la agilidad, más esbelta que robusta, diseñada para el movimiento explosivo y la gracia ardiente. Sus partes más notables son las láminas de obsidiana viviente que forman su piel, no lisas, sino angulares y fracturadas, con vetas de un magma brillante que palpita bajo la superficie. Estas escamas obsidianas irradian un calor constante, distorsionando el aire a su alrededor como un espejismo danzante. En su lomo, alas membranosas no de piel, sino de pura energía térmica condensada, ondean y se disipan en oleadas de calor abrasador, más una manifestación de su voluntad que una estructura biológica sólida. Su cabeza está coronada por una diadema natural de cuernos espinosos de obsidiana cristalizada, y sus ojos son brasas fundidas que brillan con una inteligencia antigua y una tristeza abismal. La textura general de su cuerpo es una paradoja: fría y dura como la roca volcánica al tacto, pero abrasadora e inasible por el aura de fuego que la envuelve.
-
-Habilidades y Poderes:
-La afinidad elemental del Dragonus es, sin lugar a dudas, el fuego primordial. No es un simple aliento flameante, sino una extensión de su propia existencia. Su principal habilidad, la "Emanación Ígnea Perpetua", convierte su mero caminar en una sentencia de calor: cada paso que da abrasa la tierra, y su aura constante consume el oxígeno a su alrededor, asfixiando a los no preparados y carbonizando la vegetación. Su ataque más devastador es el "Aliento de Fuego Espectral", una corriente de llamas tan puras y calientes que parecen etéreas, capaces de fundir metales y perforar la piedra con una facilidad espantosa.
-
-En combate, el Dragonus es un oponente equilibrado y formidable, a pesar de sus estadísticas "promedio" (Ataque: 50, Defensa: 50, Velocidad: 50, Inteligencia: 50, Resistencia: 50, Fuerza: 50, Precisión: 50). Esta "normalidad" es su engaño más letal. No es débil en ningún aspecto, pero tampoco abrumadoramente poderoso en uno solo. Su verdadera fuerza reside en su versatilidad y la brutalidad implacable de su fuego. Su inteligencia le permite discernir tácticas básicas, su resistencia lo mantiene en pie, y su velocidad le permite flanquear. No es un estratega maestro, pero es lo suficientemente astuto para explotar cualquier vacilación de sus adversarios, combinando ataques directos con emboscadas ígneas. Su carencia de un pico de poder lo convierte en una amenaza constante que requiere una estrategia igualmente balanceada para ser enfrentada.
-
-Sin embargo, incluso una criatura de fuego tiene sus talones de Aquiles. La "Debilidad Gélida Profunda" es su perdición. Mientras que una lluvia ligera es una molestia, la exposición prolongada a fríos extremos, a tormentas de nieve o al hielo eterno, puede apagar su llama interna, atenuando su aura y ralentizando sus movimientos hasta petrificarlo en una escultura inerte de obsidiana. Además, su profunda soledad y apego a ciertos lugares lo hacen predecible; un cazador paciente y observador puede estudiar sus patrones y explotar la melancolía que lo ancla.
-
-Ecología y Comportamiento:
-El Dragonus es el epítome del temperamento "solitario". No busca compañía, no tolera intrusos y, de hecho, se siente profundamente incómodo en presencia de otras criaturas. Su comportamiento no es el de un depredador territorial y agresivo per se, sino el de una entidad que busca la reclusión. Su dieta no es carnal; se nutre de la energía geotérmica y mágica, absorbiendo la esencia de los minerales volcánicos ricos en azufre, la pura energía latente de las cámaras de magma y, curiosamente, la energía residual de grandes concentraciones mágicas, como los antiguos campos de batalla donde el dolor y la ira empaparon la tierra.
-
-Su hábitat natural son los picos volcánicos activos, las profundidades de los túneles de magma o las llanuras chamuscadas por antiguas catástrofes. Elige los lugares más inhóspitos y desolados, no solo por su necesidad de calor, sino para evitar el contacto. Su rol social es nulo; es un anacoreta elemental. Sin embargo, su presencia puede tener un impacto indirecto: manantiales termales pueden surgir cerca de sus guaridas, y la tierra misma puede volverse más fértil en las zonas donde su calor ha enriquecido los minerales, paradójicamente fomentando nueva vida en los lugares que él mismo rehúye.
-
-Reproducción y Crianza:
-Aquí radica la verdadera tragedia del Dragonus: no tiene capacidad de reproducción. Es una criatura singular, nacida de un evento único e irrepetible, sin la chispa de la vida que le permita engendrar descendencia. Esta esterilidad forzada es la raíz de su "temperamento solitario", una soledad impuesta por su propia naturaleza. No hay rituales de apareamiento, ni huevos ígneos, ni crías a las que cuidar. Cada Dragonus es el único de su tipo, destinado a vivir y morir sin un par, sin un heredero.
-
-Historia y Lore:
-Las leyendas más antiguas, aquellas tejidas en los albores de la magia y la forja, hablan del Dragonus como "La Llama Que Anda Sola". No es una criatura que evolucionó de la vida, sino una que fue creada. Se dice que en la era de los primeros Arcanos del Fuego, un cónclave de poderosos piromantes buscó encarnar una porción del caos elemental primigenio en una forma viviente, para forjar una legión de guardianes inmortales para un imperio que soñaban imperecedero.
-
-El ritual fue de una complejidad aterradora, una amalgama de sacrificios volcánicos, runas grabadas con magma y la propia voluntad colectiva de los hechiceros. El objetivo era dar vida a "Los Forjados de la Llama", seres de fuego y obsidiana, destinados a ser legiones. Sin embargo, algo salió mal en la cúspide de la creación. Tal vez fue una grieta en el velo entre mundos, una interrupción del ritual, o simplemente el incomprensible capricho del elemento mismo, pero solo una criatura logró manifestarse plenamente: el Dragonus.
-
-Nació envuelto en una tormenta de fuego y gemidos de piedra, una conciencia singular y ardiente que contenía la esencia de una legión prometida pero nunca cumplida. La falla en su génesis fue doble: por un lado, lo dotó de una fuerza y resistencia que lo harían un guardián temible; por otro, lo condenó a la esterilidad. La chispa que debía propagarse entre una multitud de iguales se concentró en uno solo, dejándolo como el único y último de su especie, un eco solitario de una sinfonía de llamas que jamás fue cantada.
-
-Desde entonces, el Dragonus vaga por los rincones más desolados del mundo, un centinela de ruinas olvidadas y volcanes durmientes que nadie le ha encargado custodiar, salvo su propia naturaleza. Su existencia es una penitencia silenciosa, una llama que arde sin propósito más allá de su propia supervivencia. Se rumorea que en sus momentos de mayor melancolía, su aliento no es de fuego, sino un suspiro gélido que condensa el aire, transformando la obsidiana de su piel en gemas que lloran lágrimas de magma solidificado, recordatorio de la legión de hermanos que nunca tuvo. Aquellos lo suficientemente valientes para aventurarse en sus dominios no lo encuentran atacando con malicia, sino con la furia desesperada de quien desea ser dejado en paz, para arder solo en su eterna vigilia.`;
+const chartConfig = {
+  value: {
+    label: "Valor",
+    color: "hsl(var(--primary))",
+  },
+} satisfies ChartConfig;
 
 export default function CraftPage() {
   const [currentDate, setCurrentDate] = useState('');
@@ -73,7 +75,7 @@ export default function CraftPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
 
-  const [creature, setCreature] = useState<CreatureState>({
+  const [creature, setCreature] = useState<DescribeCreatureInput>({
     nombre: '',
     composicion: '',
     tamano: 'medium',
@@ -92,47 +94,37 @@ export default function CraftPage() {
     historiaOrigen: '',
   });
 
-  const [generatedDescription, setGeneratedDescription] = useState(initialDescription);
+  const [generatedValuation, setGeneratedValuation] = useState<DescribeCreatureOutput | null>(initialValuation);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
     setCreature(prev => ({ ...prev, [id]: value }));
   };
 
-  const handleSelectChange = (id: keyof CreatureState) => (value: string) => {
+  const handleSelectChange = (id: keyof DescribeCreatureInput) => (value: string) => {
     setCreature(prev => ({ ...prev, [id]: value }));
   };
 
-  const handleSwitchChange = (id: keyof CreatureState) => (checked: boolean) => {
+  const handleSwitchChange = (id: keyof DescribeCreatureInput) => (checked: boolean) => {
     setCreature(prev => ({ ...prev, [id]: checked }));
   };
   
   const handleGenerateDescription = async () => {
     setIsGenerating(true);
-    setGeneratedDescription('');
+    setGeneratedValuation(null);
     try {
-      const fullCreatureData = {
-        ...creature,
-        ataque: 0, // Placeholder, la IA los generará
-        defensa: 0,
-        velocidad: 0,
-        inteligencia: 0,
-        resistencia: 0,
-        fuerza: 0,
-        precision: 0,
-      };
-      const description = await describeCreature(fullCreatureData);
-      setGeneratedDescription(description);
+      const valuation = await describeCreature(creature);
+      setGeneratedValuation(valuation);
       toast({
-        title: "¡Descripción generada!",
-        description: "La IA ha tejido una historia para tu criatura.",
+        title: "¡Valoración generada!",
+        description: "La IA ha analizado y valorado a tu criatura.",
       });
     } catch (error) {
-      console.error("Error generating description:", error);
+      console.error("Error generating valuation:", error);
       toast({
         variant: "destructive",
         title: "Error de la IA",
-        description: "No se pudo generar la descripción. Inténtalo de nuevo.",
+        description: "No se pudo generar la valoración. Inténtalo de nuevo.",
       });
     } finally {
       setIsGenerating(false);
@@ -152,7 +144,7 @@ export default function CraftPage() {
         const newHour = (prevTime.hour + 1) % 24;
         return { hour: newHour, minute: 0 };
       });
-    }, 60000); // Update every minute for realism
+    }, 60000); 
 
     return () => clearInterval(timer);
   }, []);
@@ -162,6 +154,8 @@ export default function CraftPage() {
     const minute = gameTime.minute.toString().padStart(2, '0');
     return `${hour}:${minute}`;
   };
+  
+  const chartData = generatedValuation ? Object.entries(generatedValuation.combatStats).map(([name, value]) => ({ name, value })) : [];
 
   return (
     <main className="flex min-h-screen w-full flex-col items-center bg-background p-4 md:p-8">
@@ -369,24 +363,122 @@ export default function CraftPage() {
               <div className="flex justify-between items-center">
                 <CardTitle className="flex items-center gap-2">
                   <WandSparkles className="h-5 w-5 text-primary" />
-                  Descripción Generada por IA
+                  Ficha de Valoración (IA)
                 </CardTitle>
                 <Button onClick={handleGenerateDescription} disabled={isGenerating}>
-                  {isGenerating ? 'Generando...' : 'Generar Descripción'}
+                  {isGenerating ? 'Generando...' : 'Generar Valoración'}
                 </Button>
               </div>
             </CardHeader>
-            <CardContent>
-               <Textarea 
-                  id="generated-description" 
-                  placeholder="La historia y lore de tu criatura aparecerá aquí..." 
-                  className="min-h-[200px] bg-background/50"
-                  value={generatedDescription}
-                  readOnly
-                />
+            <CardContent className="space-y-6">
+               {isGenerating && (
+                <div className="flex items-center justify-center p-8">
+                  <WandSparkles className="h-8 w-8 text-primary animate-spin" />
+                  <p className="ml-4 text-lg">La IA está forjando la leyenda de tu criatura...</p>
+                </div>
+               )}
+               {generatedValuation && (
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                  {/* Columna Izquierda: Lore y Reseñas */}
+                  <div className="lg:col-span-3 space-y-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Descripción y Lore</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-muted-foreground whitespace-pre-wrap">{generatedValuation.narrativeDescription}</p>
+                      </CardContent>
+                    </Card>
+                    <Tabs defaultValue="expert">
+                      <TabsList className="grid w-full grid-cols-3">
+                        <TabsTrigger value="expert">Valoración Experta</TabsTrigger>
+                        <TabsTrigger value="public">Valoración del Público</TabsTrigger>
+                        <TabsTrigger value="ai">Reseña de la IA</TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="expert">
+                        <Card>
+                          <CardContent className="pt-6">
+                            <p className="italic text-muted-foreground">"{generatedValuation.expertValuation}"</p>
+                          </CardContent>
+                        </Card>
+                      </TabsContent>
+                      <TabsContent value="public">
+                        <Card>
+                           <CardContent className="pt-6">
+                            <p className="italic text-muted-foreground">"{generatedValuation.publicValuation}"</p>
+                          </CardContent>
+                        </Card>
+                      </TabsContent>
+                      <TabsContent value="ai">
+                        <Card>
+                           <CardContent className="pt-6">
+                            <p className="italic text-muted-foreground">"{generatedValuation.aiValuation}"</p>
+                          </CardContent>
+                        </Card>
+                      </TabsContent>
+                    </Tabs>
+                  </div>
+
+                  {/* Columna Derecha: Valoración y Estadísticas */}
+                  <div className="lg:col-span-2 space-y-6">
+                     <Card>
+                      <CardHeader>
+                        <CardTitle>Valoración General</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="flex justify-between items-center">
+                          <Label>Rareza</Label>
+                          <Badge variant={generatedValuation.rarity === 'Legendario' || generatedValuation.rarity === 'Épico' ? 'default' : 'secondary'}>
+                            {generatedValuation.rarity}
+                          </Badge>
+                        </div>
+                         <div className="flex justify-between items-center">
+                          <Label>Puntuación Final</Label>
+                          <div className="flex items-center">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star 
+                                key={i} 
+                                className={`h-5 w-5 ${i < generatedValuation.starRating ? 'text-primary fill-primary' : 'text-muted-foreground/50'}`}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                     <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <AreaChart className="h-5 w-5" />
+                            Estadísticas de Combate
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+                            <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ left: 10 }}>
+                              <YAxis
+                                dataKey="name"
+                                type="category"
+                                tickLine={false}
+                                axisLine={false}
+                                tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }}
+                                width={80}
+                              />
+                              <XAxis dataKey="value" type="number" hide />
+                              <ChartTooltip
+                                cursor={false}
+                                content={<ChartTooltipContent hideLabel />}
+                              />
+                              <Bar dataKey="value" layout="vertical" radius={5}>
+                              </Bar>
+                            </BarChart>
+                          </ChartContainer>
+                        </CardContent>
+                      </Card>
+                  </div>
+                </div>
+               )}
             </CardContent>
           </Card>
-
         </div>
       </div>
     </main>
