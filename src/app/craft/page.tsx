@@ -389,6 +389,15 @@ export default function CraftPage() {
                     <SelectItem value="air">Aire</SelectItem>
                     <SelectItem value="light">Luz</SelectItem>
                     <SelectItem value="darkness">Oscuridad</SelectItem>
+                    <SelectItem value="nature">Naturaleza</SelectItem>
+                    <SelectItem value="ice">Hielo</SelectItem>
+                    <SelectItem value="lightning">Rayo</SelectItem>
+                    <SelectItem value="poison">Veneno</SelectItem>
+                    <SelectItem value="psychic">Psíquico</SelectItem>
+                    <SelectItem value="metal">Metal</SelectItem>
+                    <SelectItem value="sound">Sonido</SelectItem>
+                    <SelectItem value="celestial">Celestial</SelectItem>
+                    <SelectItem value="abyssal">Abisal</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -422,6 +431,14 @@ export default function CraftPage() {
                     <SelectItem value="lonely">Solitaria</SelectItem>
                     <SelectItem value="social">Social</SelectItem>
                     <SelectItem value="playful">Juguetona</SelectItem>
+                    <SelectItem value="territorial">Territorial</SelectItem>
+                    <SelectItem value="curious">Curiosa</SelectItem>
+                    <SelectItem value="shy">Tímida</SelectItem>
+                    <SelectItem value="proud">Orgullosa</SelectItem>
+                    <SelectItem value="mischievous">Traviesa</SelectItem>
+                    <SelectItem value="protective">Protectora</SelectItem>
+                    <SelectItem value="wise">Sabia</SelectItem>
+                    <SelectItem value="wild">Salvaje</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
