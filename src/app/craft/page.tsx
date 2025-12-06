@@ -33,7 +33,8 @@ import {
   AudioLines,
   Hourglass,
   Leaf,
-  Recycle
+  Recycle,
+  CircleDollarSign
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -135,6 +136,7 @@ export default function CraftPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingSound, setIsGeneratingSound] = useState(false);
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
+  const [capital, setCapital] = useState(0);
 
   const { toast } = useToast();
 
@@ -320,6 +322,10 @@ export default function CraftPage() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
             <h1 className="text-4xl font-bold">Taller de Criaturas</h1>
             <div className="flex items-center gap-6 text-sm md:text-lg">
+              <div className="flex items-center gap-2">
+                <CircleDollarSign className="h-5 w-5 text-foreground/70" />
+                <span className="text-foreground/90 font-semibold">{capital} euros</span>
+              </div>
               <div className="flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-foreground/70" />
                 <span className="text-foreground/90">{currentDate}</span>
