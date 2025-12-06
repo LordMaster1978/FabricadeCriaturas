@@ -321,7 +321,7 @@ export default function GalleryPage() {
                   id="betAmount"
                   type="number"
                   value={betAmount}
-                  onChange={(e) => setBetAmount(parseInt(e.target.value, 10))}
+                  onChange={(e) => setBetAmount(parseInt(e.target.value, 10) || 0)}
                   min="1"
                   max={capital}
                 />
