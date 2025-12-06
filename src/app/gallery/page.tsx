@@ -145,6 +145,10 @@ export default function GalleryPage() {
   const isCreatureInActiveEvent = (creatureName: string) => {
     return activeEvents.some(event => event.creature.nombre === creatureName && event.isActive);
   };
+  
+  const isPlanetOccupied = (planetName: string) => {
+    return activeEvents.some(event => event.planet.name === planetName && event.isActive);
+  }
 
   const handleSelectContender = (creature: DescribeCreatureOutput) => {
     if (isCreatureInActiveEvent(creature.nombre)) {
@@ -562,9 +566,14 @@ export default function GalleryPage() {
                             <DialogTitle>{canContinueSaga ? 'Continuar Odisea Universal' : 'Confirmar Liberación Universal'}</DialogTitle>
                             <DialogDescription>
                               {canContinueSaga 
-                               ? `La saga de "${creature.nombre}" ha concluido en su último mundo. Elige un nuevo planeta para continuar su viaje.`
-                               : `Vas a liberar a "${creature.nombre}". Esta acción la apartará de la arena y comenzará su propia saga planetaria.`
+                                ? `La saga de "${creature.nombre}" ha concluido en su último mundo. Elige un nuevo planeta para continuar su viaje.`
+                                : `Vas a liberar a "${creature.nombre}". Esta acción la apartará de la arena y comenzará su propia saga planetaria.`
                               }
+                               {isPlanetOccupied(selectedPlanet) && (
+                                <span className="mt-2 block text-amber-500 font-semibold">
+                                  Este planeta ya está ocupado. La función para que varias criaturas interactúen en el mismo mundo está en desarrollo y llegará en una futura actualización. Por ahora, si liberas a esta criatura aquí, su historia se desarrollará de forma independiente.
+                                </span>
+                              )}
                             </DialogDescription>
                           </DialogHeader>
                           <div className="space-y-4 py-4">
@@ -693,3 +702,5 @@ export default function GalleryPage() {
     </>
   );
 }
+
+    
