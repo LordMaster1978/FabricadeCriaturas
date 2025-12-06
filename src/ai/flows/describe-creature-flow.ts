@@ -72,32 +72,32 @@ const prompt = ai.definePrompt({
   input: { schema: DescribeCreatureInputSchema },
   output: { schema: DescribeCreatureOutputSchema },
   prompt: `
-    Eres un maestro narrador, un diseñador de juegos de rol y un crítico experto. Tu tarea es crear una ficha de valoración completa para una nueva criatura.
+    Eres un maestro narrador, un diseñador de juegos de rol y un crítico experto. Tu tarea es crear una ficha de valoración completa y detallada para una nueva criatura, extrapolando creativamente a partir de los datos proporcionados.
 
-    **Instrucciones:**
-    1.  **Devuelve el Nombre:** Asegúrate de que el campo 'nombre' en la salida sea el mismo que el proporcionado en la entrada.
-    2.  **Genera Estadísticas de Combate (0-100):** Basándote en todos los detalles proporcionados (tamaño, complexión, composición, medidas, velocidades, etc.), asigna valores numéricos de 0 a 100 para Ataque, Defensa, Velocidad, Inteligencia, Resistencia, Fuerza y Precisión.
-    3.  **Escribe la Descripción Narrativa:** Redacta una descripción evocadora y una historia de origen (lore) para la criatura. **Dentro de esta narrativa, justifica brevemente por qué has elegido los valores de las estadísticas**. Por ejemplo, una criatura 'gigante' y 'robusta' con alta 'capacidad de carga' y 'resistencia de piel' tendrá alta Fuerza y Defensa. Una criatura pequeña y con alta 'velocidad de vuelo' tendrá alta Velocidad.
-    4.  **Determina la Rareza:** Clasifica la criatura como "Común", "Poco Común", "Raro", "Épico" o "Legendario" basándote en su origen, poder y unicidad.
-    5.  **Escribe las Reseñas:**
-        *   **Valoración de Expertos:** Escribe una reseña desde la perspectiva de un erudito, analizando sus capacidades de forma técnica.
-        *   **Valoración del Público:** Escribe una reseña como si fueras un aventurero o un ciudadano común, basándote en rumores o encuentros.
-        *   **Valoración de la IA:** Escribe una breve autocrítica sobre el concepto de la criatura, comentando su originalidad y coherencia.
-    6.  **Asigna Puntuación de Estrellas:** Otorga una puntuación final de 1 a 5 estrellas, resumiendo su poder, originalidad y diseño general.
+    **Instrucciones Clave:**
+    1.  **Devuelve el Nombre:** El campo 'nombre' en la salida debe ser idéntico al de la entrada.
+    2.  **Infiere y Genera Estadísticas de Combate (0-100):** Analiza TODOS los atributos proporcionados. Usa las medidas (altura, peso, envergadura), la composición (roca, carne, energía), y el comportamiento (agresivo, rápido) para asignar valores numéricos de 0 a 100 a Ataque, Defensa, Velocidad, Inteligencia, Resistencia, Fuerza y Precisión.
+    3.  **Escribe la Descripción Narrativa (Lore Épico):** Crea una historia y descripción inmersiva. No te limites a listar los datos; intégralos en la narrativa. **Justifica sutilmente las estadísticas dentro del texto**. Por ejemplo, si tiene alta 'capacidadCarga' y 'resistenciaPiel', describe su musculatura masiva y su coraza impenetrable para justificar su alta Fuerza y Defensa. Si tiene alta 'velocidadVuelo', narra su agilidad aérea para justificar una Velocidad elevada.
+    4.  **Expande Creativamente:** Si un campo está vacío (ej. 'velocidadNado'), puedes omitirlo o inferir una debilidad (ej. "es torpe en el agua"). Usa los datos como trampolín para una descripción rica, añadiendo detalles sobre sus sentidos, su ciclo de vida o su impacto en el ecosistema.
+    5.  **Determina la Rareza:** Clasifica la criatura como "Común", "Poco Común", "Raro", "Épico" o "Legendario" basándote en la combinación de su poder, origen, unicidad y debilidades.
+    6.  **Redacta las Tres Reseñas:**
+        *   **Valoración de Expertos:** Analítica y técnica. Un erudito discutiendo su biología, tácticas de combate y posibles usos o amenazas.
+        *   **Valoración del Público:** Coloquial y anecdótica. Un aventurero, un mercader o un aldeano contando un rumor o una experiencia de segunda mano.
+        *   **Valoración de la IA:** Una autocrítica objetiva sobre la coherencia y originalidad del diseño de la criatura.
+    7.  **Asigna Puntuación de Estrellas:** Otorga de 1 a 5 estrellas, resumiendo el concepto general: poder, originalidad y credibilidad dentro de su mundo.
 
-    **Tono:** Épico, descriptivo y como si fuera una entrada en un bestiario legendario para la descripción; analítico para los expertos; coloquial para el público; y objetivo para la IA.
+    **Tono:** Épico para la narrativa; analítico para el experto; conversacional para el público; y objetivo para la IA.
 
-    **Detalles de la Criatura:**
-    - **Nombre:** {{{nombre}}}
-    - **Composición:** {{{composicion}}}
-    - **Físico General:** Tamaño {{{tamano}}}, complexión {{{complexion}}}, partes notables {{{partesCuerpo}}}, apariencia {{{apariencia}}}.
-    - **Medidas:** Altura {{{altura}}}, Peso {{{peso}}}, Anchura {{{anchura}}}, Profundidad {{{profundidad}}}, Envergadura {{{envergadura}}}, Longitud {{{longitud}}}, Circunferencia {{{circunferencia}}}.
-    - **Movimiento:** Velocidad en tierra {{{velocidadMaxima}}}, Velocidad de vuelo {{{velocidadVuelo}}}, Velocidad de nado {{{velocidadNado}}}, Capacidad de salto {{{capacidadSalto}}}.
-    - **Capacidades Físicas:** Fuerza de mordida {{{fuerzaMordida}}}, Capacidad de carga {{{capacidadCarga}}}, Resistencia de piel/coraza {{{resistenciaPiel}}}.
-    - **Poderes:** Afinidad elemental a {{{afinidadElemental}}}, habilidades únicas {{{habilidadesUnicas}}}, debilidades {{{debilidades}}}.
-    - **Comportamiento:** Temperamento {{{temperamento}}}, dieta {{{dieta}}}, hábitat {{{habitat}}}, rol social {{{rolSocial}}}.
-    - **Reproducción:** Apto: {{{aptoReproduccion_text}}} (Habilidades de crianza: {{{habilidadesCrianza}}}).
-    - **Historia Sugerida:** {{{historiaOrigen}}}
+    **Datos Base para la Criatura:**
+    - **Identidad:** Nombre: {{{nombre}}}. Composición: {{{composicion}}}.
+    - **Físico:** Tamaño {{{tamano}}}, complexión {{{complexion}}}. Partes notables: {{{partesCuerpo}}}. Apariencia/textura: {{{apariencia}}}.
+    - **Dimensiones:** Altura: {{{altura}}}, Peso: {{{peso}}}, Anchura: {{{anchura}}}, Profundidad: {{{profundidad}}}, Envergadura: {{{envergadura}}}, Longitud: {{{longitud}}}, Circunferencia: {{{circunferencia}}}.
+    - **Movilidad:** Velocidad en tierra: {{{velocidadMaxima}}}, Velocidad de vuelo: {{{velocidadVuelo}}}, Velocidad de nado: {{{velocidadNado}}}, Capacidad de salto: {{{capacidadSalto}}}.
+    - **Capacidades Físicas:** Fuerza de mordida: {{{fuerzaMordida}}}, Capacidad de carga: {{{capacidadCarga}}}, Resistencia de piel/coraza: {{{resistenciaPiel}}}.
+    - **Poderes y Vulnerabilidades:** Afinidad elemental a {{{afinidadElemental}}}. Habilidades únicas: {{{habilidadesUnicas}}}. Debilidades: {{{debilidades}}}.
+    - **Comportamiento:** Temperamento: {{{temperamento}}}, dieta: {{{dieta}}}, hábitat: {{{habitat}}}, rol social: {{{rolSocial}}}.
+    - **Ciclo de Vida:** Apto para reproducción: {{{aptoReproduccion_text}}}. Habilidades de crianza: {{{habilidadesCrianza}}}.
+    - **Trasfondo:** Historia de origen sugerida: {{{historiaOrigen}}}.
   `,
 });
 
