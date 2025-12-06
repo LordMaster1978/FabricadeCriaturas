@@ -310,7 +310,7 @@ export default function CraftPage() {
         const newHour = (prevTime.hour + 1) % 24;
         return { hour: newHour, minute: 0 };
       });
-    }, 60000); 
+    }, 10000); 
 
     return () => clearInterval(timer);
   }, []);
