@@ -21,9 +21,13 @@ import {
 } from '@/components/ui/accordion';
 
 const getLegacyTitle = (wins: number): string => {
-  if (wins >= 15) return "Mito Universal";
-  if (wins >= 10) return "Héroe Legendario";
-  if (wins >= 6) return "Maestro del Combate";
+  if (wins >= 25) return "Mito Universal";
+  if (wins >= 20) return "Demiurgo del Caos";
+  if (wins >= 16) return "Señor de la Guerra";
+  if (wins >= 13) return "Héroe Legendario";
+  if (wins >= 10) return "Conquistador Implacable";
+  if (wins >= 7) return "Maestro de la Arena";
+  if (wins >= 5) return "Gladiador de Renombre";
   if (wins >= 3) return "Luchador Veterano";
   if (wins >= 1) return "Contendiente";
   return "Carne de Cañón";
