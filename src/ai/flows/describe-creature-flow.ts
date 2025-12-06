@@ -30,6 +30,15 @@ const DescribeCreatureInputSchema = z.object({
     aptoReproduccion: z.boolean().describe('Si la criatura es apta para la reproducción.'),
     habilidadesCrianza: z.string().describe('Las habilidades de crianza de la criatura.'),
     historiaOrigen: z.string().describe('La historia de origen o lore de la criatura.'),
+    envergadura: z.string().optional().describe('La envergadura de la criatura (ej: 15m).'),
+    longitud: z.string().optional().describe('La longitud de la criatura (ej: 10m).'),
+    circunferencia: z.string().optional().describe('La circunferencia de la criatura (ej: 5m).'),
+    velocidadVuelo: z.string().optional().describe('La velocidad de vuelo de la criatura (ej: 120km/h).'),
+    velocidadNado: z.string().optional().describe('La velocidad de nado de la criatura (ej: 30km/h).'),
+    capacidadSalto: z.string().optional().describe('La capacidad de salto de la criatura (ej: 20m).'),
+    fuerzaMordida: z.string().optional().describe('La fuerza de la mordida de la criatura (ej: 1500 PSI).'),
+    capacidadCarga: z.string().optional().describe('La capacidad de carga de la criatura (ej: 2000kg).'),
+    resistenciaPiel: z.string().optional().describe('La resistencia de la piel o coraza de la criatura (ej: 500 KPa).'),
   });
 
 export type DescribeCreatureInput = z.infer<typeof DescribeCreatureInputSchema>;
@@ -65,8 +74,8 @@ const prompt = ai.definePrompt({
 
     **Instrucciones:**
     1.  **Devuelve el Nombre:** Asegúrate de que el campo 'nombre' en la salida sea el mismo que el proporcionado en la entrada.
-    2.  **Genera Estadísticas de Combate (0-100):** Basándote en todos los detalles proporcionados (tamaño, complexión, composición, altura, peso, velocidad, etc.), asigna valores numéricos de 0 a 100 para Ataque, Defensa, Velocidad, Inteligencia, Resistencia, Fuerza y Precisión.
-    3.  **Escribe la Descripción Narrativa:** Redacta una descripción evocadora y una historia de origen (lore) para la criatura. **Dentro de esta narrativa, justifica brevemente por qué has elegido los valores de las estadísticas**. Por ejemplo, una criatura 'gigante' y 'robusta' debería tener alta Fuerza y Resistencia. Una criatura pequeña y rápida tendrá alta Velocidad.
+    2.  **Genera Estadísticas de Combate (0-100):** Basándote en todos los detalles proporcionados (tamaño, complexión, composición, medidas, velocidades, etc.), asigna valores numéricos de 0 a 100 para Ataque, Defensa, Velocidad, Inteligencia, Resistencia, Fuerza y Precisión.
+    3.  **Escribe la Descripción Narrativa:** Redacta una descripción evocadora y una historia de origen (lore) para la criatura. **Dentro de esta narrativa, justifica brevemente por qué has elegido los valores de las estadísticas**. Por ejemplo, una criatura 'gigante' y 'robusta' con alta 'capacidad de carga' y 'resistencia de piel' tendrá alta Fuerza y Defensa. Una criatura pequeña y con alta 'velocidad de vuelo' tendrá alta Velocidad.
     4.  **Determina la Rareza:** Clasifica la criatura como "Común", "Poco Común", "Raro", "Épico" o "Legendario" basándote en su origen, poder y unicidad.
     5.  **Escribe las Reseñas:**
         *   **Valoración de Expertos:** Escribe una reseña desde la perspectiva de un erudito, analizando sus capacidades de forma técnica.
@@ -79,7 +88,10 @@ const prompt = ai.definePrompt({
     **Detalles de la Criatura:**
     - **Nombre:** {{{nombre}}}
     - **Composición:** {{{composicion}}}
-    - **Físico:** Tamaño {{{tamano}}}, complexión {{{complexion}}}, altura {{{altura}}}, peso {{{peso}}}, velocidad máxima {{{velocidadMaxima}}}, partes notables {{{partesCuerpo}}}, apariencia {{{apariencia}}}.
+    - **Físico General:** Tamaño {{{tamano}}}, complexión {{{complexion}}}, partes notables {{{partesCuerpo}}}, apariencia {{{apariencia}}}.
+    - **Medidas:** Altura {{{altura}}}, Peso {{{peso}}}, Envergadura {{{envergadura}}}, Longitud {{{longitud}}}, Circunferencia {{{circunferencia}}}.
+    - **Movimiento:** Velocidad en tierra {{{velocidadMaxima}}}, Velocidad de vuelo {{{velocidadVuelo}}}, Velocidad de nado {{{velocidadNado}}}, Capacidad de salto {{{capacidadSalto}}}.
+    - **Capacidades Físicas:** Fuerza de mordida {{{fuerzaMordida}}}, Capacidad de carga {{{capacidadCarga}}}, Resistencia de piel/coraza {{{resistenciaPiel}}}.
     - **Poderes:** Afinidad elemental a {{{afinidadElemental}}}, habilidades únicas {{{habilidadesUnicas}}}, debilidades {{{debilidades}}}.
     - **Comportamiento:** Temperamento {{{temperamento}}}, dieta {{{dieta}}}, hábitat {{{habitat}}}, rol social {{{rolSocial}}}.
     - **Reproducción:** Apto: {{{aptoReproduccion_text}}} (Habilidades de crianza: {{{habilidadesCrianza}}}).

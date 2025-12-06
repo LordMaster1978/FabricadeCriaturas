@@ -19,7 +19,17 @@ import {
   AreaChart,
   MoveUp,
   Weight,
-  Gauge
+  Gauge,
+  Maximize,
+  Circle,
+  Ruler,
+  Bird,
+  Fish,
+  Footprints,
+  RectangleHorizontal,
+  ChevronsLeftRight,
+  Shield,
+  Hand,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -118,6 +128,15 @@ export default function CraftPage() {
     aptoReproduccion: false,
     habilidadesCrianza: '',
     historiaOrigen: '',
+    envergadura: '',
+    longitud: '',
+    circunferencia: '',
+    velocidadVuelo: '',
+    velocidadNado: '',
+    capacidadSalto: '',
+    fuerzaMordida: '',
+    capacidadCarga: '',
+    resistenciaPiel: '',
   });
 
   const [generatedValuation, setGeneratedValuation] = useState<DescribeCreatureOutput | null>(initialValuation);
@@ -272,17 +291,71 @@ export default function CraftPage() {
                   <Input id="peso" placeholder="Ej: 500kg" value={creature.peso} onChange={handleInputChange} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="velocidadMaxima">Vel. Máxima</Label>
+                  <Label htmlFor="velocidadMaxima">Velocidad</Label>
                   <Input id="velocidadMaxima" placeholder="Ej: 60km/h" value={creature.velocidadMaxima} onChange={handleInputChange} />
                 </div>
               </div>
                <div className="space-y-2">
-                <Label htmlFor="partesCuerpo">Partes del Cuerpo</Label>
+                <Label htmlFor="partesCuerpo">Partes del Cuerpo Notables</Label>
                 <Textarea id="partesCuerpo" placeholder="Ej: Alas de cuero, cuernos retorcidos..." className="min-h-[50px]" value={creature.partesCuerpo} onChange={handleInputChange}/>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="apariencia">Apariencia y Textura</Label>
                 <Textarea id="apariencia" placeholder="Ej: Piel escamosa y brillante, pelaje metálico..." className="min-h-[50px]" value={creature.apariencia} onChange={handleInputChange} />
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Medidas Detalladas */}
+          <Card className="bg-card/50 border-border/50 lg:col-span-1">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Ruler className="h-5 w-5 text-primary" />
+                Medidas Detalladas
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-3 gap-2">
+                <div className="space-y-2">
+                  <Label htmlFor="envergadura" className="flex items-center gap-1 text-xs"><ChevronsLeftRight size={12}/>Envergadura</Label>
+                  <Input id="envergadura" placeholder="Ej: 15m" value={creature.envergadura} onChange={handleInputChange} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="longitud" className="flex items-center gap-1 text-xs"><RectangleHorizontal size={12}/>Longitud</Label>
+                  <Input id="longitud" placeholder="Ej: 10m" value={creature.longitud} onChange={handleInputChange} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="circunferencia" className="flex items-center gap-1 text-xs"><Circle size={12}/>Circunferencia</Label>
+                  <Input id="circunferencia" placeholder="Ej: 5m" value={creature.circunferencia} onChange={handleInputChange} />
+                </div>
+              </div>
+               <div className="grid grid-cols-3 gap-2">
+                <div className="space-y-2">
+                  <Label htmlFor="velocidadVuelo" className="flex items-center gap-1 text-xs"><Bird size={12}/>Vel. Vuelo</Label>
+                  <Input id="velocidadVuelo" placeholder="Ej: 120km/h" value={creature.velocidadVuelo} onChange={handleInputChange} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="velocidadNado" className="flex items-center gap-1 text-xs"><Fish size={12}/>Vel. Nado</Label>
+                  <Input id="velocidadNado" placeholder="Ej: 30km/h" value={creature.velocidadNado} onChange={handleInputChange} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="capacidadSalto" className="flex items-center gap-1 text-xs"><Footprints size={12}/>Salto</Label>
+                  <Input id="capacidadSalto" placeholder="Ej: 20m" value={creature.capacidadSalto} onChange={handleInputChange} />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="space-y-2">
+                  <Label htmlFor="fuerzaMordida" className="flex items-center gap-1 text-xs"><Hand size={12}/>Fuerza Mordida</Label>
+                  <Input id="fuerzaMordida" placeholder="Ej: 1500 PSI" value={creature.fuerzaMordida} onChange={handleInputChange} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="capacidadCarga" className="flex items-center gap-1 text-xs"><Weight size={12}/>Cap. Carga</Label>
+                  <Input id="capacidadCarga" placeholder="Ej: 2000kg" value={creature.capacidadCarga} onChange={handleInputChange} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="resistenciaPiel" className="flex items-center gap-1 text-xs"><Shield size={12}/>Resist. Piel</Label>
+                  <Input id="resistenciaPiel" placeholder="Ej: 500 KPa" value={creature.resistenciaPiel} onChange={handleInputChange} />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -322,14 +395,14 @@ export default function CraftPage() {
           </Card>
 
           {/* Temperamento, Dieta y Hábitat Natural */}
-          <Card className="bg-card/50 border-border/50 lg:col-span-2">
+          <Card className="bg-card/50 border-border/50 lg:col-span-1">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BookOpen className="h-5 w-5 text-primary" />
                 Temperamento, Dieta y Hábitat Natural
               </CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="temperamento">Temperamento</Label>
                  <Select value={creature.temperamento} onValueChange={handleSelectChange('temperamento')}>
