@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Cog, Hammer, LayoutGrid, Skull, Trophy } from 'lucide-react';
+import { Cog, Globe, Hammer, Skull, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function MainMenu() {
@@ -27,7 +27,7 @@ export function MainMenu() {
           Crea tu criatura tu limite es tu imaginación
         </p>
 
-        <nav className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 items-center gap-4">
+        <nav className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 items-center gap-4">
           <Link href="/craft" passHref>
             <Button size="lg" className="w-64 justify-center bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/40 transition-all duration-300 transform hover:scale-105">
               <Hammer className="mr-2 h-5 w-5" />
@@ -38,6 +38,12 @@ export function MainMenu() {
             <Button size="lg" variant="outline" className="w-64 justify-center border-accent/50 text-accent/80 hover:border-accent hover:bg-accent hover:text-accent-foreground transition-all duration-300 transform hover:scale-105">
               <Trophy className="mr-2 h-5 w-5" />
               Ranking y Arena
+            </Button>
+          </Link>
+          <Link href="/events" passHref>
+            <Button size="lg" variant="outline" className="w-64 justify-center border-accent/50 text-accent/80 hover:border-accent hover:bg-accent hover:text-accent-foreground transition-all duration-300 transform hover:scale-105">
+              <Globe className="mr-2 h-5 w-5" />
+              Eventos Universales
             </Button>
           </Link>
            <Link href="/cemetery" passHref>

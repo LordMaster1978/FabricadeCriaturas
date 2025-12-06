@@ -12,9 +12,11 @@ import {
   CardFooter
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Star, Swords, WandSparkles, LandPlot, Ticket, CircleDollarSign, Crown, HeartPulse, Skull, Trophy } from 'lucide-react';
+import { Star, Swords, Globe, Ticket, CircleDollarSign, Trophy, HeartPulse, Skull } from 'lucide-react';
 import { type DescribeCreatureOutput } from '@/ai/flows/describe-creature-flow';
-import { simulateCombat, type SimulateCombatInput, type SimulateCombatOutput } from '@/ai/flows/simulate-combat-flow';
+import { simulateCombat, type SimulateCombatInput } from '@/ai/flows/simulate-combat-flow';
+import { UniversalEventSchema, type UniversalEvent } from '@/ai/flows/generate-universal-event-flow';
+
 import {
   Dialog,
   DialogContent,
@@ -22,6 +24,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogTrigger,
 } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -34,6 +37,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { cn } from '@/lib/utils';
+import { WandSparkles } from 'lucide-react';
 
 const battlefields = [
   { name: "Jungla Frondosa", description: "Un entorno denso y húmedo con árboles altos, lianas y poca visibilidad. Favorece la agilidad, el sigilo y a las criaturas adaptadas a la vegetación." },
@@ -53,7 +57,7 @@ export default function GalleryPage() {
   const [capital, setCapital] = useState(1000);
 
   const [isSimulating, setIsSimulating] = useState(false);
-  const [combatResult, setCombatResult] = useState<SimulateCombatOutput | null>(null);
+  const [combatResult, setCombatResult] = useState<any | null>(null);
   const [combatDetails, setCombatDetails] = useState<{
     creature1: DescribeCreatureOutput;
     creature2: DescribeCreatureOutput;
@@ -134,7 +138,6 @@ export default function GalleryPage() {
       const result = await simulateCombat(input);
       setCombatResult(result);
       
-      // Update logic
       const creature1Name = combatDetails.creature1.nombre;
       const creature2Name = combatDetails.creature2.nombre;
 
@@ -147,7 +150,7 @@ export default function GalleryPage() {
             creature.combatHistory = [...(creature.combatHistory || []), { opponentName: creature2Name, result: result.creature1_outcome.outcome, battlefieldName: combatDetails.battlefield.name }];
             if (result.creature1_outcome.outcome === 'victoria') {
                 creature.wins = (creature.wins || 0) + 1;
-                newCapital += betAmount; // Simplified win logic
+                newCapital += betAmount; 
                 toast({ title: "¡Victoria!", description: `Has ganado ${betAmount}€.` });
             } else {
                 creature.losses = (creature.losses || 0) + 1;
@@ -182,7 +185,6 @@ export default function GalleryPage() {
       setCapital(finalCapital);
       localStorage.setItem('player-capital', finalCapital.toString());
       localStorage.setItem('creature-bestiary', JSON.stringify(updatedBestiary));
-      // No re-sorting here, will be sorted on next load
       setBestiary(updatedBestiary);
 
     } catch (error: any) {
@@ -198,6 +200,63 @@ export default function GalleryPage() {
     }
   }
 
+
+  const handleReleaseCreature = (creature: DescribeCreatureOutput) => {
+    try {
+      const existingEvents = JSON.parse(localStorage.getItem('universal-events') || '[]');
+      if (existingEvents.some((e: UniversalEvent) => e.creature.nombre === creature.nombre)) {
+        toast({
+          variant: 'destructive',
+          title: 'Criatura ya liberada',
+          description: `${creature.nombre} ya es parte de un evento universal.`,
+        });
+        return;
+      }
+      
+      const newEvent: UniversalEvent = {
+        id: creature.nombre + new Date().toISOString(),
+        creature: creature,
+        planet: {
+          name: 'Tierra',
+          population: 7800000000,
+          initialPopulation: 7800000000,
+          demographics: {
+            infants: 1000000000,
+            children: 1500000000,
+            adolescents: 1200000000,
+            adults: 3000000000,
+            elderly: 1100000000,
+          },
+          devastationLevel: 0,
+          description: 'Un planeta de tipo terrestre con una civilización tecnológica de nivel medio-alto, ecosistemas diversos y una población masiva concentrada en megaciudades.',
+          status: 'Estable',
+        },
+        eventLog: [`La criatura "${creature.nombre}" ha sido liberada en la Tierra. El universo contiene la respiración.`],
+        storySummary: `"${creature.nombre}" acaba de llegar a la Tierra, un mundo desprevenido de la nueva presencia en su ecosistema.`,
+        turn: 1,
+        isActive: true,
+        startDate: new Date().toISOString(),
+      };
+      
+      existingEvents.push(newEvent);
+      localStorage.setItem('universal-events', JSON.stringify(existingEvents));
+      
+      // Remove from bestiary
+      const updatedBestiary = bestiary.filter(c => c.nombre !== creature.nombre);
+      localStorage.setItem('creature-bestiary', JSON.stringify(updatedBestiary));
+      setBestiary(updatedBestiary);
+      
+      toast({
+        title: '¡Criatura Liberada!',
+        description: `${creature.nombre} ha comenzado su saga en la Tierra. ¡Ve a Eventos Universales para seguir su historia!`,
+      });
+
+    } catch (error) {
+      console.error('Error releasing creature:', error);
+      toast({ variant: 'destructive', title: 'Error al liberar la criatura' });
+    }
+  };
+  
 
   const rarityVariant = (rarity: string) => {
     switch (rarity) {
@@ -228,7 +287,7 @@ export default function GalleryPage() {
     setCombatResult(null);
     setCombatDetails(null);
     setIsSimulating(false);
-    loadData(); // Reload data to reflect combat changes and re-sort
+    loadData();
   }
 
   if (selectedCreature && !opponent) {
@@ -336,8 +395,8 @@ export default function GalleryPage() {
                   <Card 
                     key={index} 
                     className={cn(
-                        "flex flex-col hover:shadow-lg hover:border-primary/50 transition-all relative",
-                        creature.status !== 'Saludable' && "bg-muted/30 border-dashed"
+                        "flex flex-col hover:shadow-lg transition-all relative",
+                        creature.status !== 'Saludable' ? "bg-muted/30 border-dashed" : "hover:border-primary/50"
                     )}
                   >
                     {index === 0 && (
@@ -396,11 +455,33 @@ export default function GalleryPage() {
                         </AccordionItem>
                       </Accordion>
                     </CardContent>
-                    <CardFooter>
-                      <Button className="w-full" onClick={() => handleSelectContender(creature)} disabled={creature.status !== 'Saludable'}>
+                     <CardFooter className="flex-col gap-2 items-stretch">
+                       <Button className="w-full" onClick={() => handleSelectContender(creature)} disabled={creature.status !== 'Saludable'}>
                         <Swords className="mr-2 h-4 w-4" />
                         Seleccionar para Luchar
                       </Button>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                           <Button variant="secondary" className="w-full" disabled={creature.status !== 'Saludable'}>
+                            <Globe className="mr-2 h-4 w-4" />
+                            Liberar en un Planeta
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Confirmar Liberación Universal</DialogTitle>
+                            <DialogDescription>
+                              Estás a punto de liberar a "{creature.nombre}" en un evento universal. La criatura será eliminada de la arena y comenzará su propia saga en un planeta. Esta acción no se puede deshacer.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <DialogFooter>
+                             <Button variant="outline" >Cancelar</Button>
+                            <Button variant="destructive" onClick={() => handleReleaseCreature(creature)}>
+                              Confirmar y Liberar
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
                     </CardFooter>
                   </Card>
                 ))}
@@ -421,7 +502,7 @@ export default function GalleryPage() {
           <div className="py-4 space-y-4">
              <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium flex items-center gap-2"><LandPlot size={16} /> Campo de Batalla</CardTitle>
+                  <CardTitle className="text-sm font-medium flex items-center gap-2"><Globe size={16} /> Campo de Batalla</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <h3 className="font-semibold">{combatDetails?.battlefield.name}</h3>
@@ -463,7 +544,7 @@ export default function GalleryPage() {
           </DialogHeader>
           <div className="py-4">
             <div className="flex flex-col items-center">
-              <Crown className="h-12 w-12 text-yellow-400" />
+              <Trophy className="h-12 w-12 text-yellow-400" />
               <h2 className="text-2xl font-bold mt-4">
                 {combatResult?.winnerName ? `El ganador es... ¡${combatResult.winnerName}!` : "¡El combate termina sin un ganador!"}
                 </h2>
