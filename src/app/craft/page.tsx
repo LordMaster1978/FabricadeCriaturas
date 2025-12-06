@@ -27,7 +27,8 @@ import {
   Maximize,
   MoveVertical,
   Palette,
-  AudioLines
+  AudioLines,
+  Hourglass
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -164,6 +165,7 @@ export default function CraftPage() {
     fuerzaMordida: '',
     capacidadCarga: '',
     resistenciaPiel: '',
+    longevidad: '',
   });
 
   const [generatedValuation, setGeneratedValuation] = useState<DescribeCreatureOutput | null>(initialValuation);
@@ -598,6 +600,10 @@ export default function CraftPage() {
                 <Label htmlFor="rolSocial">Rol Social</Label>
                 <Input id="rolSocial" placeholder="Ej: Líder de manada, explorador..." value={creature.rolSocial} onChange={handleInputChange} />
               </div>
+               <div className="space-y-2">
+                <Label htmlFor="longevidad" className="flex items-center gap-2"><Hourglass size={14}/>Longevidad</Label>
+                <Input id="longevidad" placeholder="Ej: 100 años, inmortal..." value={creature.longevidad} onChange={handleInputChange} />
+              </div>
               <div className="flex items-center justify-between space-x-2">
                 <Label htmlFor="aptoReproduccion" className="flex items-center gap-2"><HeartHandshake size={16}/>Apto para Reproducción</Label>
                 <Switch id="aptoReproduccion" checked={creature.aptoReproduccion} onCheckedChange={handleSwitchChange('aptoReproduccion')} />
@@ -755,3 +761,5 @@ export default function CraftPage() {
     </main>
   );
 }
+
+    

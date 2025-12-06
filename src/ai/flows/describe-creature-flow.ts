@@ -42,6 +42,7 @@ const DescribeCreatureInputSchema = z.object({
     fuerzaMordida: z.string().optional().describe('La fuerza de la mordida de la criatura (ej: 1500 PSI).'),
     capacidadCarga: z.string().optional().describe('La capacidad de carga de la criatura (ej: 2000kg).'),
     resistenciaPiel: z.string().optional().describe('La resistencia de la piel o coraza de la criatura (ej: 500 KPa).'),
+    longevidad: z.string().optional().describe('La longevidad o esperanza de vida de la criatura.'),
   });
 
 export type DescribeCreatureInput = z.infer<typeof DescribeCreatureInputSchema>;
@@ -97,7 +98,7 @@ const prompt = ai.definePrompt({
     - **Capacidades Físicas:** Fuerza de mordida: {{{fuerzaMordida}}}, Capacidad de carga: {{{capacidadCarga}}}, Resistencia de piel/coraza: {{{resistenciaPiel}}}.
     - **Poderes y Vulnerabilidades:** Afinidad elemental a {{{afinidadElemental}}}. Habilidades únicas: {{{habilidadesUnicas}}}. Debilidades: {{{debilidades}}}.
     - **Comportamiento:** Temperamento: {{{temperamento}}}, dieta: {{{dieta}}}, hábitat: {{{habitat}}}, rol social: {{{rolSocial}}}, Vocalizaciones: {{{vocalizaciones}}}.
-    - **Ciclo de Vida:** Apto para reproducción: {{{aptoReproduccion_text}}}. Habilidades de crianza: {{{habilidadesCrianza}}}.
+    - **Ciclo de Vida:** Longevidad: {{{longevidad}}}. Apto para reproducción: {{{aptoReproduccion_text}}}. Habilidades de crianza: {{{habilidadesCrianza}}}.
     - **Trasfondo:** Historia de origen sugerida: {{{historiaOrigen}}}.
   `,
 });
@@ -133,5 +134,7 @@ export async function describeCreature(
 ): Promise<DescribeCreatureOutput> {
   return describeCreatureFlow(input);
 }
+
+    
 
     
