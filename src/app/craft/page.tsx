@@ -43,6 +43,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { describeCreature, type DescribeCreatureInput, type DescribeCreatureOutput } from '@/ai/flows/describe-creature-flow';
+import { generateSound, type GenerateSoundOutput } from '@/ai/flows/generate-sound-flow';
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -126,6 +127,9 @@ export default function CraftPage() {
   const [currentDate, setCurrentDate] = useState('');
   const [gameTime, setGameTime] = useState({ hour: 0, minute: 0 });
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isGeneratingSound, setIsGeneratingSound] = useState(false);
+  const [audioSrc, setAudioSrc] = useState<string | null>(null);
+
   const { toast } = useToast();
 
   const [creature, setCreature] = useState<DescribeCreatureInput>({
@@ -203,6 +207,36 @@ export default function CraftPage() {
       });
     } finally {
       setIsGenerating(false);
+    }
+  };
+  
+  const handleGenerateSound = async () => {
+    if (!creature.vocalizaciones) {
+      toast({
+        variant: "destructive",
+        title: "Sin descripción",
+        description: "Por favor, describe el sonido de la criatura en el campo de Vocalizaciones.",
+      });
+      return;
+    }
+    setIsGeneratingSound(true);
+    setAudioSrc(null);
+    try {
+      const result = await generateSound(creature.vocalizaciones);
+      setAudioSrc(result.audioDataUri);
+      toast({
+        title: "¡Sonido generado!",
+        description: "La IA ha creado el sonido de tu criatura.",
+      });
+    } catch (error) {
+      console.error("Error generating sound:", error);
+      toast({
+        variant: "destructive",
+        title: "Error de IA de Sonido",
+        description: "No se pudo generar el sonido. Inténtalo de nuevo.",
+      });
+    } finally {
+      setIsGeneratingSound(false);
     }
   };
 
@@ -509,8 +543,24 @@ export default function CraftPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="vocalizaciones">Vocalizaciones</Label>
+                <div className="flex justify-between items-center">
+                  <Label htmlFor="vocalizaciones">Vocalizaciones</Label>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleGenerateSound}
+                    disabled={isGeneratingSound}
+                    title="Generar Sonido con IA"
+                  >
+                    <WandSparkles className={`h-4 w-4 ${isGeneratingSound ? 'animate-spin' : ''}`} />
+                  </Button>
+                </div>
                 <Textarea id="vocalizaciones" placeholder="Ej: Rugido grave, canto melódico..." className="min-h-[50px]" value={creature.vocalizaciones} onChange={handleInputChange} />
+                 {audioSrc && (
+                  <audio controls src={audioSrc} className="w-full mt-2">
+                    Tu navegador no soporta el elemento de audio.
+                  </audio>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -705,5 +755,3 @@ export default function CraftPage() {
     </main>
   );
 }
-
-    
