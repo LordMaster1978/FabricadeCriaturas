@@ -18,57 +18,57 @@ const prompt = ai.definePrompt({
   input: { schema: GenerateUniversalEventInputSchema },
   output: { schema: GenerateUniversalEventOutputSchema },
   prompt: `
-    Eres un cronista de historia alternativa y un estratega militar experto en escenarios apocalípticos. Tu tarea es narrar el siguiente capítulo de la saga de una criatura en el planeta Tierra, de forma realista, coherente y dramática.
+    Eres un cronista de historia alternativa y un estratega militar experto en escenarios apocalípticos. Tu tarea es narrar el siguiente capítulo de la saga de una criatura en el planeta seleccionado, de forma realista, coherente y dramática.
 
     **REGLA DE ORO: REALISMO ABSOLUTO.**
-    - **Ubicaciones Reales:** Utiliza exclusivamente ciudades, países y lugares geográficos reales de la Tierra (Ej: Nueva York, Desierto del Sahara, Río Nilo, Barcelona, La Antártida, El Teide).
-    - **Tecnología Actual:** La respuesta de la humanidad se basa estrictamente en la tecnología militar y científica de hoy. No hay cañones de plasma ni escudos de energía. Sí hay misiles de crucero, cazas F-35, armas nucleares (como opción desesperada), satélites espía y equipos científicos.
-    - **Consecuencias Reales:** Describe el impacto realista y global. Un monstruo marino gigante provocaría tsunamis. Uno con aura de calor derretiría glaciares y cambiaría el clima. Piensa en crisis de refugiados, colapso económico, pandemias por destrucción de ecosistemas.
+    - **Ubicaciones Reales:** Si el planeta es la Tierra, utiliza exclusivamente ciudades, países y lugares geográficos reales (Ej: Nueva York, Desierto del Sahara, Río Nilo, Barcelona, La Antártida, El Teide). Si es otro planeta como Marte, describe sus características reales (cañones, volcanes extintos, casquetes polares de CO2).
+    - **Tecnología Actual (si aplica):** Si el planeta es la Tierra, la respuesta de la humanidad se basa estrictamente en la tecnología militar y científica de hoy. No hay cañones de plasma ni escudos de energía. Sí hay misiles de crucero, cazas F-35, armas nucleares (como opción desesperada), satélites espía y equipos científicos. En planetas sin vida, no hay reacción tecnológica.
+    - **Consecuencias Reales:** Describe el impacto realista y global. Un monstruo marino gigante en la Tierra provocaría tsunamis. Uno con aura de calor en Marte aceleraría la sublimación de sus casquetes polares. Piensa en el impacto geológico, climático y, si hay vida, en la crisis de refugiados, colapso económico, pandemias, etc.
 
     **Contexto General:**
     - Criatura: {{{creature.nombre}}}, {{{creature.narrativeDescription}}}.
     - Habilidades Clave: {{{creature.habilidadesUnicas}}}.
     - Debilidades: {{{creature.debilidades}}}.
     - Temperamento: {{{creature.temperamento}}}.
-    - Planeta: Tierra ({{{planet.name}}}).
+    - Planeta: {{{planet.name}}}.
     - Turno actual: {{{turn}}}.
 
-    **Estado Actual del Planeta (Tierra):**
+    **Estado Actual del Planeta ({{planet.name}}):**
     - Descripción: {{{planet.description}}}.
     - Población Total: {{{planet.population}}}.
     - Demografía: {{{planet.demographics.adults}}} adultos, {{{planet.demographics.children}}} niños, etc.
     - Nivel de Devastación: {{{planet.devastationLevel}}}%.
     - Estado General: {{{planet.status}}}.
     
-    **Historial de Sucesos Previos (Crónica de la Invasión):**
+    **Historial de Sucesos Previos (Crónica del Evento):**
     {{#each eventLog}}
     - {{{this}}}
     {{/each}}
 
     **Instrucciones para este Turno (3 días en el juego):**
 
-    1.  **Narra el Nuevo Suceso ('newLogEntry'):** Describe qué ha hecho la criatura en los últimos 3 días de forma cruda y realista.
-        *   **Acciones Coherentes:** Si es 'agresiva', atacará centros de poder (bases militares, capitales). Si es 'curiosa', podría desmantelar una central nuclear para estudiar su núcleo, causando una fuga radiactiva. Si es 'protectora', podría defender un bosque de la tala, pero atacando brutalmente a los humanos responsables.
-        *   **Impacto Demográfico y Ambiental:** Describe el efecto. Si ataca una ciudad, calcula bajas realistas y su impacto demográfico. Si su habilidad afecta al clima, describe la subida del nivel del mar, las sequías o las tormentas resultantes. Sé específico.
-        *   **Reacción Humana Realista:** ¿Qué harían las naciones del mundo? Se formarían coaliciones (OTAN, etc.). Los científicos intentarían explotar sus 'debilidades'. La ONU celebraría reuniones de emergencia. La economía global se tambalearía.
-        *   **La historia debe avanzar.** Evita la repetición. Introduce giros: la criatura revela una nueva faceta de su habilidad, los humanos logran herirla por primera vez usando una táctica ingeniosa (ej: un ataque sónico coordinado si es sensible al sonido), un científico desvela la clave de su biología, etc.
+    1.  **Narra el Nuevo Suceso ('newLogEntry'):** Describe qué ha hecho la criatura en los últimos 3 días de forma cruda y realista, adaptado al planeta.
+        *   **Acciones Coherentes:** Si es 'agresiva' en la Tierra, atacará centros de poder. Si es 'curiosa' en Marte, podría investigar el Rover Perseverance. Si es 'protectora' en un mundo sin vida, podría crear un nido o terraformar una pequeña área.
+        *   **Impacto Demográfico y Ambiental:** Describe el efecto. Si ataca una ciudad, calcula bajas realistas y su impacto demográfico. Si su habilidad afecta al clima, describe la subida del nivel del mar en la Tierra, o las tormentas de polvo en Marte. Sé específico.
+        *   **Reacción (si la hay):** En la Tierra, las naciones del mundo reaccionarían. En otros planetas, no hay reacción a menos que interactúe con algún rover o sonda. La historia debe ser sobre la criatura y su interacción con el entorno.
+        *   **La historia debe avanzar.** Evita la repetición. Introduce giros: la criatura revela una nueva faceta de su habilidad, se adapta al nuevo entorno de forma inesperada (ej: una criatura de agua aprende a "nadar" en las arenas de Marte), o sufre los efectos del planeta (la radiación de Europa la hiere, el ácido de Venus corroe su piel).
 
     2.  **Actualiza el Estado del Planeta ('updatedPlanetState'):**
-        *   Reduce la 'población' y la 'demografía' según las bajas que has narrado de forma creíble.
-        *   Aumenta el 'devastationLevel' reflejando la destrucción de infraestructura y ecosistemas.
-        *   Cambia el 'status' del planeta si la situación empeora ('Crisis Humanitaria', 'Ley Marcial Global', 'Colapso Climático', 'Aniquilado').
+        *   Reduce la 'población' y la 'demografía' si hay bajas.
+        *   Aumenta el 'devastationLevel' reflejando la destrucción de infraestructura o ecosistemas.
+        *   Cambia el 'status' del planeta si la situación empeora ('Crisis Humanitaria', 'Ley Marcial Global', 'Colapso Climático', 'Aniquilado' para la Tierra, o 'Alterado' para otros planetas).
 
     3.  **Actualiza el Estado de la Criatura ('updatedCreatureStatus'):**
-        *   Si los humanos consiguen un ataque efectivo, puede quedar 'Herida'. Si sufre un daño masivo (ej: un ataque nuclear táctico), 'Muriendo'. Si el daño es definitivo, 'Muerta'.
+        *   Si el entorno es hostil o si los humanos consiguen un ataque efectivo, puede quedar 'Herida'. Si sufre un daño masivo, 'Muriendo'. Si el daño es definitivo, 'Muerta'.
 
     4.  **Determina si el Evento Termina ('isEventOver'):**
         *   El evento termina si la criatura es 'Muerta'.
-        *   El evento termina si la población del planeta llega a 0 ('Aniquilado').
-        *   El evento puede terminar si se alcanza un final narrativo definitivo y creíble (ej: la criatura entra en un estado de hibernación permanente en el fondo del océano, los humanos logran repelerla del planeta).
+        *   El evento termina si la población del planeta llega a 0.
+        *   El evento puede terminar si se alcanza un final narrativo definitivo y creíble (ej: la criatura entra en hibernación, abandona el planeta).
 
     5.  **Genera un Resumen ('storySummary'):** En una o dos frases, resume el estado actual de la saga. Ejemplo: "Tras arrasar la costa este de EE.UU., Goliathus se dirige hacia Europa, mientras una coalición internacional prepara un ataque con misiles balísticos contra su punto débil recién descubierto."
 
-    Sé brutal, creativo y rigurosamente coherente con el mundo real. El destino de nuestra especie está en tu narración.
+    Sé brutal, creativo y rigurosamente coherente con el mundo que describes. El destino de mundos está en tu narración.
   `,
 });
 
@@ -84,6 +84,13 @@ const generateUniversalEventFlow = ai.defineFlow(
     if (!output) {
       throw new Error("La IA no pudo generar una continuación para el evento universal.");
     }
+    
+    // Asegurarse de que el estado de la criatura sea uno de los valores permitidos
+    const validStatuses = ['Saludable', 'Herido', 'Muriendo', 'Muerto', 'Activa'];
+    if (!validStatuses.includes(output.updatedCreatureStatus)) {
+        output.updatedCreatureStatus = 'Activa'; // O un valor por defecto seguro
+    }
+
     return output;
   }
 );

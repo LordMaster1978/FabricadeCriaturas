@@ -7,7 +7,7 @@ import { type DescribeCreatureOutput } from './describe-creature-flow';
 
 const CreatureSchema = z.custom<DescribeCreatureOutput>();
 
-const PlanetStateSchema = z.object({
+export const PlanetStateSchema = z.object({
   name: z.string(),
   population: z.number(),
   initialPopulation: z.number(),
@@ -20,8 +20,10 @@ const PlanetStateSchema = z.object({
   }),
   devastationLevel: z.number().min(0).max(100),
   description: z.string(),
-  status: z.enum(['Estable', 'En Pánico', 'Bajo Asedio', 'Colapsado', 'Aniquilado']),
+  status: z.enum(['Estable', 'En Pánico', 'Bajo Asedio', 'Crisis Humanitaria', 'Ley Marcial Global', 'Colapso Climático', 'Colapsado', 'Aniquilado']),
 });
+export type PlanetState = z.infer<typeof PlanetStateSchema>;
+
 
 export const UniversalEventSchema = z.object({
   id: z.string(),
@@ -49,7 +51,7 @@ export const GenerateUniversalEventOutputSchema = z.object({
   newLogEntry: z.string().describe("La narración del nuevo suceso que acaba de ocurrir. Debe ser un párrafo detallado que continúe la historia."),
   storySummary: z.string().describe("Un resumen actualizado de la situación global en el planeta. Máximo dos frases."),
   updatedPlanetState: PlanetStateSchema.describe("El estado actualizado del planeta después del suceso (población, demografía, devastación, etc.)."),
-  updatedCreatureStatus: z.enum(['Activa', 'Herida', 'Muriendo', 'Muerta']).describe("El nuevo estado de salud de la criatura."),
+  updatedCreatureStatus: z.enum(['Saludable', 'Herido', 'Muriendo', 'Muerto', 'Activa']).describe("El nuevo estado de salud de la criatura."),
   isEventOver: z.boolean().describe("Indica si el evento ha concluido (la criatura muere, la humanidad es aniquilada o se alcanza un final definitivo)."),
 });
 export type GenerateUniversalEventOutput = z.infer<typeof GenerateUniversalEventOutputSchema>;

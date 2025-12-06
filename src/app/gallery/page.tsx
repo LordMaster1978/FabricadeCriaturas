@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Star, Swords, Globe, Ticket, CircleDollarSign, Trophy, HeartPulse, Skull } from 'lucide-react';
 import { type DescribeCreatureOutput } from '@/ai/flows/describe-creature-flow';
 import { simulateCombat, type SimulateCombatInput } from '@/ai/flows/simulate-combat-flow';
-import { type UniversalEvent } from '@/ai/flows/universal-event-types';
+import { type UniversalEvent, type PlanetState } from '@/ai/flows/universal-event-types';
 
 import {
   Dialog,
@@ -36,6 +36,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { WandSparkles } from 'lucide-react';
 
@@ -48,6 +55,45 @@ const battlefields = [
   { name: "Planeta sin Atmósfera", description: "Superficie de un planetoide rocoso en el vacío. No hay aire, ni sonido. La gravedad es baja. Solo criaturas que no necesitan respirar o están adaptadas al vacío pueden sobrevivir." },
 ];
 
+const planets: PlanetState[] = [
+  {
+    name: 'Tierra',
+    population: 7800000000,
+    initialPopulation: 7800000000,
+    demographics: { infants: 1000000000, children: 1500000000, adolescents: 1200000000, adults: 3000000000, elderly: 1100000000 },
+    devastationLevel: 0,
+    description: 'Un planeta de tipo terrestre con una civilización tecnológica de nivel medio-alto, ecosistemas diversos y una población masiva concentrada en megaciudades.',
+    status: 'Estable',
+  },
+  {
+    name: 'Marte',
+    population: 0,
+    initialPopulation: 0,
+    demographics: { infants: 0, children: 0, adolescents: 0, adults: 0, elderly: 0 },
+    devastationLevel: 0,
+    description: 'Un planeta desértico y frío con una atmósfera delgada de dióxido de carbono. La superficie está cubierta de óxido de hierro, dándole su característico color rojo. Sin vida conocida. Las temperaturas son extremadamente bajas.',
+    status: 'Estable',
+  },
+  {
+    name: 'Venus',
+    population: 0,
+    initialPopulation: 0,
+    demographics: { infants: 0, children: 0, adolescents: 0, adults: 0, elderly: 0 },
+    devastationLevel: 0,
+    description: 'Un infierno tóxico. Su atmósfera es densa y está compuesta de dióxido de carbono con nubes de ácido sulfúrico. La presión en la superficie es 90 veces la de la Tierra y la temperatura promedio es de 465°C.',
+    status: 'Estable',
+  },
+   {
+    name: 'Europa (luna de Júpiter)',
+    population: 0,
+    initialPopulation: 0,
+    demographics: { infants: 0, children: 0, adolescents: 0, adults: 0, elderly: 0 },
+    devastationLevel: 0,
+    description: 'Una luna helada con una superficie de hielo de agua, pero con un vasto océano de agua líquida debajo. Es el lugar más prometedor para encontrar vida extraterrestre. La superficie es bombardeada por la radiación de Júpiter.',
+    status: 'Estable',
+  },
+];
+
 
 export default function GalleryPage() {
   const [bestiary, setBestiary] = useState<DescribeCreatureOutput[]>([]);
@@ -55,6 +101,7 @@ export default function GalleryPage() {
   const [opponent, setOpponent] = useState<DescribeCreatureOutput | null>(null);
   const [betAmount, setBetAmount] = useState(10);
   const [capital, setCapital] = useState(1000);
+  const [selectedPlanet, setSelectedPlanet] = useState<string>(planets[0].name);
 
   const [isSimulating, setIsSimulating] = useState(false);
   const [combatResult, setCombatResult] = useState<any | null>(null);
@@ -202,6 +249,12 @@ export default function GalleryPage() {
 
 
   const handleReleaseCreature = (creature: DescribeCreatureOutput) => {
+    const planetData = planets.find(p => p.name === selectedPlanet);
+    if (!planetData) {
+      toast({ variant: 'destructive', title: 'Planeta no encontrado' });
+      return;
+    }
+
     try {
       const existingEvents = JSON.parse(localStorage.getItem('universal-events') || '[]');
       if (existingEvents.some((e: UniversalEvent) => e.creature.nombre === creature.nombre)) {
@@ -216,23 +269,9 @@ export default function GalleryPage() {
       const newEvent: UniversalEvent = {
         id: creature.nombre + new Date().toISOString(),
         creature: creature,
-        planet: {
-          name: 'Tierra',
-          population: 7800000000,
-          initialPopulation: 7800000000,
-          demographics: {
-            infants: 1000000000,
-            children: 1500000000,
-            adolescents: 1200000000,
-            adults: 3000000000,
-            elderly: 1100000000,
-          },
-          devastationLevel: 0,
-          description: 'Un planeta de tipo terrestre con una civilización tecnológica de nivel medio-alto, ecosistemas diversos y una población masiva concentrada en megaciudades.',
-          status: 'Estable',
-        },
-        eventLog: [`La criatura "${creature.nombre}" ha sido liberada en la Tierra. El universo contiene la respiración.`],
-        storySummary: `"${creature.nombre}" acaba de llegar a la Tierra, un mundo desprevenido de la nueva presencia en su ecosistema.`,
+        planet: planetData,
+        eventLog: [`La criatura "${creature.nombre}" ha sido liberada en ${planetData.name}. El universo contiene la respiración.`],
+        storySummary: `"${creature.nombre}" acaba de llegar a ${planetData.name}, un mundo desprevenido de la nueva presencia en su ecosistema.`,
         turn: 1,
         isActive: true,
         startDate: new Date().toISOString(),
@@ -241,14 +280,13 @@ export default function GalleryPage() {
       existingEvents.push(newEvent);
       localStorage.setItem('universal-events', JSON.stringify(existingEvents));
       
-      // Remove from bestiary
       const updatedBestiary = bestiary.filter(c => c.nombre !== creature.nombre);
       localStorage.setItem('creature-bestiary', JSON.stringify(updatedBestiary));
       setBestiary(updatedBestiary);
       
       toast({
         title: '¡Criatura Liberada!',
-        description: `${creature.nombre} ha comenzado su saga en la Tierra. ¡Ve a Eventos Universales para seguir su historia!`,
+        description: `${creature.nombre} ha comenzado su saga en ${planetData.name}. ¡Ve a Eventos Universales para seguir su historia!`,
       });
 
     } catch (error) {
@@ -471,13 +509,29 @@ export default function GalleryPage() {
                           <DialogHeader>
                             <DialogTitle>Confirmar Liberación Universal</DialogTitle>
                             <DialogDescription>
-                              Estás a punto de liberar a "{creature.nombre}" en un evento universal. La criatura será eliminada de la arena y comenzará su propia saga en un planeta. Esta acción no se puede deshacer.
+                              Vas a liberar a "{creature.nombre}". Esta acción es irreversible. La criatura será eliminada de la arena y comenzará su propia saga.
                             </DialogDescription>
                           </DialogHeader>
+                          <div className="space-y-4 py-4">
+                            <Label htmlFor="planet-select">Elige un planeta de destino</Label>
+                            <Select value={selectedPlanet} onValueChange={setSelectedPlanet}>
+                              <SelectTrigger id="planet-select">
+                                <SelectValue placeholder="Selecciona un planeta" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {planets.map((p) => (
+                                  <SelectItem key={p.name} value={p.name}>{p.name}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                             <div className="text-xs text-muted-foreground p-2 bg-muted/50 rounded-md">
+                                {planets.find(p => p.name === selectedPlanet)?.description}
+                            </div>
+                          </div>
                           <DialogFooter>
                              <Button variant="outline" >Cancelar</Button>
                             <Button variant="destructive" onClick={() => handleReleaseCreature(creature)}>
-                              Confirmar y Liberar
+                              Confirmar y Liberar en {selectedPlanet}
                             </Button>
                           </DialogFooter>
                         </DialogContent>
