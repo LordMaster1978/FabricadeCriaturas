@@ -8,7 +8,6 @@ import {
   Scaling,
   Sparkles,
   BookOpen,
-  Apple,
   Mountain,
   FileText,
   Users,
@@ -26,7 +25,8 @@ import {
   Shield,
   Hand,
   Maximize,
-  MoveVertical
+  MoveVertical,
+  Palette
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -99,6 +99,28 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+const colorPalette = [
+  { name: 'Rojo', value: 'hsl(0, 70%, 50%)' },
+  { name: 'Naranja', value: 'hsl(30, 70%, 50%)' },
+  { name: 'Amarillo', value: 'hsl(60, 70%, 50%)' },
+  { name: 'Verde', value: 'hsl(120, 70%, 40%)' },
+  { name: 'Cian', value: 'hsl(180, 70%, 40%)' },
+  { name: 'Azul', value: 'hsl(210, 70%, 50%)' },
+  { name: 'Púrpura', value: 'hsl(270, 70%, 50%)' },
+  { name: 'Magenta', value: 'hsl(300, 70%, 50%)' },
+  { name: 'Negro', value: 'hsl(0, 0%, 10%)' },
+  { name: 'Gris', value: 'hsl(0, 0%, 50%)' },
+  { name: 'Blanco', value: 'hsl(0, 0%, 95%)' },
+  { name: 'Marrón', value: 'hsl(30, 40%, 30%)' },
+  { name: 'Dorado', value: 'hsl(50, 80%, 60%)' },
+  { name: 'Plateado', value: 'hsl(210, 15%, 80%)' },
+  { name: 'Obsidiana', value: 'hsl(240, 10%, 8%)' },
+  { name: 'Carmesi', value: 'hsl(348, 83%, 47%)' },
+  { name: 'Hueso', value: 'hsl(45, 20%, 90%)' },
+  { name: 'Esmeralda', value: 'hsl(145, 63%, 49%)' },
+];
+
+
 export default function CraftPage() {
   const [currentDate, setCurrentDate] = useState('');
   const [gameTime, setGameTime] = useState({ hour: 0, minute: 0 });
@@ -153,6 +175,13 @@ export default function CraftPage() {
     setCreature(prev => ({ ...prev, [id]: checked }));
   };
   
+  const handleColorClick = (colorName: string) => {
+    setCreature(prev => ({
+      ...prev,
+      apariencia: prev.apariencia ? `${prev.apariencia}, ${colorName.toLowerCase()}` : colorName,
+    }));
+  };
+
   const handleGenerateDescription = async () => {
     setIsGenerating(true);
     setGeneratedValuation(null);
@@ -308,13 +337,42 @@ export default function CraftPage() {
                 <Label htmlFor="partesCuerpo">Partes del Cuerpo Notables</Label>
                 <Textarea id="partesCuerpo" placeholder="Ej: Alas de cuero, cuernos retorcidos..." className="min-h-[50px]" value={creature.partesCuerpo} onChange={handleInputChange}/>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="apariencia">Apariencia y Textura</Label>
-                <Textarea id="apariencia" placeholder="Ej: Piel escamosa y brillante, pelaje metálico..." className="min-h-[50px]" value={creature.apariencia} onChange={handleInputChange} />
-              </div>
             </CardContent>
           </Card>
           
+          {/* Apariencia y Colores */}
+          <Card className="bg-card/50 border-border/50 lg:col-span-1">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Palette className="h-5 w-5 text-primary" />
+                Apariencia y Colores
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="apariencia">Apariencia y Textura</Label>
+                <Textarea id="apariencia" placeholder="Ej: Piel escamosa y brillante, pelaje metálico..." className="min-h-[80px]" value={creature.apariencia} onChange={handleInputChange} />
+              </div>
+              <div className="space-y-2">
+                <Label>Paleta de Colores Sugeridos</Label>
+                <div className="flex flex-wrap gap-2">
+                  {colorPalette.map((color) => (
+                    <button
+                      key={color.name}
+                      type="button"
+                      title={color.name}
+                      onClick={() => handleColorClick(color.name)}
+                      className="h-6 w-6 rounded-full border-2 border-transparent focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                      style={{ backgroundColor: color.value }}
+                    >
+                      <span className="sr-only">{color.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Medidas Detalladas */}
           <Card className="bg-card/50 border-border/50 lg:col-span-1">
             <CardHeader>
@@ -439,6 +497,12 @@ export default function CraftPage() {
                     <SelectItem value="protective">Protectora</SelectItem>
                     <SelectItem value="wise">Sabia</SelectItem>
                     <SelectItem value="wild">Salvaje</SelectItem>
+                    <SelectItem value="cunning">Astuta</SelectItem>
+                    <SelectItem value="lazy">Perezosa</SelectItem>
+                    <SelectItem value="stoic">Estoica</SelectItem>
+                    <SelectItem value="erratic">Errática</SelectItem>
+                    <SelectItem value="timid">Miedosa</SelectItem>
+                    <SelectItem value="majestic">Majestuosa</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -478,7 +542,7 @@ export default function CraftPage() {
           </Card>
 
           {/* Historia de Origen */}
-          <Card className="bg-card/50 border-border/50 lg:col-span-3">
+          <Card className="bg-card/50 border-border/50 lg:col-span-2">
              <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-primary" />

@@ -21,7 +21,7 @@ const DescribeCreatureInputSchema = z.object({
     profundidad: z.string().optional().describe('La profundidad o longitud de la criatura (ej: 5m).'),
     velocidadMaxima: z.string().describe('La velocidad máxima de la criatura (ej: 60km/h).'),
     partesCuerpo: z.string().describe('Las partes distintivas del cuerpo de la criatura.'),
-    apariencia: z.string().describe('La apariencia y textura de la criatura.'),
+    apariencia: z.string().describe('La apariencia, colores y textura de la criatura.'),
     afinidadElemental: z.string().describe('El elemento al que la criatura es afín.'),
     habilidadesUnicas: z.string().describe('Las habilidades únicas de la criatura.'),
     debilidades: z.string().describe('Las debilidades de la criatura.'),
@@ -78,7 +78,7 @@ const prompt = ai.definePrompt({
     1.  **Devuelve el Nombre:** El campo 'nombre' en la salida debe ser idéntico al de la entrada.
     2.  **Infiere y Genera Estadísticas de Combate (0-100):** Analiza TODOS los atributos proporcionados. Usa las medidas (altura, peso, envergadura), la composición (roca, carne, energía), y el comportamiento (agresivo, rápido) para asignar valores numéricos de 0 a 100 a Ataque, Defensa, Velocidad, Inteligencia, Resistencia, Fuerza y Precisión.
     3.  **Escribe la Descripción Narrativa (Lore Épico):** Crea una historia y descripción inmersiva. No te limites a listar los datos; intégralos en la narrativa. **Justifica sutilmente las estadísticas dentro del texto**. Por ejemplo, si tiene alta 'capacidadCarga' y 'resistenciaPiel', describe su musculatura masiva y su coraza impenetrable para justificar su alta Fuerza y Defensa. Si tiene alta 'velocidadVuelo', narra su agilidad aérea para justificar una Velocidad elevada.
-    4.  **Expande Creativamente:** Si un campo está vacío (ej. 'velocidadNado'), puedes omitirlo o inferir una debilidad (ej. "es torpe en el agua"). Usa los datos como trampolín para una descripción rica, añadiendo detalles sobre sus sentidos, su ciclo de vida o su impacto en el ecosistema.
+    4.  **Expande Creativamente:** Si un campo está vacío (ej. 'velocidadNado'), puedes omitirlo o inferir una debilidad (ej. "es torpe en el agua"). Usa los datos como trampolín para una descripción rica, añadiendo detalles sobre sus sentidos, su ciclo de vida o su impacto en el ecosistema. Presta especial atención a la descripción de la apariencia, colores y texturas para crear una imagen vívida.
     5.  **Determina la Rareza:** Clasifica la criatura como "Común", "Poco Común", "Raro", "Épico" o "Legendario" basándote en la combinación de su poder, origen, unicidad y debilidades.
     6.  **Redacta las Tres Reseñas:**
         *   **Valoración de Expertos:** Analítica y técnica. Un erudito discutiendo su biología, tácticas de combate y posibles usos o amenazas.
@@ -90,7 +90,7 @@ const prompt = ai.definePrompt({
 
     **Datos Base para la Criatura:**
     - **Identidad:** Nombre: {{{nombre}}}. Composición: {{{composicion}}}.
-    - **Físico:** Tamaño {{{tamano}}}, complexión {{{complexion}}}. Partes notables: {{{partesCuerpo}}}. Apariencia/textura: {{{apariencia}}}.
+    - **Físico:** Tamaño {{{tamano}}}, complexión {{{complexion}}}. Partes notables: {{{partesCuerpo}}}. Apariencia, colores y textura: {{{apariencia}}}.
     - **Dimensiones:** Altura: {{{altura}}}, Peso: {{{peso}}}, Anchura: {{{anchura}}}, Profundidad: {{{profundidad}}}, Envergadura: {{{envergadura}}}, Longitud: {{{longitud}}}, Circunferencia: {{{circunferencia}}}.
     - **Movilidad:** Velocidad en tierra: {{{velocidadMaxima}}}, Velocidad de vuelo: {{{velocidadVuelo}}}, Velocidad de nado: {{{velocidadNado}}}, Capacidad de salto: {{{capacidadSalto}}}.
     - **Capacidades Físicas:** Fuerza de mordida: {{{fuerzaMordida}}}, Capacidad de carga: {{{capacidadCarga}}}, Resistencia de piel/coraza: {{{resistenciaPiel}}}.
