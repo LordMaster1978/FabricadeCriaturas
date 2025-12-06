@@ -8,19 +8,19 @@ import { type DescribeCreatureOutput } from './describe-creature-flow';
 const CreatureSchema = z.custom<DescribeCreatureOutput>();
 
 export const PlanetStateSchema = z.object({
-  name: z.string(),
-  population: z.number(),
-  initialPopulation: z.number(),
+  name: z.string().describe("El nombre único y evocador del planeta."),
+  population: z.number().describe("La población actual del planeta."),
+  initialPopulation: z.number().describe("La población inicial del planeta cuando comenzó el evento."),
   demographics: z.object({
     infants: z.number(),
     children: z.number(),
     adolescents: z.number(),
     adults: z.number(),
     elderly: z.number(),
-  }),
-  devastationLevel: z.number().min(0).max(100),
-  description: z.string(),
-  status: z.enum(['Estable', 'En Pánico', 'Bajo Asedio', 'Crisis Humanitaria', 'Ley Marcial Global', 'Colapso Climático', 'Colapsado', 'Aniquilado', 'Alterado']),
+  }).describe("La distribución demográfica de la población."),
+  devastationLevel: z.number().min(0).max(100).describe("El nivel de devastación del planeta en porcentaje (0-100)."),
+  description: z.string().describe("Una descripción detallada del entorno, clima, y características únicas del planeta."),
+  status: z.enum(['Estable', 'En Pánico', 'Bajo Asedio', 'Crisis Humanitaria', 'Ley Marcial Global', 'Colapso Climático', 'Colapsado', 'Aniquilado', 'Alterado']).describe("El estado general actual del planeta."),
 });
 export type PlanetState = z.infer<typeof PlanetStateSchema>;
 

@@ -16,6 +16,8 @@ import { Star, Swords, Globe, Ticket, CircleDollarSign, Trophy, HeartPulse, Skul
 import { type DescribeCreatureOutput } from '@/ai/flows/describe-creature-flow';
 import { simulateCombat, type SimulateCombatInput } from '@/ai/flows/simulate-combat-flow';
 import { type UniversalEvent, type PlanetState } from '@/ai/flows/universal-event-types';
+import { generatePlanet } from '@/ai/flows/generate-planet-flow';
+
 
 import {
   Dialog,
@@ -107,6 +109,8 @@ export default function GalleryPage() {
   const [betAmount, setBetAmount] = useState(10);
   const [capital, setCapital] = useState(1000);
   const [selectedPlanet, setSelectedPlanet] = useState<string>(planets[0].name);
+  const [isGeneratingPlanet, setIsGeneratingPlanet] = useState(false);
+
 
   const [isSimulating, setIsSimulating] = useState(false);
   const [combatResult, setCombatResult] = useState<any | null>(null);
@@ -284,21 +288,40 @@ export default function GalleryPage() {
   }
 
 
-  const handleReleaseCreature = (creature: DescribeCreatureOutput) => {
-    const planetData = planets.find(p => p.name === selectedPlanet);
+  const handleReleaseCreature = async (creature: DescribeCreatureOutput) => {
+    let planetData: PlanetState | undefined;
+
+    if (selectedPlanet === 'ia-generated') {
+      setIsGeneratingPlanet(true);
+      try {
+        planetData = await generatePlanet();
+        toast({
+          title: "¡Nuevo Mundo Descubierto!",
+          description: `La IA ha generado el planeta: ${planetData.name}. ${planetData.description}`,
+        });
+      } catch (error: any) {
+        console.error('Error generating planet:', error);
+        toast({ variant: 'destructive', title: 'Error de la IA', description: 'No se pudo generar un nuevo planeta.' });
+        setIsGeneratingPlanet(false);
+        return;
+      } finally {
+        setIsGeneratingPlanet(false);
+      }
+    } else {
+      planetData = planets.find(p => p.name === selectedPlanet);
+    }
+
     if (!planetData) {
       toast({ variant: 'destructive', title: 'Planeta no encontrado' });
       return;
     }
-
+    
     try {
         const existingEvents = JSON.parse(localStorage.getItem('universal-events') || '[]');
         
-        // Comprobar si hay un evento INACTIVO para esta criatura (para continuar la saga)
         const inactiveEventIndex = existingEvents.findIndex((e: UniversalEvent) => e.creature.nombre === creature.nombre && !e.isActive);
 
         if (inactiveEventIndex !== -1) {
-            // Reactivar y mover a un nuevo planeta
             existingEvents[inactiveEventIndex] = {
                 ...existingEvents[inactiveEventIndex],
                 planet: planetData,
@@ -314,7 +337,6 @@ export default function GalleryPage() {
                 description: `${creature.nombre} ha comenzado un nuevo capítulo en ${planetData.name}.`,
             });
         } else {
-            // Crear un evento nuevo
             const newEvent: UniversalEvent = {
                 id: creature.nombre + new Date().toISOString(),
                 creature: { ...creature, status: 'Activa' },
@@ -333,7 +355,6 @@ export default function GalleryPage() {
             });
         }
         
-        // Actualizar bestiario para reflejar el estado 'Activa'
         const updatedBestiary = bestiary.map(c => c.nombre === creature.nombre ? { ...c, status: 'Activa' } : c);
         localStorage.setItem('creature-bestiary', JSON.stringify(updatedBestiary));
         
@@ -586,11 +607,15 @@ export default function GalleryPage() {
                                 {planets.map((p) => (
                                   <SelectItem key={p.name} value={p.name}>{p.name}</SelectItem>
                                 ))}
-                                <SelectItem value="ia-generated">Viajar a un nuevo mundo desconocido (Próximamente)</SelectItem>
+                                <SelectItem value="ia-generated">Viajar a un nuevo mundo desconocido (generado por IA)</SelectItem>
                               </SelectContent>
                             </Select>
                              <div className="text-xs text-muted-foreground p-2 bg-muted/50 rounded-md">
-                                {planets.find(p => p.name === selectedPlanet)?.description || "La IA generará un planeta único con características, habitantes y desafíos impredecibles."}
+                                {
+                                 selectedPlanet === 'ia-generated' 
+                                 ? "La IA generará un planeta único con características, habitantes y desafíos impredecibles." 
+                                 : planets.find(p => p.name === selectedPlanet)?.description
+                                 }
                             </div>
                           </div>
                           <DialogFooter>
@@ -601,9 +626,10 @@ export default function GalleryPage() {
                               <Button 
                                 variant="destructive" 
                                 onClick={() => handleReleaseCreature(creature)}
-                                disabled={selectedPlanet === 'ia-generated'}
+                                disabled={isGeneratingPlanet}
                               >
-                                Confirmar y {canContinueSaga ? 'Viajar' : 'Liberar'} a {selectedPlanet}
+                                {isGeneratingPlanet ? <WandSparkles className="mr-2 h-4 w-4 animate-spin"/> : null}
+                                {isGeneratingPlanet ? 'Creando Mundo...' : `Confirmar y ${canContinueSaga ? 'Viajar' : 'Liberar'}`}
                               </Button>
                             </DialogClose>
                           </DialogFooter>
