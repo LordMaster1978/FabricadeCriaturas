@@ -11,9 +11,11 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { type DescribeCreatureOutput } from './describe-creature-flow';
 
+const CreatureInputSchema = z.custom<DescribeCreatureOutput>();
+
 const SimulateCombatInputSchema = z.object({
-  creature1: z.custom<DescribeCreatureOutput>(),
-  creature2: z.custom<DescribeCreatureOutput>(),
+  creature1: CreatureInputSchema,
+  creature2: CreatureInputSchema,
   battlefield: z.object({
     name: z.string(),
     description: z.string(),
@@ -21,18 +23,28 @@ const SimulateCombatInputSchema = z.object({
 });
 export type SimulateCombatInput = z.infer<typeof SimulateCombatInputSchema>;
 
+
+const CombatOutcomeSchema = z.object({
+  outcome: z.enum(['victoria', 'derrota', 'muerte', 'herido', 'huida']),
+  description: z.string().optional().describe("Descripción del resultado, especialmente importante si es 'muerte'."),
+});
+
 const SimulateCombatOutputSchema = z.object({
   combatLog: z.string().describe("Una narración detallada y épica del combate, describiendo las acciones, el entorno, las reacciones y el clímax de la batalla."),
-  winnerName: z.string().describe("El nombre de la criatura que ha ganado el combate."),
+  winnerName: z.string().nullable().describe("El nombre de la criatura que ha ganado el combate. Puede ser null si ambos huyen o mueren."),
   favoriteCreatureName: z.string().describe("El nombre de la criatura considerada favorita para ganar ANTES del combate."),
   odds: z.string().describe("Las probabilidades de la apuesta para el favorito, en formato 'X:1'."),
+  creature1_outcome: CombatOutcomeSchema,
+  creature2_outcome: CombatOutcomeSchema,
 });
+export type SimulateCombatOutput = z.infer<typeof SimulateCombatOutputSchema>;
+
 
 const prompt = ai.definePrompt({
   name: 'simulateCombatPrompt',
   input: { schema: z.object({
-      creature1: z.custom<DescribeCreatureOutput>(),
-      creature2: z.custom<DescribeCreatureOutput>(),
+      creature1: CreatureInputSchema,
+      creature2: CreatureInputSchema,
       stats1_text: z.string(),
       stats2_text: z.string(),
       battlefield: z.object({
@@ -43,9 +55,7 @@ const prompt = ai.definePrompt({
   output: { schema: SimulateCombatOutputSchema },
   prompt: `
     Eres un estratega de combate de clase mundial, un maestro narrador de batallas y un corredor de apuestas astuto.
-    Tu tarea es doble:
-    1.  Analizar a los contendientes y el entorno para predecir un ganador y establecer las probabilidades.
-    2.  Simular una batalla a muerte entre las dos criaturas y narrarla de forma emocionante, donde el favorito NO siempre gana.
+    Tu tarea es simular una batalla potencialmente mortal entre dos criaturas y determinar las consecuencias para cada una.
 
     **Campo de Batalla: {{{battlefield.name}}}**
     - Descripción del entorno: {{{battlefield.description}}}
@@ -65,18 +75,19 @@ const prompt = ai.definePrompt({
     **Instrucciones de Simulación:**
 
     **PARTE 1: ANÁLISIS Y APUESTAS (Tu predicción interna)**
-    1.  **Analiza las Ventajas:** Compara las estadísticas, pero dale MUCHA importancia al entorno. ¿El hábitat natural de una criatura coincide con el campo de batalla? ¿Su composición (ej: fuego) es una desventaja en un pantano? ¿La toxicidad del aire afecta a una criatura más que a otra?
-    2.  **Determina el Favorito:** Basado en este análisis completo, elige a la criatura con la mayor probabilidad de ganar. Este será tu 'favoriteCreatureName'.
-    3.  **Establece las Probabilidades:** Define las probabilidades ('odds') para tu favorito. Si la ventaja es clara, las probabilidades pueden ser altas (ej. "3:1"). Si es un combate reñido, pueden ser bajas (ej. "1.5:1"). Sé creativo, puedes usar "2:1", "5:2", etc.
+    1.  **Analiza las Ventajas:** Compara las estadísticas, pero dale MUCHA importancia al entorno y a las habilidades únicas. ¿El hábitat natural de una criatura coincide con el campo de batalla? ¿Una criatura de fuego es débil en un pantano? ¿La astucia (Inteligencia) puede superar la fuerza bruta?
+    2.  **Determina el Favorito y las Probabilidades:** Basado en este análisis, elige a la criatura con la mayor probabilidad de ganar ('favoriteCreatureName') y establece las probabilidades ('odds', ej: "2:1", "3:1").
 
-    **PARTE 2: LA BATALLA (La narración para el público)**
-    4.  **Simula el Combate:** ¡Aquí es donde la magia ocurre! El favorito que elegiste NO tiene la victoria garantizada. La astucia (Inteligencia), un golpe de suerte, o el uso inesperado de una habilidad o del entorno pueden cambiar el curso de la batalla.
-    5.  **Narra con Detalle Épico:**
-        *   Describe cómo el entorno influye en el combate. ¿Una criatura usa los árboles para una emboscada? ¿El suelo inestable perjudica a la criatura más pesada?
-        *   Usa explícitamente las características físicas: "Clavó su gran cuerno...", "Sus garras afiladas rasgaron la coraza...", "Se protegió con su escudo de quitina".
-        *   La 'Inteligencia' y 'Astucia' son clave. Una criatura más inteligente puede usar el entorno a su favor o explotar una debilidad que una criatura más fuerte pero bruta no vería.
-    6.  **Declara un Vencedor Real:** Basado en tu simulación narrativa, determina quién gana realmente la pelea. Este será el 'winnerName'.
-    7.  **Formato de Salida:** Rellena todos los campos: 'combatLog', 'winnerName', 'favoriteCreatureName', y 'odds'.
+    **PARTE 2: LA BATALLA Y SUS CONSECUENCIAS (La narración para el público)**
+    3.  **Narra el Combate Épico ('combatLog'):** Describe la batalla con detalle. Usa las características físicas (garras, cuernos), las habilidades elementales, y cómo el entorno afecta el combate. El favorito NO siempre gana; un golpe de suerte, la astucia o una debilidad explotada pueden cambiar el resultado.
+    4.  **Determina el Desenlace y las Consecuencias para CADA CRIATURA:** ¡Esto es lo más importante! El combate no es solo ganar o perder.
+        *   **Victoria ('victoria'):** La criatura gana de forma decisiva.
+        *   **Derrota ('derrota'):** La criatura pierde, pero sobrevive.
+        *   **Muerte ('muerte'):** La criatura perece en el combate. Si esto ocurre, DEBES escribir una breve pero impactante descripción de su muerte en el campo 'description' de su 'outcome'.
+        *   **Herido ('herido'):** La criatura no gana ni pierde, pero queda gravemente herida y no puede continuar.
+        *   **Huida ('huida'):** La criatura, superada, decide abandonar el combate para sobrevivir.
+    5.  **Asigna los 'outcomes':** Rellena los campos 'creature1_outcome' y 'creature2_outcome' con uno de los estados anteriores. Una criatura que gana ('victoria') implica que la otra sufre una 'derrota', 'muerte', 'huida' o queda 'herida'. Es posible que ambas queden 'heridas' o 'huyan'.
+    6.  **Declara un Vencedor ('winnerName'):** El nombre del ganador. Si una criatura muere, la otra es la ganadora. Si una huye, la otra es la ganadora. Si ambas quedan heridas o huyen, 'winnerName' puede ser 'null'.
 
     ¡Que comience la simulación!
   `,

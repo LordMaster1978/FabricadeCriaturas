@@ -1,0 +1,130 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from '@/components/ui/card';
+import { Skull, Swords, Shield, Star } from 'lucide-react';
+import { type DescribeCreatureOutput } from '@/ai/flows/describe-creature-flow';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+
+export default function CemeteryPage() {
+  const [fallen, setFallen] = useState<DescribeCreatureOutput[]>([]);
+
+  useEffect(() => {
+    try {
+      const allCreatures = JSON.parse(
+        localStorage.getItem('creature-bestiary') || '[]'
+      );
+      setFallen(allCreatures.filter((c: DescribeCreatureOutput) => c.status === 'Muerto'));
+    } catch (error) {
+      console.error('Error loading fallen creatures from localStorage:', error);
+      setFallen([]);
+    }
+  }, []);
+
+  return (
+    <main className="flex min-h-screen w-full flex-col items-center bg-background p-4 md:p-8">
+      <div className="w-full max-w-6xl">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold flex items-center gap-4">
+            <Skull className="h-10 w-10 text-foreground/50" />
+            Cementerio de Criaturas
+          </h1>
+          <Link href="/">
+            <Button variant="outline">Volver al Menú</Button>
+          </Link>
+        </div>
+
+        {fallen.length === 0 ? (
+          <div className="text-center py-16 border-2 border-dashed border-border rounded-lg">
+            <h2 className="text-2xl font-semibold">El Cementerio está en calma</h2>
+            <p className="text-muted-foreground mt-2">
+              Aún no ha caído ninguna criatura en combate.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {fallen.map((creature, index) => (
+              <Card
+                key={index}
+                className="flex flex-col bg-card/50 border-border/50"
+              >
+                <CardHeader>
+                  <CardTitle className="flex justify-between items-center text-muted-foreground">
+                    <span>{creature.nombre}</span>
+                    <Skull className="h-5 w-5" />
+                  </CardTitle>
+                  <CardDescription className="flex items-center gap-2 pt-1">
+                    <div className="flex items-center">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-4 w-4 ${
+                            i < creature.starRating
+                              ? 'text-muted-foreground/50 fill-muted-foreground/50'
+                              : 'text-muted-foreground/20'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex-grow space-y-4">
+                  <div className="p-3 bg-muted/50 rounded-md">
+                    <h4 className="font-semibold text-sm mb-1">Causa de la Muerte</h4>
+                    <p className="text-xs text-muted-foreground italic">
+                      "{creature.deathCause || 'Caído en combate.'}"
+                    </p>
+                  </div>
+                   <div className="flex justify-around text-center text-xs">
+                    <div>
+                      <p className="font-bold text-lg">{creature.wins}</p>
+                      <p className="text-muted-foreground">Victorias</p>
+                    </div>
+                    <div>
+                      <p className="font-bold text-lg">{creature.losses}</p>
+                      <p className="text-muted-foreground">Derrotas</p>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter>
+                    <Accordion type="single" collapsible className="w-full">
+                      <AccordionItem value="item-1">
+                        <AccordionTrigger>Ver Historial de Combate</AccordionTrigger>
+                        <AccordionContent>
+                           {creature.combatHistory && creature.combatHistory.length > 0 ? (
+                            <ul className="space-y-2 text-xs">
+                              {creature.combatHistory.map((fight, i) => (
+                                <li key={i} className={`p-2 rounded-md ${fight.result === 'victoria' ? 'bg-primary/10' : 'bg-destructive/10'}`}>
+                                  <span className={`font-bold ${fight.result === 'victoria' ? 'text-primary' : 'text-destructive'}`}>{fight.result.toUpperCase()}</span> vs {fight.opponentName} en {fight.battlefieldName}
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="text-xs text-muted-foreground">Sin combates registrados.</p>
+                          )}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}

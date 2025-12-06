@@ -12,7 +12,7 @@ import {
   CardFooter
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Star, Swords, Shield, Zap, Brain, HeartPulse, Wind, Gem, Crown, WandSparkles, LandPlot, Users, Ticket, Scale, CircleDollarSign } from 'lucide-react';
+import { Star, Swords, Shield, WandSparkles, LandPlot, Users, Ticket, CircleDollarSign, Crown, HeartPulse, Skull, Scale, History } from 'lucide-react';
 import { type DescribeCreatureOutput } from '@/ai/flows/describe-creature-flow';
 import { simulateCombat, type SimulateCombatInput, type SimulateCombatOutput } from '@/ai/flows/simulate-combat-flow';
 import {
@@ -27,6 +27,13 @@ import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { cn } from '@/lib/utils';
 
 const battlefields = [
   { name: "Jungla Frondosa", description: "Un entorno denso y húmedo con árboles altos, lianas y poca visibilidad. Favorece la agilidad, el sigilo y a las criaturas adaptadas a la vegetación." },
@@ -43,9 +50,8 @@ export default function GalleryPage() {
   const [selectedCreature, setSelectedCreature] = useState<DescribeCreatureOutput | null>(null);
   const [opponent, setOpponent] = useState<DescribeCreatureOutput | null>(null);
   const [betAmount, setBetAmount] = useState(10);
-  const [capital, setCapital] = useState(1000); // Starting capital
+  const [capital, setCapital] = useState(1000);
 
-  // Combat simulation states
   const [isSimulating, setIsSimulating] = useState(false);
   const [combatResult, setCombatResult] = useState<SimulateCombatOutput | null>(null);
   const [combatDetails, setCombatDetails] = useState<{
@@ -56,7 +62,7 @@ export default function GalleryPage() {
 
   const { toast } = useToast();
 
-  useEffect(() => {
+  const loadData = () => {
     try {
       const savedCreatures = JSON.parse(localStorage.getItem('creature-bestiary') || '[]');
       const savedCapital = localStorage.getItem('player-capital');
@@ -68,23 +74,43 @@ export default function GalleryPage() {
       console.error("Error loading data from localStorage:", error);
       setBestiary([]);
     }
+  };
+
+  useEffect(() => {
+    loadData();
   }, []);
 
   const handleSelectContender = (creature: DescribeCreatureOutput) => {
+    if (creature.status !== 'Saludable') {
+      toast({
+        variant: "destructive",
+        title: "No se puede luchar",
+        description: `"${creature.nombre}" está ${creature.status} y no puede combatir.`,
+      });
+      return;
+    }
     setSelectedCreature(creature);
-    setOpponent(null); // Reset target when a new contender is chosen
+    setOpponent(null);
   }
 
-  const handleSelectOpponent = (opponent: DescribeCreatureOutput) => {
+  const handleSelectOpponent = (opponentCreature: DescribeCreatureOutput) => {
     if (!selectedCreature) return;
+     if (opponentCreature.status !== 'Saludable') {
+      toast({
+        variant: "destructive",
+        title: "Oponente no disponible",
+        description: `"${opponentCreature.nombre}" está ${opponentCreature.status} y no puede combatir.`,
+      });
+      return;
+    }
     const randomBattlefield = battlefields[Math.floor(Math.random() * battlefields.length)];
     setCombatDetails({
       creature1: selectedCreature,
-      creature2: opponent,
+      creature2: opponentCreature,
       battlefield: randomBattlefield,
     });
-    setOpponent(opponent);
-    setCombatResult(null); // Clear previous results
+    setOpponent(opponentCreature);
+    setCombatResult(null);
   }
 
   const handleStartCombat = async () => {
@@ -107,26 +133,56 @@ export default function GalleryPage() {
       };
       const result = await simulateCombat(input);
       setCombatResult(result);
+      
+      // Update logic
+      const creature1Name = combatDetails.creature1.nombre;
+      const creature2Name = combatDetails.creature2.nombre;
 
-      // Betting logic
-      const oddsValue = parseFloat(result.odds.split(':')[0]);
       let newCapital = capital;
 
-      if (result.winnerName === combatDetails.creature1.nombre) { // If player's creature won
-        toast({ title: "¡Victoria!", description: "Has ganado la apuesta." });
-        if (result.favoriteCreatureName === combatDetails.creature1.nombre) {
-          newCapital += betAmount / oddsValue;
-        } else {
-          newCapital += betAmount * oddsValue;
+      const updatedBestiary = bestiary.map(c => {
+        let creature = {...c};
+        
+        if (creature.nombre === creature1Name) {
+            creature.combatHistory = [...(creature.combatHistory || []), { opponentName: creature2Name, result: result.creature1_outcome.outcome, battlefieldName: combatDetails.battlefield.name }];
+            if (result.creature1_outcome.outcome === 'victoria') {
+                creature.wins = (creature.wins || 0) + 1;
+                newCapital += betAmount; // Simplified win logic
+                toast({ title: "¡Victoria!", description: `Has ganado ${betAmount}€.` });
+            } else {
+                creature.losses = (creature.losses || 0) + 1;
+                newCapital -= betAmount;
+                toast({ variant: "destructive", title: "Derrota", description: `Has perdido ${betAmount}€.` });
+            }
+
+            if(result.creature1_outcome.outcome === 'muerte') {
+                creature.status = 'Muerto';
+                creature.deathCause = result.creature1_outcome.description;
+            }
+             if(result.creature1_outcome.outcome === 'herido') creature.status = 'Herido';
+
+        } else if (creature.nombre === creature2Name) {
+            creature.combatHistory = [...(creature.combatHistory || []), { opponentName: creature1Name, result: result.creature2_outcome.outcome, battlefieldName: combatDetails.battlefield.name }];
+             if (result.creature2_outcome.outcome === 'victoria') {
+                creature.wins = (creature.wins || 0) + 1;
+            } else {
+                creature.losses = (creature.losses || 0) + 1;
+            }
+
+            if(result.creature2_outcome.outcome === 'muerte') {
+                creature.status = 'Muerto';
+                creature.deathCause = result.creature2_outcome.description;
+            }
+            if(result.creature2_outcome.outcome === 'herido') creature.status = 'Herido';
         }
-      } else { // Player's creature lost
-        toast({ variant: "destructive", title: "Derrota", description: "Has perdido la apuesta." });
-        newCapital -= betAmount;
-      }
+        return creature;
+      });
       
       const finalCapital = Math.round(newCapital);
       setCapital(finalCapital);
       localStorage.setItem('player-capital', finalCapital.toString());
+      localStorage.setItem('creature-bestiary', JSON.stringify(updatedBestiary));
+      setBestiary(updatedBestiary);
 
     } catch (error: any) {
       console.error("Error simulating combat:", error);
@@ -135,7 +191,7 @@ export default function GalleryPage() {
         title: "Error de Simulación",
         description: error.message || "No se pudo simular el combate.",
       });
-      setOpponent(null); // Close the dialog on error
+      setOpponent(null);
     } finally {
       setIsSimulating(false);
     }
@@ -153,6 +209,17 @@ export default function GalleryPage() {
         return 'secondary';
     }
   };
+  
+  const statusIcon = (status?: string) => {
+    switch (status) {
+      case 'Herido':
+        return <HeartPulse className="h-4 w-4 text-destructive" title="Herido"/>;
+      case 'Muerto':
+        return <Skull className="h-4 w-4 text-muted-foreground" title="Muerto"/>;
+      default:
+        return null;
+    }
+  }
 
   const resetSelection = () => {
     setSelectedCreature(null);
@@ -160,6 +227,7 @@ export default function GalleryPage() {
     setCombatResult(null);
     setCombatDetails(null);
     setIsSimulating(false);
+    loadData(); // Reload data to reflect combat changes
   }
 
   if (selectedCreature && !opponent) {
@@ -172,20 +240,20 @@ export default function GalleryPage() {
               <p className="text-muted-foreground">Has seleccionado a <span className="font-bold text-primary">{selectedCreature.nombre}</span>. Ahora, elige a su rival.</p>
             </div>
             <Button onClick={resetSelection} variant="outline">
-              &larr; Cambiar de Contendiente
+              &larr; Volver a la Galería
             </Button>
           </div>
-           {bestiary.filter(c => c.nombre !== selectedCreature.nombre).length === 0 ? (
+           {bestiary.filter(c => c.nombre !== selectedCreature.nombre && c.status === 'Saludable').length === 0 ? (
             <div className="text-center py-16 border-2 border-dashed border-border rounded-lg">
               <h2 className="text-2xl font-semibold">No hay oponentes disponibles</h2>
-              <p className="text-muted-foreground mt-2">Necesitas al menos dos criaturas en tu bestiario para poder combatir.</p>
+              <p className="text-muted-foreground mt-2">Necesitas al menos dos criaturas saludables para poder combatir.</p>
               <Link href="/craft" className="mt-4 inline-block">
                 <Button>Crear otra criatura</Button>
               </Link>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {bestiary.filter(c => c.nombre !== selectedCreature.nombre).map((opp, index) => (
+              {bestiary.filter(c => c.nombre !== selectedCreature.nombre && c.status === 'Saludable').map((opp, index) => (
                 <Card 
                   key={index} 
                   className="hover:shadow-lg hover:border-primary/50 transition-all cursor-pointer"
@@ -208,6 +276,16 @@ export default function GalleryPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
+                     <div className="flex justify-around text-center mb-4">
+                        <div>
+                            <p className="font-bold text-lg">{opp.wins || 0}</p>
+                            <p className="text-xs text-muted-foreground">Victorias</p>
+                        </div>
+                        <div>
+                            <p className="font-bold text-lg">{opp.losses || 0}</p>
+                            <p className="text-xs text-muted-foreground">Derrotas</p>
+                        </div>
+                    </div>
                     <p className="text-sm text-muted-foreground line-clamp-3">
                       {opp.narrativeDescription.split('\n')[1] || opp.narrativeDescription}
                     </p>
@@ -230,7 +308,7 @@ export default function GalleryPage() {
   return (
     <>
       <main className="flex min-h-screen w-full flex-col items-center bg-background p-4 md:p-8">
-        <div className="w-full max-w-6xl">
+        <div className="w-full max-w-7xl">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-4xl font-bold">Galería y Arena</h1>
             <div className="flex items-center gap-4">
@@ -244,7 +322,7 @@ export default function GalleryPage() {
             </div>
           </div>
 
-          {bestiary.length === 0 ? (
+          {bestiary.filter(c => c.status !== 'Muerto').length === 0 ? (
             <div className="text-center py-16 border-2 border-dashed border-border rounded-lg">
               <h2 className="text-2xl font-semibold">Tu Bestiario está vacío</h2>
               <p className="text-muted-foreground mt-2">Aún no has guardado ninguna criatura. ¡Ve al taller y crea tu primera bestia!</p>
@@ -252,16 +330,22 @@ export default function GalleryPage() {
           ) : (
              <div>
               <p className="text-lg text-center text-muted-foreground mb-6">Selecciona una criatura de tu bestiario para ver sus detalles o para iniciar un combate.</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {bestiary.map((creature, index) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {bestiary.filter(c => c.status !== 'Muerto').map((creature, index) => (
                   <Card 
                     key={index} 
-                    className="flex flex-col hover:shadow-lg hover:border-primary/50 transition-all"
+                    className={cn(
+                        "flex flex-col hover:shadow-lg hover:border-primary/50 transition-all",
+                        creature.status !== 'Saludable' && "bg-muted/30 border-dashed"
+                    )}
                   >
                     <CardHeader>
                       <CardTitle className="flex justify-between items-center">
-                        <span>{creature.nombre}</span>
-                        <Badge variant={rarityVariant(creature.rarity)}>{creature.rarity}</Badge>
+                        <span className={cn(creature.status !== 'Saludable' && "text-muted-foreground")}>{creature.nombre}</span>
+                        <div className="flex items-center gap-2">
+                          {statusIcon(creature.status)}
+                          <Badge variant={rarityVariant(creature.rarity)}>{creature.rarity}</Badge>
+                        </div>
                       </CardTitle>
                       <CardDescription className="flex items-center gap-2 pt-1">
                         <div className="flex items-center">
@@ -272,16 +356,42 @@ export default function GalleryPage() {
                               />
                             ))}
                           </div>
-                          <span className="text-xs text-muted-foreground">({creature.starRating} estrellas)</span>
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="flex-grow">
-                      <p className="text-sm text-muted-foreground line-clamp-3">
-                        {creature.narrativeDescription.split('\n')[1] || creature.narrativeDescription}
-                      </p>
+                    <CardContent className="flex-grow space-y-4">
+                      <div className="flex justify-around text-center">
+                        <div>
+                            <p className="font-bold text-lg">{creature.wins || 0}</p>
+                            <p className="text-xs text-muted-foreground">Victorias</p>
+                        </div>
+                        <div>
+                            <p className="font-bold text-lg">{creature.losses || 0}</p>
+                            <p className="text-xs text-muted-foreground">Derrotas</p>
+                        </div>
+                      </div>
+                      <Accordion type="single" collapsible>
+                        <AccordionItem value="history">
+                          <AccordionTrigger className="text-xs py-2">Historial de Combate</AccordionTrigger>
+                          <AccordionContent>
+                            {creature.combatHistory && creature.combatHistory.length > 0 ? (
+                               <ScrollArea className="h-24">
+                                <ul className="space-y-2 text-xs pr-4">
+                                  {creature.combatHistory.map((fight, i) => (
+                                    <li key={i} className={cn("p-2 rounded-md", fight.result === 'victoria' ? 'bg-primary/10' : 'bg-destructive/10')}>
+                                      <span className={cn("font-bold", fight.result === 'victoria' ? 'text-primary' : 'text-destructive')}>{fight.result.toUpperCase()}</span> vs {fight.opponentName}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </ScrollArea>
+                            ) : (
+                                <p className="text-xs text-muted-foreground text-center py-2">Sin combates registrados.</p>
+                            )}
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
                     </CardContent>
                     <CardFooter>
-                      <Button className="w-full" onClick={() => handleSelectContender(creature)}>
+                      <Button className="w-full" onClick={() => handleSelectContender(creature)} disabled={creature.status !== 'Saludable'}>
                         <Swords className="mr-2 h-4 w-4" />
                         Seleccionar para Luchar
                       </Button>
@@ -294,7 +404,6 @@ export default function GalleryPage() {
         </div>
       </main>
       
-      {/* Pre-combat and betting dialog */}
       <Dialog open={!!opponent && !combatResult} onOpenChange={(isOpen) => { if (!isOpen) setOpponent(null) }}>
         <DialogContent className="max-w-md">
            <DialogHeader>
@@ -339,8 +448,7 @@ export default function GalleryPage() {
         </DialogContent>
       </Dialog>
       
-      {/* Combat result dialog */}
-      <Dialog open={!!combatResult} onOpenChange={(isOpen) => { if (!isOpen) setOpponent(null); setCombatResult(null) }}>
+      <Dialog open={!!combatResult} onOpenChange={(isOpen) => { if (!isOpen) resetSelection() }}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="text-2xl text-center">
@@ -350,7 +458,9 @@ export default function GalleryPage() {
           <div className="py-4">
             <div className="flex flex-col items-center">
               <Crown className="h-12 w-12 text-yellow-400" />
-              <h2 className="text-2xl font-bold mt-4">El ganador es... ¡{combatResult?.winnerName}!</h2>
+              <h2 className="text-2xl font-bold mt-4">
+                {combatResult?.winnerName ? `El ganador es... ¡${combatResult.winnerName}!` : "¡El combate termina sin un ganador!"}
+                </h2>
               
               <Card className="w-full mt-4 bg-muted/20">
                 <CardHeader>
@@ -371,7 +481,7 @@ export default function GalleryPage() {
             </div>
           </div>
            <DialogFooter>
-             <Button onClick={() => { setOpponent(null); setCombatResult(null); }}>Cerrar</Button>
+             <Button onClick={resetSelection}>Cerrar</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -49,6 +49,12 @@ const DescribeCreatureInputSchema = z.object({
 
 export type DescribeCreatureInput = z.infer<typeof DescribeCreatureInputSchema>;
 
+const CombatHistoryEntrySchema = z.object({
+  opponentName: z.string(),
+  result: z.enum(['victoria', 'derrota', 'muerte', 'herido', 'huida']),
+  battlefieldName: z.string(),
+});
+
 const DescribeCreatureOutputSchema = z.object({
   nombre: z.string().describe("El nombre de la criatura."),
   narrativeDescription: z.string().describe("La descripción narrativa completa y el lore de la criatura, escrita en un tono épico de bestiario. Debe tener al menos 5 párrafos."),
@@ -66,8 +72,12 @@ const DescribeCreatureOutputSchema = z.object({
   publicValuation: z.string().describe("Una reseña desde la perspectiva del público general o aventureros, con un tono más coloquial y basado en experiencias o rumores."),
   aiValuation: z.string().describe("Una meta-reseña de la propia IA, comentando sobre el diseño y la coherencia de la criatura que ha ayudado a crear."),
   starRating: z.number().min(1).max(5).describe("Una valoración final en formato de estrellas (1 a 5) basada en el poder, originalidad y coherencia general de la criatura."),
+  status: z.enum(['Saludable', 'Herido', 'Muerto']).optional().default('Saludable'),
+  wins: z.number().optional().default(0),
+  losses: z.number().optional().default(0),
+  combatHistory: z.array(CombatHistoryEntrySchema).optional().default([]),
+  deathCause: z.string().optional().nullable(),
 });
-
 
 export type DescribeCreatureOutput = z.infer<typeof DescribeCreatureOutputSchema>;
 
@@ -89,6 +99,7 @@ const prompt = ai.definePrompt({
         *   **Valoración del Público:** Coloquial y anecdótica. Un aventurero, un mercader o un aldeano contando un rumor o una experiencia de segunda mano.
         *   **Valoración de la IA:** Una autocrítica objetiva sobre la coherencia y originalidad del diseño de la criatura.
     7.  **Asigna Puntuación de Estrellas:** Otorga de 1 a 5 estrellas, resumiendo el concepto general: poder, originalidad y credibilidad dentro de su mundo.
+    8.  **Valores por Defecto:** Los campos 'status', 'wins', 'losses', y 'combatHistory' deben inicializarse con sus valores por defecto ('Saludable', 0, 0, []). No generes valores para ellos.
 
     **Tono:** Épico para la narrativa; analítico para el experto; conversacional para el público; y objetivo para la IA.
 
@@ -127,6 +138,12 @@ const describeCreatureFlow = ai.defineFlow(
     return {
       ...response.output,
       nombre: input.nombre, // Ensure the name is passed through
+      // Ensure default values are set
+      status: 'Saludable',
+      wins: 0,
+      losses: 0,
+      combatHistory: [],
+      deathCause: null,
     };
   }
 );
