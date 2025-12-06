@@ -21,14 +21,19 @@ import {
 } from '@/components/ui/accordion';
 
 const getLegacyTitle = (wins: number): string => {
+  if (wins >= 40) return "Leyenda Inmortal";
+  if (wins >= 35) return "Entidad Primordial";
+  if (wins >= 30) return "Icono Cósmico";
   if (wins >= 25) return "Mito Universal";
   if (wins >= 20) return "Demiurgo del Caos";
   if (wins >= 16) return "Señor de la Guerra";
   if (wins >= 13) return "Héroe Legendario";
   if (wins >= 10) return "Conquistador Implacable";
   if (wins >= 7) return "Maestro de la Arena";
-  if (wins >= 5) return "Gladiador de Renombre";
+  if (wins >= 5) return "Campeón de Fosos";
+  if (wins >= 4) return "Gladiador de Renombre";
   if (wins >= 3) return "Luchador Veterano";
+  if (wins >= 2) return "Superviviente de la Arena";
   if (wins >= 1) return "Contendiente";
   return "Carne de Cañón";
 };
