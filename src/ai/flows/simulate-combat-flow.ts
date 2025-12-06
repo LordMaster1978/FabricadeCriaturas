@@ -11,23 +11,25 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { type DescribeCreatureOutput } from './describe-creature-flow';
 
-// El objeto de entrada contendrá las dos criaturas que van a luchar.
 const SimulateCombatInputSchema = z.object({
   creature1: z.custom<DescribeCreatureOutput>(),
   creature2: z.custom<DescribeCreatureOutput>(),
 });
 export type SimulateCombatInput = z.infer<typeof SimulateCombatInputSchema>;
 
-// El objeto de salida contendrá el registro del combate y el nombre del ganador.
 const SimulateCombatOutputSchema = z.object({
   combatLog: z.string().describe("Una narración detallada y épica del combate, turno por turno, describiendo las acciones, reacciones y el clímax de la batalla."),
   winnerName: z.string().describe("El nombre de la criatura que ha ganado el combate."),
 });
-export type SimulateCombatOutput = z.infer<typeof SimulateCombatOutputSchema>;
 
 const prompt = ai.definePrompt({
   name: 'simulateCombatPrompt',
-  input: { schema: SimulateCombatInputSchema },
+  input: { schema: z.object({
+      creature1: z.custom<DescribeCreatureOutput>(),
+      creature2: z.custom<DescribeCreatureOutput>(),
+      stats1_text: z.string(),
+      stats2_text: z.string(),
+  }) },
   output: { schema: SimulateCombatOutputSchema },
   prompt: `
     Eres un maestro narrador de batallas épicas, un "Dungeon Master" experto en combates de criaturas fantásticas.
@@ -35,12 +37,12 @@ const prompt = ai.definePrompt({
 
     **Criatura 1: {{{creature1.nombre}}}**
     - Descripción: {{{creature1.narrativeDescription}}}
-    - Estadísticas: {{{JSON.stringify(creature1.combatStats)}}}
+    - Estadísticas: {{{stats1_text}}}
     - Rareza: {{{creature1.rarity}}}
 
     **Criatura 2: {{{creature2.nombre}}}**
     - Descripción: {{{creature2.narrativeDescription}}}
-    - Estadísticas: {{{JSON.stringify(creature2.combatStats)}}}
+    - Estadísticas: {{{stats2_text}}}
     - Rareza: {{{creature2.rarity}}}
 
     **Instrucciones de Simulación:**
@@ -69,7 +71,13 @@ const simulateCombatFlow = ai.defineFlow(
     outputSchema: SimulateCombatOutputSchema,
   },
   async (input) => {
-    const { output } = await prompt(input);
+    const augmentedInput = {
+        ...input,
+        stats1_text: JSON.stringify(input.creature1.combatStats),
+        stats2_text: JSON.stringify(input.creature2.combatStats),
+    };
+
+    const { output } = await prompt(augmentedInput);
 
     if (!output) {
       throw new Error("La IA no pudo generar una simulación de combate.");
