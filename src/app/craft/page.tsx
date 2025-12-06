@@ -114,6 +114,8 @@ export default function CraftPage() {
     apariencia: '',
     altura: '',
     peso: '',
+    anchura: '',
+    profundidad: '',
     velocidadMaxima: '',
     afinidadElemental: 'fire',
     habilidadesUnicas: '',
@@ -278,7 +280,7 @@ export default function CraftPage() {
                   </Select>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-2">
                   <Label htmlFor="altura">Altura</Label>
                   <Input id="altura" placeholder="Ej: 3m" value={creature.altura} onChange={handleInputChange} />
@@ -286,6 +288,16 @@ export default function CraftPage() {
                 <div className="space-y-2">
                   <Label htmlFor="peso">Peso</Label>
                   <Input id="peso" placeholder="Ej: 500kg" value={creature.peso} onChange={handleInputChange} />
+                </div>
+              </div>
+               <div className="grid grid-cols-3 gap-2">
+                 <div className="space-y-2">
+                  <Label htmlFor="anchura">Anchura</Label>
+                  <Input id="anchura" placeholder="Ej: 2m" value={creature.anchura} onChange={handleInputChange} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="profundidad">Profundidad</Label>
+                  <Input id="profundidad" placeholder="Ej: 5m" value={creature.profundidad} onChange={handleInputChange} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="velocidadMaxima">Velocidad</Label>
@@ -594,5 +606,3 @@ export default function CraftPage() {
     </main>
   );
 }
-
-    

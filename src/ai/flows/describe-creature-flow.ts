@@ -17,6 +17,8 @@ const DescribeCreatureInputSchema = z.object({
     complexion: z.string().describe('La complexión física de la criatura.'),
     altura: z.string().describe('La altura de la criatura (ej: 3m, 50cm).'),
     peso: z.string().describe('El peso de la criatura (ej: 500kg, 10kg).'),
+    anchura: z.string().optional().describe('La anchura de la criatura (ej: 2m).'),
+    profundidad: z.string().optional().describe('La profundidad o longitud de la criatura (ej: 5m).'),
     velocidadMaxima: z.string().describe('La velocidad máxima de la criatura (ej: 60km/h).'),
     partesCuerpo: z.string().describe('Las partes distintivas del cuerpo de la criatura.'),
     apariencia: z.string().describe('La apariencia y textura de la criatura.'),
@@ -89,7 +91,7 @@ const prompt = ai.definePrompt({
     - **Nombre:** {{{nombre}}}
     - **Composición:** {{{composicion}}}
     - **Físico General:** Tamaño {{{tamano}}}, complexión {{{complexion}}}, partes notables {{{partesCuerpo}}}, apariencia {{{apariencia}}}.
-    - **Medidas:** Altura {{{altura}}}, Peso {{{peso}}}, Envergadura {{{envergadura}}}, Longitud {{{longitud}}}, Circunferencia {{{circunferencia}}}.
+    - **Medidas:** Altura {{{altura}}}, Peso {{{peso}}}, Anchura {{{anchura}}}, Profundidad {{{profundidad}}}, Envergadura {{{envergadura}}}, Longitud {{{longitud}}}, Circunferencia {{{circunferencia}}}.
     - **Movimiento:** Velocidad en tierra {{{velocidadMaxima}}}, Velocidad de vuelo {{{velocidadVuelo}}}, Velocidad de nado {{{velocidadNado}}}, Capacidad de salto {{{capacidadSalto}}}.
     - **Capacidades Físicas:** Fuerza de mordida {{{fuerzaMordida}}}, Capacidad de carga {{{capacidadCarga}}}, Resistencia de piel/coraza {{{resistenciaPiel}}}.
     - **Poderes:** Afinidad elemental a {{{afinidadElemental}}}, habilidades únicas {{{habilidadesUnicas}}}, debilidades {{{debilidades}}}.
