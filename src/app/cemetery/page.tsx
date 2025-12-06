@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -21,6 +22,7 @@ import {
 } from '@/components/ui/accordion';
 
 const getLegacyTitle = (wins: number): string => {
+  if (wins >= 10000) return "El Dios Universal";
   if (wins >= 1000) return "Criatura Universal";
   if (wins >= 500) return "El Fin de los Tiempos";
   if (wins >= 200) return "Calamidad Cósmica";
