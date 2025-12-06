@@ -119,7 +119,7 @@ const generateUniversalEventFlow = ai.defineFlow(
   {
     name: 'generateUniversalEventFlow',
     inputSchema: GenerateUniversalEventInputSchema,
-    outputSchema: GenerateUniversalert-EventOutputSchema,
+    outputSchema: GenerateUniversalEventOutputSchema,
   },
   async (input) => {
     const { output } = await prompt(input);
