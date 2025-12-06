@@ -21,6 +21,9 @@ import {
 } from '@/components/ui/accordion';
 
 const getLegacyTitle = (wins: number): string => {
+  if (wins >= 100) return "El Fin de los Tiempos";
+  if (wins >= 80) return "Calamidad Cósmica";
+  if (wins >= 70) return "Avatar de la Destrucción";
   if (wins >= 60) return "Leyenda Inmortal";
   if (wins >= 50) return "Singularidad Combativa";
   if (wins >= 40) return "Fuerza de la Naturaleza";
