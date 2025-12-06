@@ -136,7 +136,7 @@ export default function CraftPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingSound, setIsGeneratingSound] = useState(false);
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
-  const [capital, setCapital] = useState(0);
+  const [capital, setCapital] = useState(1000);
 
   const { toast } = useToast();
 
@@ -252,11 +252,11 @@ export default function CraftPage() {
   };
 
   const handleSaveCreature = () => {
-    if (!generatedValuation) {
+    if (!generatedValuation || !generatedValuation.nombre) {
       toast({
         variant: "destructive",
         title: "No hay criatura generada",
-        description: "Primero debes generar una valoración para poder guardar la criatura.",
+        description: "Primero debes generar una valoración con un nombre para poder guardar la criatura.",
       });
       return;
     }
@@ -289,8 +289,13 @@ export default function CraftPage() {
       });
     }
   };
+  
+    useEffect(() => {
+    const savedCapital = localStorage.getItem('player-capital');
+    if (savedCapital) {
+      setCapital(parseInt(savedCapital, 10));
+    }
 
-  useEffect(() => {
     setCurrentDate(new Date().toLocaleDateString('es-ES', {
       weekday: 'long',
       year: 'numeric',
@@ -308,6 +313,7 @@ export default function CraftPage() {
     return () => clearInterval(timer);
   }, []);
 
+
   const formatGameTime = () => {
     const hour = gameTime.hour.toString().padStart(2, '0');
     const minute = gameTime.minute.toString().padStart(2, '0');
@@ -324,7 +330,7 @@ export default function CraftPage() {
             <div className="flex items-center gap-6 text-sm md:text-lg">
               <div className="flex items-center gap-2">
                 <CircleDollarSign className="h-5 w-5 text-foreground/70" />
-                <span className="text-foreground/90 font-semibold">{capital} euros</span>
+                <span className="text-foreground/90 font-semibold">{capital.toLocaleString('es-ES')} €</span>
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-foreground/70" />

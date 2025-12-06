@@ -1,8 +1,8 @@
 'use server';
 /**
- * @fileOverview Un flujo de IA para simular un combate entre dos criaturas.
+ * @fileOverview Un flujo de IA para simular un combate entre dos criaturas, considerando el entorno y generando probabilidades de apuesta.
  *
- * - simulateCombat - Una función que genera una narración de combate y determina un ganador.
+ * - simulateCombat - Una función que genera una narración de combate, determina un ganador y establece las apuestas.
  * - SimulateCombatInput - El tipo de entrada para la función simulateCombat.
  * - SimulateCombatOutput - El tipo de retorno para la función simulateCombat.
  */
@@ -14,12 +14,18 @@ import { type DescribeCreatureOutput } from './describe-creature-flow';
 const SimulateCombatInputSchema = z.object({
   creature1: z.custom<DescribeCreatureOutput>(),
   creature2: z.custom<DescribeCreatureOutput>(),
+  battlefield: z.object({
+    name: z.string(),
+    description: z.string(),
+  }),
 });
 export type SimulateCombatInput = z.infer<typeof SimulateCombatInputSchema>;
 
 const SimulateCombatOutputSchema = z.object({
-  combatLog: z.string().describe("Una narración detallada y épica del combate, turno por turno, describiendo las acciones, reacciones y el clímax de la batalla."),
+  combatLog: z.string().describe("Una narración detallada y épica del combate, describiendo las acciones, el entorno, las reacciones y el clímax de la batalla."),
   winnerName: z.string().describe("El nombre de la criatura que ha ganado el combate."),
+  favoriteCreatureName: z.string().describe("El nombre de la criatura considerada favorita para ganar ANTES del combate."),
+  odds: z.string().describe("Las probabilidades de la apuesta para el favorito, en formato 'X:1'."),
 });
 
 const prompt = ai.definePrompt({
@@ -29,38 +35,50 @@ const prompt = ai.definePrompt({
       creature2: z.custom<DescribeCreatureOutput>(),
       stats1_text: z.string(),
       stats2_text: z.string(),
+      battlefield: z.object({
+        name: z.string(),
+        description: z.string(),
+      }),
   }) },
   output: { schema: SimulateCombatOutputSchema },
   prompt: `
-    Eres un maestro narrador de batallas épicas, un "Dungeon Master" experto en combates de criaturas fantásticas.
-    Tu tarea es simular una batalla a muerte entre las dos criaturas proporcionadas y narrarla de forma emocionante.
+    Eres un estratega de combate de clase mundial, un maestro narrador de batallas y un corredor de apuestas astuto.
+    Tu tarea es doble:
+    1.  Analizar a los contendientes y el entorno para predecir un ganador y establecer las probabilidades.
+    2.  Simular una batalla a muerte entre las dos criaturas y narrarla de forma emocionante, donde el favorito NO siempre gana.
+
+    **Campo de Batalla: {{{battlefield.name}}}**
+    - Descripción del entorno: {{{battlefield.description}}}
 
     **Criatura 1: {{{creature1.nombre}}}**
-    - Descripción: {{{creature1.narrativeDescription}}}
+    - Descripción y Habilidades: {{{creature1.narrativeDescription}}}
+    - Debilidades: {{{creature1.debilidades}}}
+    - Hábitat Natural: {{{creature1.habitat}}}
     - Estadísticas: {{{stats1_text}}}
-    - Rareza: {{{creature1.rarity}}}
 
     **Criatura 2: {{{creature2.nombre}}}**
-    - Descripción: {{{creature2.narrativeDescription}}}
+    - Descripción y Habilidades: {{{creature2.narrativeDescription}}}
+    - Debilidades: {{{creature2.debilidades}}}
+    - Hábitat Natural: {{{creature2.habitat}}}
     - Estadísticas: {{{stats2_text}}}
-    - Rareza: {{{creature2.rarity}}}
 
     **Instrucciones de Simulación:**
-    1.  **Analiza a los Contendientes:** Revisa cuidadosamente las estadísticas de combate, las descripciones, habilidades, debilidades, composición y temperamento de ambas criaturas.
-    2.  **Determina la Iniciativa:** La criatura con mayor 'Velocidad' generalmente ataca primero. Si es similar, considera su 'Inteligencia' o 'Temperamento' (una criatura 'Agresiva' podría lanzarse al ataque).
-    3.  **Narra el Combate por Turnos:** Describe la batalla de forma vívida y detallada.
-        *   ¿Cómo utiliza la criatura más rápida su ventaja?
-        *   ¿Cómo impactan los ataques? ¿La 'Defensa' del objetivo mitiga el daño? ¿Su 'Resistencia' le permite seguir luchando?
-        *   ¿Cómo se usan las 'Habilidades Únicas'? ¿Se explotan las 'Debilidades' del oponente?
-        *   Usa las descripciones físicas. Una criatura 'masiva' podría usar su peso, mientras que una 'atlética' usaría la agilidad.
-        *   El 'Ataque' y la 'Fuerza' determinan el potencial de daño, mientras que la 'Precisión' determina si el golpe acierta.
-    4.  **Crea un Clímax:** La batalla debe tener un punto de inflexión. Quizás una criatura usa una habilidad desesperada, o una de ellas comete un error fatal.
-    5.  **Declara un Vencedor:** Basado en la simulación lógica, determina qué criatura gana. El ganador debe tener una ventaja clara según sus estadísticas y habilidades. Justifica el resultado en la narración. Por ejemplo, "A pesar de la fuerza bruta de X, la velocidad y astucia superiores de Y le permitieron esquivar el ataque final y asestar un golpe crítico en su punto débil".
-    6.  **Formato de Salida:**
-        *   combatLog: Debe ser una historia coherente y emocionante, no solo una lista de acciones.
-        *   winnerName: Debe ser exactamente el nombre de la criatura ganadora.
 
-    ¡Que comience la batalla!
+    **PARTE 1: ANÁLISIS Y APUESTAS (Tu predicción interna)**
+    1.  **Analiza las Ventajas:** Compara las estadísticas, pero dale MUCHA importancia al entorno. ¿El hábitat natural de una criatura coincide con el campo de batalla? ¿Su composición (ej: fuego) es una desventaja en un pantano? ¿La toxicidad del aire afecta a una criatura más que a otra?
+    2.  **Determina el Favorito:** Basado en este análisis completo, elige a la criatura con la mayor probabilidad de ganar. Este será tu 'favoriteCreatureName'.
+    3.  **Establece las Probabilidades:** Define las probabilidades ('odds') para tu favorito. Si la ventaja es clara, las probabilidades pueden ser altas (ej. "3:1"). Si es un combate reñido, pueden ser bajas (ej. "1.5:1"). Sé creativo, puedes usar "2:1", "5:2", etc.
+
+    **PARTE 2: LA BATALLA (La narración para el público)**
+    4.  **Simula el Combate:** ¡Aquí es donde la magia ocurre! El favorito que elegiste NO tiene la victoria garantizada. La astucia (Inteligencia), un golpe de suerte, o el uso inesperado de una habilidad o del entorno pueden cambiar el curso de la batalla.
+    5.  **Narra con Detalle Épico:**
+        *   Describe cómo el entorno influye en el combate. ¿Una criatura usa los árboles para una emboscada? ¿El suelo inestable perjudica a la criatura más pesada?
+        *   Usa explícitamente las características físicas: "Clavó su gran cuerno...", "Sus garras afiladas rasgaron la coraza...", "Se protegió con su escudo de quitina".
+        *   La 'Inteligencia' y 'Astucia' son clave. Una criatura más inteligente puede usar el entorno a su favor o explotar una debilidad que una criatura más fuerte pero bruta no vería.
+    6.  **Declara un Vencedor Real:** Basado en tu simulación narrativa, determina quién gana realmente la pelea. Este será el 'winnerName'.
+    7.  **Formato de Salida:** Rellena todos los campos: 'combatLog', 'winnerName', 'favoriteCreatureName', y 'odds'.
+
+    ¡Que comience la simulación!
   `,
 });
 
