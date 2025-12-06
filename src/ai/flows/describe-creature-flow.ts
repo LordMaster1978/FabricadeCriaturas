@@ -72,7 +72,7 @@ const DescribeCreatureOutputSchema = z.object({
   publicValuation: z.string().describe("Una reseña desde la perspectiva del público general o aventureros, con un tono más coloquial y basado en experiencias o rumores."),
   aiValuation: z.string().describe("Una meta-reseña de la propia IA, comentando sobre el diseño y la coherencia de la criatura que ha ayudado a crear."),
   starRating: z.number().min(1).max(5).describe("Una valoración final en formato de estrellas (1 a 5) basada en el poder, originalidad y coherencia general de la criatura."),
-  status: z.enum(['Saludable', 'Herido', 'Muerto']).optional().default('Saludable'),
+  status: z.enum(['Saludable', 'Herido', 'Muerto', 'Activa']).optional().default('Saludable'),
   wins: z.number().optional().default(0),
   losses: z.number().optional().default(0),
   combatHistory: z.array(CombatHistoryEntrySchema).optional().default([]),

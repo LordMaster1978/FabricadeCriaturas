@@ -56,10 +56,10 @@ const prompt = ai.definePrompt({
     2.  **Actualiza el Estado del Planeta ('updatedPlanetState'):**
         *   Reduce la 'población' y la 'demografía' si hay bajas.
         *   Aumenta el 'devastationLevel' reflejando la destrucción de infraestructura o ecosistemas.
-        *   Cambia el 'status' del planeta si la situación empeora ('Crisis Humanitaria', 'Ley Marcial Global', 'Colapso Climático', 'Aniquilado' para la Tierra, o 'Alterado' para otros planetas).
+        *   Cambia el 'status' del planeta si la situación empeora ('Crisis Humanitaria', 'Ley Marcial Global', 'Colapso Climático', 'Colapsado', 'Aniquilado' para la Tierra, o 'Alterado' para otros planetas).
 
     3.  **Actualiza el Estado de la Criatura ('updatedCreatureStatus'):**
-        *   Si el entorno es hostil o si los humanos consiguen un ataque efectivo, puede quedar 'Herida'. Si sufre un daño masivo, 'Muriendo'. Si el daño es definitivo, 'Muerta'.
+        *   Si el entorno es hostil o si los humanos consiguen un ataque efectivo, puede quedar 'Herida'. Si sufre un daño masivo, 'Muriendo'. Si el daño es definitivo, 'Muerta'. Si no sufre daño y sigue operando, su estado es 'Activa'.
 
     4.  **Determina si el Evento Termina ('isEventOver'):**
         *   El evento termina si la criatura es 'Muerta'.
@@ -88,7 +88,8 @@ const generateUniversalEventFlow = ai.defineFlow(
     // Asegurarse de que el estado de la criatura sea uno de los valores permitidos
     const validStatuses = ['Saludable', 'Herido', 'Muriendo', 'Muerto', 'Activa'];
     if (!validStatuses.includes(output.updatedCreatureStatus)) {
-        output.updatedCreatureStatus = 'Activa'; // O un valor por defecto seguro
+        // Si la IA devuelve un estado no válido, se asume 'Activa' si el evento no ha terminado.
+        output.updatedCreatureStatus = output.isEventOver ? 'Saludable' : 'Activa';
     }
 
     return output;

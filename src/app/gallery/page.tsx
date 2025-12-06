@@ -12,7 +12,7 @@ import {
   CardFooter
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Star, Swords, Globe, Ticket, CircleDollarSign, Trophy, HeartPulse, Skull } from 'lucide-react';
+import { Star, Swords, Globe, Ticket, CircleDollarSign, Trophy, HeartPulse, Skull, Rocket } from 'lucide-react';
 import { type DescribeCreatureOutput } from '@/ai/flows/describe-creature-flow';
 import { simulateCombat, type SimulateCombatInput } from '@/ai/flows/simulate-combat-flow';
 import { type UniversalEvent, type PlanetState } from '@/ai/flows/universal-event-types';
@@ -25,6 +25,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -55,7 +56,7 @@ const battlefields = [
   { name: "Planeta sin Atmósfera", description: "Superficie de un planetoide rocoso en el vacío. No hay aire, ni sonido. La gravedad es baja. Solo criaturas que no necesitan respirar o están adaptadas al vacío pueden sobrevivir." },
 ];
 
-const planets: PlanetState[] = [
+const planets: (PlanetState & { type: 'real' | 'ia' })[] = [
   {
     name: 'Tierra',
     population: 7800000000,
@@ -64,6 +65,7 @@ const planets: PlanetState[] = [
     devastationLevel: 0,
     description: 'Un planeta de tipo terrestre con una civilización tecnológica de nivel medio-alto, ecosistemas diversos y una población masiva concentrada en megaciudades.',
     status: 'Estable',
+    type: 'real'
   },
   {
     name: 'Marte',
@@ -71,8 +73,9 @@ const planets: PlanetState[] = [
     initialPopulation: 0,
     demographics: { infants: 0, children: 0, adolescents: 0, adults: 0, elderly: 0 },
     devastationLevel: 0,
-    description: 'Un planeta desértico y frío con una atmósfera delgada de dióxido de carbono. La superficie está cubierta de óxido de hierro, dándole su característico color rojo. Sin vida conocida. Las temperaturas son extremadamente bajas.',
+    description: 'Un planeta desértico y frío con una atmósfera delgada de dióxido de carbono. La superficie está cubierta de óxido de hierro, dándole su característico color rojo. Sin vida conocida.',
     status: 'Estable',
+    type: 'real'
   },
   {
     name: 'Venus',
@@ -82,6 +85,7 @@ const planets: PlanetState[] = [
     devastationLevel: 0,
     description: 'Un infierno tóxico. Su atmósfera es densa y está compuesta de dióxido de carbono con nubes de ácido sulfúrico. La presión en la superficie es 90 veces la de la Tierra y la temperatura promedio es de 465°C.',
     status: 'Estable',
+    type: 'real'
   },
    {
     name: 'Europa (luna de Júpiter)',
@@ -91,6 +95,7 @@ const planets: PlanetState[] = [
     devastationLevel: 0,
     description: 'Una luna helada con una superficie de hielo de agua, pero con un vasto océano de agua líquida debajo. Es el lugar más prometedor para encontrar vida extraterrestre. La superficie es bombardeada por la radiación de Júpiter.',
     status: 'Estable',
+    type: 'real'
   },
 ];
 
@@ -110,20 +115,26 @@ export default function GalleryPage() {
     creature2: DescribeCreatureOutput;
     battlefield: typeof battlefields[0];
   } | null>(null);
+  const [activeEvents, setActiveEvents] = useState<UniversalEvent[]>([]);
 
   const { toast } = useToast();
 
   const loadData = () => {
     try {
       const savedCreatures = JSON.parse(localStorage.getItem('creature-bestiary') || '[]');
+      const savedEvents = JSON.parse(localStorage.getItem('universal-events') || '[]');
       const savedCapital = localStorage.getItem('player-capital');
+      
       setBestiary(savedCreatures.sort((a: DescribeCreatureOutput, b: DescribeCreatureOutput) => (b.wins || 0) - (a.wins || 0)));
+      setActiveEvents(savedEvents);
+
       if (savedCapital) {
         setCapital(parseInt(savedCapital, 10));
       }
     } catch (error) {
       console.error("Error loading data from localStorage:", error);
       setBestiary([]);
+      setActiveEvents([]);
     }
   };
 
@@ -131,8 +142,20 @@ export default function GalleryPage() {
     loadData();
   }, []);
 
+  const isCreatureInActiveEvent = (creatureName: string) => {
+    return activeEvents.some(event => event.creature.nombre === creatureName && event.isActive);
+  };
+
   const handleSelectContender = (creature: DescribeCreatureOutput) => {
-    if (creature.status !== 'Saludable') {
+    if (isCreatureInActiveEvent(creature.nombre)) {
+      toast({
+        variant: "destructive",
+        title: "Criatura ocupada",
+        description: `"${creature.nombre}" está actualmente en un evento universal activo y no puede combatir.`,
+      });
+      return;
+    }
+     if (creature.status !== 'Saludable') {
       toast({
         variant: "destructive",
         title: "No se puede luchar",
@@ -146,6 +169,14 @@ export default function GalleryPage() {
 
   const handleSelectOpponent = (opponentCreature: DescribeCreatureOutput) => {
     if (!selectedCreature) return;
+    if (isCreatureInActiveEvent(opponentCreature.nombre)) {
+      toast({
+        variant: "destructive",
+        title: "Oponente ocupado",
+        description: `"${opponentCreature.nombre}" está actualmente en un evento universal activo.`,
+      });
+      return;
+    }
      if (opponentCreature.status !== 'Saludable') {
       toast({
         variant: "destructive",
@@ -233,6 +264,7 @@ export default function GalleryPage() {
       localStorage.setItem('player-capital', finalCapital.toString());
       localStorage.setItem('creature-bestiary', JSON.stringify(updatedBestiary));
       setBestiary(updatedBestiary);
+      loadData();
 
     } catch (error: any) {
       console.error("Error simulating combat:", error);
@@ -256,38 +288,52 @@ export default function GalleryPage() {
     }
 
     try {
-      const existingEvents = JSON.parse(localStorage.getItem('universal-events') || '[]');
-      if (existingEvents.some((e: UniversalEvent) => e.creature.nombre === creature.nombre)) {
-        toast({
-          variant: 'destructive',
-          title: 'Criatura ya liberada',
-          description: `${creature.nombre} ya es parte de un evento universal.`,
-        });
-        return;
-      }
-      
-      const newEvent: UniversalEvent = {
-        id: creature.nombre + new Date().toISOString(),
-        creature: creature,
-        planet: planetData,
-        eventLog: [`La criatura "${creature.nombre}" ha sido liberada en ${planetData.name}. El universo contiene la respiración.`],
-        storySummary: `"${creature.nombre}" acaba de llegar a ${planetData.name}, un mundo desprevenido de la nueva presencia en su ecosistema.`,
-        turn: 1,
-        isActive: true,
-        startDate: new Date().toISOString(),
-      };
-      
-      existingEvents.push(newEvent);
-      localStorage.setItem('universal-events', JSON.stringify(existingEvents));
-      
-      const updatedBestiary = bestiary.filter(c => c.nombre !== creature.nombre);
-      localStorage.setItem('creature-bestiary', JSON.stringify(updatedBestiary));
-      setBestiary(updatedBestiary);
-      
-      toast({
-        title: '¡Criatura Liberada!',
-        description: `${creature.nombre} ha comenzado su saga en ${planetData.name}. ¡Ve a Eventos Universales para seguir su historia!`,
-      });
+        const existingEvents = JSON.parse(localStorage.getItem('universal-events') || '[]');
+        
+        // Comprobar si hay un evento INACTIVO para esta criatura (para continuar la saga)
+        const inactiveEventIndex = existingEvents.findIndex((e: UniversalEvent) => e.creature.nombre === creature.nombre && !e.isActive);
+
+        if (inactiveEventIndex !== -1) {
+            // Reactivar y mover a un nuevo planeta
+            existingEvents[inactiveEventIndex] = {
+                ...existingEvents[inactiveEventIndex],
+                planet: planetData,
+                isActive: true,
+                turn: 1,
+                eventLog: [`Tras su saga anterior, "${creature.nombre}" viaja a un nuevo mundo: ${planetData.name}. La odisea continúa.`],
+                storySummary: `"${creature.nombre}" ha llegado a ${planetData.name}, un mundo que no sospecha la magnitud de la leyenda que acaba de aterrizar.`,
+                startDate: new Date().toISOString(),
+            };
+            localStorage.setItem('universal-events', JSON.stringify(existingEvents));
+            toast({
+                title: '¡Saga Continuada!',
+                description: `${creature.nombre} ha comenzado un nuevo capítulo en ${planetData.name}.`,
+            });
+        } else {
+            // Crear un evento nuevo
+            const newEvent: UniversalEvent = {
+                id: creature.nombre + new Date().toISOString(),
+                creature: { ...creature, status: 'Activa' },
+                planet: planetData,
+                eventLog: [`La criatura "${creature.nombre}" ha sido liberada en ${planetData.name}. El universo contiene la respiración.`],
+                storySummary: `"${creature.nombre}" acaba de llegar a ${planetData.name}, un mundo desprevenido de la nueva presencia en su ecosistema.`,
+                turn: 1,
+                isActive: true,
+                startDate: new Date().toISOString(),
+            };
+            existingEvents.push(newEvent);
+            localStorage.setItem('universal-events', JSON.stringify(existingEvents));
+            toast({
+                title: '¡Criatura Liberada!',
+                description: `${creature.nombre} ha comenzado su saga en ${planetData.name}. ¡Ve a Eventos Universales para seguir su historia!`,
+            });
+        }
+        
+        // Actualizar bestiario para reflejar el estado 'Activa'
+        const updatedBestiary = bestiary.map(c => c.nombre === creature.nombre ? { ...c, status: 'Activa' } : c);
+        localStorage.setItem('creature-bestiary', JSON.stringify(updatedBestiary));
+        
+        loadData();
 
     } catch (error) {
       console.error('Error releasing creature:', error);
@@ -314,6 +360,8 @@ export default function GalleryPage() {
         return <HeartPulse className="h-4 w-4 text-destructive" title="Herido"/>;
       case 'Muerto':
         return <Skull className="h-4 w-4 text-muted-foreground" title="Muerto"/>;
+      case 'Activa':
+        return <Globe className="h-4 w-4 text-blue-400" title="Activa en un Evento Universal"/>;
       default:
         return null;
     }
@@ -341,17 +389,17 @@ export default function GalleryPage() {
               &larr; Volver al Ranking
             </Button>
           </div>
-           {bestiary.filter(c => c.nombre !== selectedCreature.nombre && c.status === 'Saludable').length === 0 ? (
+           {bestiary.filter(c => c.nombre !== selectedCreature.nombre && c.status === 'Saludable' && !isCreatureInActiveEvent(c.nombre)).length === 0 ? (
             <div className="text-center py-16 border-2 border-dashed border-border rounded-lg">
               <h2 className="text-2xl font-semibold">No hay oponentes disponibles</h2>
-              <p className="text-muted-foreground mt-2">Necesitas al menos dos criaturas saludables para poder combatir.</p>
+              <p className="text-muted-foreground mt-2">Necesitas al menos dos criaturas saludables y que no estén en eventos para poder combatir.</p>
               <Link href="/craft" className="mt-4 inline-block">
                 <Button>Crear otra criatura</Button>
               </Link>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {bestiary.filter(c => c.nombre !== selectedCreature.nombre && c.status === 'Saludable').map((opp, index) => (
+              {bestiary.filter(c => c.nombre !== selectedCreature.nombre && c.status === 'Saludable' && !isCreatureInActiveEvent(c.nombre)).map((opp, index) => (
                 <Card 
                   key={index} 
                   className="hover:shadow-lg hover:border-primary/50 transition-all cursor-pointer"
@@ -427,14 +475,18 @@ export default function GalleryPage() {
             </div>
           ) : (
              <div>
-              <p className="text-lg text-center text-muted-foreground mb-6">Selecciona una criatura para ver sus detalles o para iniciar un combate.</p>
+              <p className="text-lg text-center text-muted-foreground mb-6">Selecciona una criatura para ver sus detalles, iniciar un combate o una odisea universal.</p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {bestiary.filter(c => c.status !== 'Muerto').map((creature, index) => (
+                {bestiary.filter(c => c.status !== 'Muerto').map((creature, index) => {
+                  const isInEvent = isCreatureInActiveEvent(creature.nombre);
+                  const canContinueSaga = !isInEvent && activeEvents.some(e => e.creature.nombre === creature.nombre);
+
+                  return (
                   <Card 
                     key={index} 
                     className={cn(
                         "flex flex-col hover:shadow-lg transition-all relative",
-                        creature.status !== 'Saludable' ? "bg-muted/30 border-dashed" : "hover:border-primary/50"
+                         isInEvent || creature.status !== 'Saludable' ? "bg-muted/30 border-dashed" : "hover:border-primary/50"
                     )}
                   >
                     {index === 0 && (
@@ -444,9 +496,9 @@ export default function GalleryPage() {
                     )}
                     <CardHeader>
                       <CardTitle className="flex justify-between items-center">
-                        <span className={cn(creature.status !== 'Saludable' && "text-muted-foreground")}>{creature.nombre}</span>
+                        <span className={cn(isInEvent || creature.status !== 'Saludable' && "text-muted-foreground")}>{creature.nombre}</span>
                         <div className="flex items-center gap-2">
-                          {statusIcon(creature.status)}
+                          {statusIcon(isInEvent ? 'Activa' : creature.status)}
                           <Badge variant={rarityVariant(creature.rarity)}>{creature.rarity}</Badge>
                         </div>
                       </CardTitle>
@@ -479,7 +531,7 @@ export default function GalleryPage() {
                             {creature.combatHistory && creature.combatHistory.length > 0 ? (
                                <ScrollArea className="h-24">
                                 <ul className="space-y-2 text-xs pr-4">
-                                  {creature.combatHistory.map((fight, i) => (
+                                  {creature.combatHistory.slice().reverse().map((fight, i) => (
                                     <li key={i} className={cn("p-2 rounded-md", fight.result === 'victoria' ? 'bg-primary/10' : 'bg-destructive/10')}>
                                       <span className={cn("font-bold", fight.result === 'victoria' ? 'text-primary' : 'text-destructive')}>{fight.result.toUpperCase()}</span> vs {fight.opponentName}
                                     </li>
@@ -494,22 +546,25 @@ export default function GalleryPage() {
                       </Accordion>
                     </CardContent>
                      <CardFooter className="flex-col gap-2 items-stretch">
-                       <Button className="w-full" onClick={() => handleSelectContender(creature)} disabled={creature.status !== 'Saludable'}>
+                       <Button className="w-full" onClick={() => handleSelectContender(creature)} disabled={creature.status !== 'Saludable' || isInEvent}>
                         <Swords className="mr-2 h-4 w-4" />
                         Seleccionar para Luchar
                       </Button>
                       <Dialog>
                         <DialogTrigger asChild>
-                           <Button variant="secondary" className="w-full" disabled={creature.status !== 'Saludable'}>
-                            <Globe className="mr-2 h-4 w-4" />
-                            Liberar en un Planeta
+                           <Button variant="secondary" className="w-full" disabled={isInEvent}>
+                             {canContinueSaga ? <Rocket className="mr-2 h-4 w-4" /> : <Globe className="mr-2 h-4 w-4" />}
+                             {canContinueSaga ? 'Continuar Saga' : 'Liberar en Planeta'}
                           </Button>
                         </DialogTrigger>
                         <DialogContent>
                           <DialogHeader>
-                            <DialogTitle>Confirmar Liberación Universal</DialogTitle>
+                            <DialogTitle>{canContinueSaga ? 'Continuar Odisea Universal' : 'Confirmar Liberación Universal'}</DialogTitle>
                             <DialogDescription>
-                              Vas a liberar a "{creature.nombre}". Esta acción es irreversible. La criatura será eliminada de la arena y comenzará su propia saga.
+                              {canContinueSaga 
+                               ? `La saga de "${creature.nombre}" ha concluido en su último mundo. Elige un nuevo planeta para continuar su viaje.`
+                               : `Vas a liberar a "${creature.nombre}". Esta acción la apartará de la arena y comenzará su propia saga planetaria.`
+                              }
                             </DialogDescription>
                           </DialogHeader>
                           <div className="space-y-4 py-4">
@@ -522,23 +577,32 @@ export default function GalleryPage() {
                                 {planets.map((p) => (
                                   <SelectItem key={p.name} value={p.name}>{p.name}</SelectItem>
                                 ))}
+                                <SelectItem value="ia-generated">Viajar a un nuevo mundo desconocido (Próximamente)</SelectItem>
                               </SelectContent>
                             </Select>
                              <div className="text-xs text-muted-foreground p-2 bg-muted/50 rounded-md">
-                                {planets.find(p => p.name === selectedPlanet)?.description}
+                                {planets.find(p => p.name === selectedPlanet)?.description || "La IA generará un planeta único con características, habitantes y desafíos impredecibles."}
                             </div>
                           </div>
                           <DialogFooter>
-                             <Button variant="outline" >Cancelar</Button>
-                            <Button variant="destructive" onClick={() => handleReleaseCreature(creature)}>
-                              Confirmar y Liberar en {selectedPlanet}
-                            </Button>
+                             <DialogClose asChild>
+                                <Button variant="outline">Cancelar</Button>
+                             </DialogClose>
+                            <DialogClose asChild>
+                              <Button 
+                                variant="destructive" 
+                                onClick={() => handleReleaseCreature(creature)}
+                                disabled={selectedPlanet === 'ia-generated'}
+                              >
+                                Confirmar y {canContinueSaga ? 'Viajar' : 'Liberar'} a {selectedPlanet}
+                              </Button>
+                            </DialogClose>
                           </DialogFooter>
                         </DialogContent>
                       </Dialog>
                     </CardFooter>
                   </Card>
-                ))}
+                )})}
               </div>
             </div>
           )}

@@ -34,7 +34,7 @@ export default function EventsPage() {
   const loadEvents = () => {
     try {
       const savedEvents = JSON.parse(localStorage.getItem('universal-events') || '[]');
-      setEvents(savedEvents);
+      setEvents(savedEvents.sort((a: UniversalEvent, b: UniversalEvent) => b.isActive === a.isActive ? 0 : b.isActive ? -1 : 1));
     } catch (error) {
       console.error('Error loading events from localStorage:', error);
       setEvents([]);
@@ -58,7 +58,7 @@ export default function EventsPage() {
         turn: eventToAdvance.turn,
       });
 
-      const updatedEvent = {
+      const updatedEvent: UniversalEvent = {
         ...eventToAdvance,
         planet: result.updatedPlanetState,
         creature: { ...eventToAdvance.creature, status: result.updatedCreatureStatus },
@@ -70,19 +70,31 @@ export default function EventsPage() {
 
       const updatedEvents = events.map(e => e.id === eventId ? updatedEvent : e);
       localStorage.setItem('universal-events', JSON.stringify(updatedEvents));
-      setEvents(updatedEvents);
+      loadEvents(); // Recargar y reordenar
 
       toast({
-        title: `Turno ${updatedEvent.turn} avanzado para ${updatedEvent.creature.nombre}`,
+        title: `Turno ${updatedEvent.turn - 1} avanzado para ${updatedEvent.creature.nombre}`,
         description: result.newLogEntry,
       });
-
+      
       if (result.isEventOver) {
          toast({
             variant: "destructive",
             title: "¡El Evento ha Concluido!",
             description: `${eventToAdvance.creature.nombre}'s saga en ${eventToAdvance.planet.name} ha llegado a su fin.`,
          });
+
+         // Si la criatura sobrevivió, actualizar su estado en el bestiario a "Saludable"
+         if (result.updatedCreatureStatus !== 'Muerto' && result.updatedCreatureStatus !== 'Muriendo') {
+            const bestiary = JSON.parse(localStorage.getItem('creature-bestiary') || '[]');
+            const updatedBestiary = bestiary.map((c: any) => {
+                if (c.nombre === updatedEvent.creature.nombre) {
+                    return { ...c, status: 'Saludable' };
+                }
+                return c;
+            });
+            localStorage.setItem('creature-bestiary', JSON.stringify(updatedBestiary));
+         }
       }
 
     } catch (error: any) {
@@ -99,10 +111,23 @@ export default function EventsPage() {
   
   const getStatusVariant = (status: string) => {
     switch (status) {
-        case 'Bajo Asedio':
         case 'Colapsado':
+        case 'Aniquilado':
             return 'destructive';
-        case 'En Pánico':
+        case 'Crisis Humanitaria':
+        case 'Bajo Asedio':
+             return 'default'
+        default:
+            return 'secondary';
+    }
+  }
+
+  const getCreatureStatusVariant = (status: string) => {
+    switch (status) {
+        case 'Herido':
+        case 'Muriendo':
+            return 'destructive';
+        case 'Activa':
             return 'default';
         default:
             return 'secondary';
@@ -180,7 +205,7 @@ export default function EventsPage() {
                             <h3 className="font-semibold flex items-center gap-2"><Shield size={18}/> Estado de la Criatura</h3>
                              <div className="flex items-center justify-between text-sm">
                                 <span className="font-medium text-muted-foreground">Salud:</span>
-                                <Badge variant={event.creature.status === 'Herida' || event.creature.status === 'Muriendo' ? 'destructive' : 'secondary'}>{event.creature.status}</Badge>
+                                <Badge variant={getCreatureStatusVariant(event.creature.status || 'Saludable')}>{event.creature.status}</Badge>
                             </div>
                             <div className="flex items-center justify-between text-sm">
                                 <span className="font-medium text-muted-foreground">Temperamento:</span>
