@@ -19,7 +19,8 @@ import {
 } from '@/components/ui/accordion';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Globe, Hourglass, Zap, Users, Shield, BookOpen, AlertTriangle, WandSparkles } from 'lucide-react';
-import { type UniversalEvent, generateUniversalEvent } from '@/ai/flows/generate-universal-event-flow';
+import { generateUniversalEvent } from '@/ai/flows/generate-universal-event-flow';
+import { type UniversalEvent } from '@/ai/flows/universal-event-types';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from '@/components/ui/badge';

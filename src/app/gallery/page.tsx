@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { Star, Swords, Globe, Ticket, CircleDollarSign, Trophy, HeartPulse, Skull } from 'lucide-react';
 import { type DescribeCreatureOutput } from '@/ai/flows/describe-creature-flow';
 import { simulateCombat, type SimulateCombatInput } from '@/ai/flows/simulate-combat-flow';
-import { UniversalEventSchema, type UniversalEvent } from '@/ai/flows/generate-universal-event-flow';
+import { type UniversalEvent } from '@/ai/flows/universal-event-types';
 
 import {
   Dialog,
