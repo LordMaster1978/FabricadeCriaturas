@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { 
+  Camera,
+  Trash2,
+  Save,
   Calendar, 
   Clock, 
   Pencil, 
@@ -243,6 +246,45 @@ export default function CraftPage() {
       });
     } finally {
       setIsGeneratingSound(false);
+    }
+  };
+
+  const handleSaveCreature = () => {
+    if (!generatedValuation) {
+      toast({
+        variant: "destructive",
+        title: "No hay criatura generada",
+        description: "Primero debes generar una valoración para poder guardar la criatura.",
+      });
+      return;
+    }
+
+    try {
+      const bestiary = JSON.parse(localStorage.getItem('creature-bestiary') || '[]');
+      // Evitar duplicados por nombre
+      const isDuplicate = bestiary.some((c: DescribeCreatureOutput) => c.nombre === generatedValuation.nombre);
+      if (isDuplicate) {
+        toast({
+          variant: "destructive",
+          title: "Criatura duplicada",
+          description: `Ya existe una criatura llamada "${generatedValuation.nombre}" en tu bestiario.`,
+        });
+        return;
+      }
+
+      bestiary.push(generatedValuation);
+      localStorage.setItem('creature-bestiary', JSON.stringify(bestiary));
+      toast({
+        title: "¡Criatura guardada!",
+        description: `"${generatedValuation.nombre}" ha sido añadida a tu bestiario.`,
+      });
+    } catch (error) {
+      console.error("Error saving creature to localStorage:", error);
+      toast({
+        variant: "destructive",
+        title: "Error al guardar",
+        description: "No se pudo guardar la criatura en el almacenamiento local.",
+      });
     }
   };
 
@@ -654,9 +696,16 @@ export default function CraftPage() {
                   <WandSparkles className="h-5 w-5 text-primary" />
                   <span>Ficha de Valoración: {generatedValuation ? <span className="font-bold text-primary">{generatedValuation.nombre}</span> : 'IA'}</span>
                 </CardTitle>
-                <Button onClick={handleGenerateDescription} disabled={isGenerating}>
-                  {isGenerating ? 'Generando...' : 'Generar Valoración'}
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button onClick={handleGenerateDescription} disabled={isGenerating}>
+                    <WandSparkles className="h-4 w-4" />
+                    {isGenerating ? 'Generando...' : 'Generar Valoración'}
+                  </Button>
+                   <Button onClick={handleSaveCreature} disabled={!generatedValuation}>
+                    <Save className="h-4 w-4" />
+                    Guardar
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
