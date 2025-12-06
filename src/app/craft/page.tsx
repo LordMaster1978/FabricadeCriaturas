@@ -72,7 +72,7 @@ La afinidad elemental del Dragonus es, sin lugar a dudas, el fuego primordial. N
 En combate, su Ataque (75) es potente, canalizando la furia del volcán. Su Defensa (65) proviene de sus duras escamas de obsidiana. Su Velocidad (60) es sorprendente para su tamaño, permitiéndole emboscadas ígneas. Su Inteligencia (70) le permite discernir tácticas, aunque no es un estratega maestro. La Resistencia (80) es monumental, nutrida por el calor geotérmico. Su Fuerza (70) es considerable, y su Precisión (50) es su punto más débil, ya que su poder es más abrumador que sutil. Sin embargo, incluso una criatura de fuego tiene sus talones de Aquiles. La "Debilidad Gélida Profunda" es su perdición.
 
 Ecología y Comportamiento:
-El Dragonus es el epítome del temperamento "solitario". Su dieta no es carnal; se nutre de la energía geotérmica y mágica. Su hábitat natural son los picos volcánicos activos. Su rol social es nulo; es un anacoreta elemental.
+El Dragonus es el epítome del temperamento "solitario". Su dieta no es carnal; se nutre de la energía geotérmmica y mágica. Su hábitat natural son los picos volcánicos activos. Su rol social es nulo; es un anacoreta elemental.
 
 Reproducción y Crianza:
 Aquí radica la verdadera tragedia del Dragonus: no tiene capacidad de reproducción. Es una criatura singular, nacida de un evento único e irrepetible.
@@ -200,12 +200,12 @@ export default function CraftPage() {
         title: "¡Valoración generada!",
         description: "La IA ha analizado y valorado a tu criatura.",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error generating valuation:", error);
       toast({
         variant: "destructive",
         title: "Error de la IA",
-        description: "No se pudo generar la valoración. Inténtalo de nuevo.",
+        description: error.message || "No se pudo generar la valoración. Inténtalo de nuevo.",
       });
     } finally {
       setIsGenerating(false);
@@ -761,5 +761,3 @@ export default function CraftPage() {
     </main>
   );
 }
-
-    

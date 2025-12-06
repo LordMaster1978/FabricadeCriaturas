@@ -132,9 +132,10 @@ const describeCreatureFlow = ai.defineFlow(
 export async function describeCreature(
   input: DescribeCreatureInput
 ): Promise<DescribeCreatureOutput> {
-  return describeCreatureFlow(input);
+  try {
+    return await describeCreatureFlow(input);
+  } catch (error: any) {
+    console.error("Error en el flujo describeCreature:", error);
+    throw new Error(error.message || "Ocurrió un error al generar la valoración de la criatura.");
+  }
 }
-
-    
-
-    
