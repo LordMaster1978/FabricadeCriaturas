@@ -15,6 +15,9 @@ const DescribeCreatureInputSchema = z.object({
     composicion: z.string().describe('La composición y materiales de la criatura.'),
     tamano: z.string().describe('El tamaño de la criatura.'),
     complexion: z.string().describe('La complexión física de la criatura.'),
+    altura: z.string().describe('La altura de la criatura (ej: 3m, 50cm).'),
+    peso: z.string().describe('El peso de la criatura (ej: 500kg, 10kg).'),
+    velocidadMaxima: z.string().describe('La velocidad máxima de la criatura (ej: 60km/h).'),
     partesCuerpo: z.string().describe('Las partes distintivas del cuerpo de la criatura.'),
     apariencia: z.string().describe('La apariencia y textura de la criatura.'),
     afinidadElemental: z.string().describe('El elemento al que la criatura es afín.'),
@@ -62,8 +65,8 @@ const prompt = ai.definePrompt({
 
     **Instrucciones:**
     1.  **Devuelve el Nombre:** Asegúrate de que el campo 'nombre' en la salida sea el mismo que el proporcionado en la entrada.
-    2.  **Genera Estadísticas de Combate (0-100):** Basándote en todos los detalles proporcionados (tamaño, complexión, composición, etc.), asigna valores numéricos de 0 a 100 para Ataque, Defensa, Velocidad, Inteligencia, Resistencia, Fuerza y Precisión.
-    3.  **Escribe la Descripción Narrativa:** Redacta una descripción evocadora y una historia de origen (lore) para la criatura. **Dentro de esta narrativa, justifica brevemente por qué has elegido los valores de las estadísticas**. Por ejemplo, una criatura 'gigante' y 'robusta' debería tener alta Fuerza y Resistencia.
+    2.  **Genera Estadísticas de Combate (0-100):** Basándote en todos los detalles proporcionados (tamaño, complexión, composición, altura, peso, velocidad, etc.), asigna valores numéricos de 0 a 100 para Ataque, Defensa, Velocidad, Inteligencia, Resistencia, Fuerza y Precisión.
+    3.  **Escribe la Descripción Narrativa:** Redacta una descripción evocadora y una historia de origen (lore) para la criatura. **Dentro de esta narrativa, justifica brevemente por qué has elegido los valores de las estadísticas**. Por ejemplo, una criatura 'gigante' y 'robusta' debería tener alta Fuerza y Resistencia. Una criatura pequeña y rápida tendrá alta Velocidad.
     4.  **Determina la Rareza:** Clasifica la criatura como "Común", "Poco Común", "Raro", "Épico" o "Legendario" basándote en su origen, poder y unicidad.
     5.  **Escribe las Reseñas:**
         *   **Valoración de Expertos:** Escribe una reseña desde la perspectiva de un erudito, analizando sus capacidades de forma técnica.
@@ -76,7 +79,7 @@ const prompt = ai.definePrompt({
     **Detalles de la Criatura:**
     - **Nombre:** {{{nombre}}}
     - **Composición:** {{{composicion}}}
-    - **Físico:** Tamaño {{{tamano}}}, complexión {{{complexion}}}, partes notables {{{partesCuerpo}}}, apariencia {{{apariencia}}}.
+    - **Físico:** Tamaño {{{tamano}}}, complexión {{{complexion}}}, altura {{{altura}}}, peso {{{peso}}}, velocidad máxima {{{velocidadMaxima}}}, partes notables {{{partesCuerpo}}}, apariencia {{{apariencia}}}.
     - **Poderes:** Afinidad elemental a {{{afinidadElemental}}}, habilidades únicas {{{habilidadesUnicas}}}, debilidades {{{debilidades}}}.
     - **Comportamiento:** Temperamento {{{temperamento}}}, dieta {{{dieta}}}, hábitat {{{habitat}}}, rol social {{{rolSocial}}}.
     - **Reproducción:** Apto: {{{aptoReproduccion_text}}} (Habilidades de crianza: {{{habilidadesCrianza}}}).

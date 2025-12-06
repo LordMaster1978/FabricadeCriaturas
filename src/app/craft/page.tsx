@@ -16,7 +16,10 @@ import {
   Baby,
   WandSparkles,
   Star,
-  AreaChart
+  AreaChart,
+  MoveUp,
+  Weight,
+  Gauge
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -46,7 +49,26 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from "recharts";
 
 const initialValuation: DescribeCreatureOutput = {
   nombre: "Dragonus",
-  narrativeDescription: `Ah, aventurero y estudioso de lo arcaico, permíteme descorrer el velo sobre una criatura cuyo nombre apenas musitan los vientos volcánicos: el Dragonus. No es un dragón de linaje conocido, ni una bestia de la estirpe común, sino una singularidad ígnea, un enigma envuelto en el lamento de la soledad y la furia de las forjas primigenias. Prepara tu pluma y tu corazón, pues la historia de esta criatura no es solo de poder, sino de una melancolía que arde más allá de su propia llama.\n\nEl Dragonus: El Eco Solitario de la Forja Ardiente\n\nDescripción Física:\nEl Dragonus se alza a una altura "mediana" para una bestia de su naturaleza, comparable a un semental de guerra imponente, pero su presencia desborda cualquier medida. Su complexión es indiscutiblemente atlética, una silueta cincelada por la fuerza y la agilidad, más esbelta que robusta, diseñada para el movimiento explosivo y la gracia ardiente. Sus partes más notables son las láminas de obsidiana viviente que forman su piel, no lisas, sino angulares y fracturadas, con vetas de un magma brillante que palpita bajo la superficie. Estas escamas obsidianas irradian un calor constante, distorsionando el aire a su alrededor como un espejismo danzante. En su lomo, alas membranosas no de piel, sino de pura energía térmica condensada, ondean y se disipan en oleadas de calor abrasador, más una manifestación de su voluntad que una estructura biológica sólida. Su cabeza está coronada por una diadema natural de cuernos espinosos de obsidiana cristalizada, y sus ojos son brasas fundidas que brillan con una inteligencia antigua y una tristeza abismal. La textura general de su cuerpo es una paradoja: fría y dura como la roca volcánica al tacto, pero abrasadora e inasible por el aura de fuego que la envuelve.\n\nHabilidades y Poderes:\nLa afinidad elemental del Dragonus es, sin lugar a dudas, el fuego primordial. No es un simple aliento flameante, sino una extensión de su propia existencia. Su principal habilidad, la "Emanación Ígnea Perpetua", convierte su mero caminar en una sentencia de calor: cada paso que da abrasa la tierra, y su aura constante consume el oxígeno a su alrededor, asfixiando a los no preparados y carbonizando la vegetación. Su ataque más devastador es el "Aliento de Fuego Espectral", una corriente de llamas tan puras y calientes que parecen etéreas, capaces de fundir metales y perforar la piedra con una facilidad espantosa.\n\nEn combate, su Ataque (75) es potente, canalizando la furia del volcán. Su Defensa (65) proviene de sus duras escamas de obsidiana. Su Velocidad (60) es sorprendente para su tamaño, permitiéndole emboscadas ígneas. Su Inteligencia (70) le permite discernir tácticas, aunque no es un estratega maestro. La Resistencia (80) es monumental, nutrida por el calor geotérmico. Su Fuerza (70) es considerable, y su Precisión (50) es su punto más débil, ya que su poder es más abrumador que sutil. Sin embargo, incluso una criatura de fuego tiene sus talones de Aquiles. La "Debilidad Gélida Profunda" es su perdición.\n\nEcología y Comportamiento:\nEl Dragonus es el epítome del temperamento "solitario". Su dieta no es carnal; se nutre de la energía geotérmica y mágica. Su hábitat natural son los picos volcánicos activos. Su rol social es nulo; es un anacoreta elemental.\n\nReproducción y Crianza:\nAquí radica la verdadera tragedia del Dragonus: no tiene capacidad de reproducción. Es una criatura singular, nacida de un evento único e irrepetible.\n\nHistoria y Lore:\nLas leyendas más antiguas hablan del Dragonus como "La Llama Que Anda Sola". No es una criatura que evolucionó, sino que fue creada. Se dice que un cónclave de poderosos piromantes buscó encarnar el caos elemental en una forma viviente, pero solo una criatura logró manifestarse plenamente: el Dragonus.`,
+  narrativeDescription: `Ah, aventurero y estudioso de lo arcaico, permíteme descorrer el velo sobre una criatura cuyo nombre apenas musitan los vientos volcánicos: el Dragonus. No es un dragón de linaje conocido, ni una bestia de la estirpe común, sino una singularidad ígnea, un enigma envuelto en el lamento de la soledad y la furia de las forjas primigenias. Prepara tu pluma y tu corazón, pues la historia de esta criatura no es solo de poder, sino de una melancolía que arde más allá de su propia llama.
+
+El Dragonus: El Eco Solitario de la Forja Ardiente
+
+Descripción Física:
+El Dragonus se alza a una altura "mediana" para una bestia de su naturaleza, comparable a un semental de guerra imponente, pero su presencia desborda cualquier medida. Su complexión es indiscutiblemente atlética, una silueta cincelada por la fuerza y la agilidad, más esbelta que robusta, diseñada para el movimiento explosivo y la gracia ardiente. Sus partes más notables son las láminas de obsidiana viviente que forman su piel, no lisas, sino angulares y fracturadas, con vetas de un magma brillante que palpita bajo la superficie. Estas escamas obsidianas irradian un calor constante, distorsionando el aire a su alrededor como un espejismo danzante. En su lomo, alas membranosas no de piel, sino de pura energía térmica condensada, ondean y se disipan en oleadas de calor abrasador, más una manifestación de su voluntad que una estructura biológica sólida. Su cabeza está coronada por una diadema natural de cuernos espinosos de obsidiana cristalizada, y sus ojos son brasas fundidas que brillan con una inteligencia antigua y una tristeza abismal. La textura general de su cuerpo es una paradoja: fría y dura como la roca volcánica al tacto, pero abrasadora e inasible por el aura de fuego que la envuelve.
+
+Habilidades y Poderes:
+La afinidad elemental del Dragonus es, sin lugar a dudas, el fuego primordial. No es un simple aliento flameante, sino una extensión de su propia existencia. Su principal habilidad, la "Emanación Ígnea Perpetua", convierte su mero caminar en una sentencia de calor: cada paso que da abrasa la tierra, y su aura constante consume el oxígeno a su alrededor, asfixiando a los no preparados y carbonizando la vegetación. Su ataque más devastador es el "Aliento de Fuego Espectral", una corriente de llamas tan puras y calientes que parecen etéreas, capaces de fundir metales y perforar la piedra con una facilidad espantosa.
+
+En combate, su Ataque (75) es potente, canalizando la furia del volcán. Su Defensa (65) proviene de sus duras escamas de obsidiana. Su Velocidad (60) es sorprendente para su tamaño, permitiéndole emboscadas ígneas. Su Inteligencia (70) le permite discernir tácticas, aunque no es un estratega maestro. La Resistencia (80) es monumental, nutrida por el calor geotérmico. Su Fuerza (70) es considerable, y su Precisión (50) es su punto más débil, ya que su poder es más abrumador que sutil. Sin embargo, incluso una criatura de fuego tiene sus talones de Aquiles. La "Debilidad Gélida Profunda" es su perdición.
+
+Ecología y Comportamiento:
+El Dragonus es el epítome del temperamento "solitario". Su dieta no es carnal; se nutre de la energía geotérmica y mágica. Su hábitat natural son los picos volcánicos activos. Su rol social es nulo; es un anacoreta elemental.
+
+Reproducción y Crianza:
+Aquí radica la verdadera tragedia del Dragonus: no tiene capacidad de reproducción. Es una criatura singular, nacida de un evento único e irrepetible.
+
+Historia y Lore:
+Las leyendas más antiguas hablan del Dragonus como "La Llama Que Anda Sola". No es una criatura que evolucionó, sino que fue creada. Se dice que un cónclave de poderosos piromantes buscó encarnar el caos elemental en una forma viviente, pero solo una criatura logró manifestarse plenamente: el Dragonus.`,
   combatStats: {
     Ataque: 75,
     Defensa: 65,
@@ -83,6 +105,9 @@ export default function CraftPage() {
     complexion: 'athletic',
     partesCuerpo: '',
     apariencia: '',
+    altura: '',
+    peso: '',
+    velocidadMaxima: '',
     afinidadElemental: 'fire',
     habilidadesUnicas: '',
     debilidades: '',
@@ -237,6 +262,20 @@ export default function CraftPage() {
                   </Select>
                 </div>
               </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="space-y-2">
+                  <Label htmlFor="altura">Altura</Label>
+                  <Input id="altura" placeholder="Ej: 3m" value={creature.altura} onChange={handleInputChange} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="peso">Peso</Label>
+                  <Input id="peso" placeholder="Ej: 500kg" value={creature.peso} onChange={handleInputChange} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="velocidadMaxima">Vel. Máxima</Label>
+                  <Input id="velocidadMaxima" placeholder="Ej: 60km/h" value={creature.velocidadMaxima} onChange={handleInputChange} />
+                </div>
+              </div>
                <div className="space-y-2">
                 <Label htmlFor="partesCuerpo">Partes del Cuerpo</Label>
                 <Textarea id="partesCuerpo" placeholder="Ej: Alas de cuero, cuernos retorcidos..." className="min-h-[50px]" value={creature.partesCuerpo} onChange={handleInputChange}/>
@@ -248,12 +287,12 @@ export default function CraftPage() {
             </CardContent>
           </Card>
 
-          {/* Habilidades y Poderes */}
+          {/* Habilidades */}
           <Card className="bg-card/50 border-border/50 lg:col-span-1">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-primary" />
-                Habilidades y Poderes
+                Habilidades
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
