@@ -55,8 +55,8 @@ const prompt = ai.definePrompt({
     4.  **Crea un Clímax:** La batalla debe tener un punto de inflexión. Quizás una criatura usa una habilidad desesperada, o una de ellas comete un error fatal.
     5.  **Declara un Vencedor:** Basado en la simulación lógica, determina qué criatura gana. El ganador debe tener una ventaja clara según sus estadísticas y habilidades. Justifica el resultado en la narración. Por ejemplo, "A pesar de la fuerza bruta de X, la velocidad y astucia superiores de Y le permitieron esquivar el ataque final y asestar un golpe crítico en su punto débil".
     6.  **Formato de Salida:**
-        *   `combatLog`: Debe ser una historia coherente y emocionante, no solo una lista de acciones.
-        *   `winnerName`: Debe ser exactamente el nombre de la criatura ganadora.
+        *   \`combatLog\`: Debe ser una historia coherente y emocionante, no solo una lista de acciones.
+        *   \`winnerName\`: Debe ser exactamente el nombre de la criatura ganadora.
 
     ¡Que comience la batalla!
   `,
