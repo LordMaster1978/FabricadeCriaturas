@@ -9,17 +9,17 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { DescribeCreatureOutputSchema } from './describe-creature-flow';
+import { type DescribeCreatureOutput } from './describe-creature-flow';
 
 // El objeto de entrada contendrá las dos criaturas que van a luchar.
-export const SimulateCombatInputSchema = z.object({
-  creature1: DescribeCreatureOutputSchema,
-  creature2: DescribeCreatureOutputSchema,
+const SimulateCombatInputSchema = z.object({
+  creature1: z.custom<DescribeCreatureOutput>(),
+  creature2: z.custom<DescribeCreatureOutput>(),
 });
 export type SimulateCombatInput = z.infer<typeof SimulateCombatInputSchema>;
 
 // El objeto de salida contendrá el registro del combate y el nombre del ganador.
-export const SimulateCombatOutputSchema = z.object({
+const SimulateCombatOutputSchema = z.object({
   combatLog: z.string().describe("Una narración detallada y épica del combate, turno por turno, describiendo las acciones, reacciones y el clímax de la batalla."),
   winnerName: z.string().describe("El nombre de la criatura que ha ganado el combate."),
 });

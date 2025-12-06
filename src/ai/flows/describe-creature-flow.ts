@@ -49,7 +49,7 @@ const DescribeCreatureInputSchema = z.object({
 
 export type DescribeCreatureInput = z.infer<typeof DescribeCreatureInputSchema>;
 
-export const DescribeCreatureOutputSchema = z.object({
+const DescribeCreatureOutputSchema = z.object({
   nombre: z.string().describe("El nombre de la criatura."),
   narrativeDescription: z.string().describe("La descripción narrativa completa y el lore de la criatura, escrita en un tono épico de bestiario. Debe tener al menos 5 párrafos."),
   combatStats: z.object({
