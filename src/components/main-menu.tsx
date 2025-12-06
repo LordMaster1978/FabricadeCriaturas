@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Cog, Hammer, LayoutGrid, Skull } from 'lucide-react';
+import { Cog, Hammer, LayoutGrid, Skull, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function MainMenu() {
@@ -36,8 +36,8 @@ export function MainMenu() {
           </Link>
           <Link href="/gallery" passHref>
             <Button size="lg" variant="outline" className="w-64 justify-center border-accent/50 text-accent/80 hover:border-accent hover:bg-accent hover:text-accent-foreground transition-all duration-300 transform hover:scale-105">
-              <LayoutGrid className="mr-2 h-5 w-5" />
-              Galería y Arena
+              <Trophy className="mr-2 h-5 w-5" />
+              Ranking y Arena
             </Button>
           </Link>
            <Link href="/cemetery" passHref>

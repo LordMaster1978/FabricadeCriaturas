@@ -12,7 +12,7 @@ import {
   CardFooter
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Star, Swords, Shield, WandSparkles, LandPlot, Users, Ticket, CircleDollarSign, Crown, HeartPulse, Skull, Scale, History } from 'lucide-react';
+import { Star, Swords, WandSparkles, LandPlot, Ticket, CircleDollarSign, Crown, HeartPulse, Skull, Trophy } from 'lucide-react';
 import { type DescribeCreatureOutput } from '@/ai/flows/describe-creature-flow';
 import { simulateCombat, type SimulateCombatInput, type SimulateCombatOutput } from '@/ai/flows/simulate-combat-flow';
 import {
@@ -66,7 +66,7 @@ export default function GalleryPage() {
     try {
       const savedCreatures = JSON.parse(localStorage.getItem('creature-bestiary') || '[]');
       const savedCapital = localStorage.getItem('player-capital');
-      setBestiary(savedCreatures);
+      setBestiary(savedCreatures.sort((a: DescribeCreatureOutput, b: DescribeCreatureOutput) => (b.wins || 0) - (a.wins || 0)));
       if (savedCapital) {
         setCapital(parseInt(savedCapital, 10));
       }
@@ -182,6 +182,7 @@ export default function GalleryPage() {
       setCapital(finalCapital);
       localStorage.setItem('player-capital', finalCapital.toString());
       localStorage.setItem('creature-bestiary', JSON.stringify(updatedBestiary));
+      // No re-sorting here, will be sorted on next load
       setBestiary(updatedBestiary);
 
     } catch (error: any) {
@@ -227,7 +228,7 @@ export default function GalleryPage() {
     setCombatResult(null);
     setCombatDetails(null);
     setIsSimulating(false);
-    loadData(); // Reload data to reflect combat changes
+    loadData(); // Reload data to reflect combat changes and re-sort
   }
 
   if (selectedCreature && !opponent) {
@@ -240,7 +241,7 @@ export default function GalleryPage() {
               <p className="text-muted-foreground">Has seleccionado a <span className="font-bold text-primary">{selectedCreature.nombre}</span>. Ahora, elige a su rival.</p>
             </div>
             <Button onClick={resetSelection} variant="outline">
-              &larr; Volver a la Galería
+              &larr; Volver al Ranking
             </Button>
           </div>
            {bestiary.filter(c => c.nombre !== selectedCreature.nombre && c.status === 'Saludable').length === 0 ? (
@@ -310,7 +311,7 @@ export default function GalleryPage() {
       <main className="flex min-h-screen w-full flex-col items-center bg-background p-4 md:p-8">
         <div className="w-full max-w-7xl">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-4xl font-bold">Galería y Arena</h1>
+            <h1 className="text-4xl font-bold">Ranking y Arena</h1>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <CircleDollarSign className="h-5 w-5 text-foreground/70" />
@@ -329,16 +330,21 @@ export default function GalleryPage() {
             </div>
           ) : (
              <div>
-              <p className="text-lg text-center text-muted-foreground mb-6">Selecciona una criatura de tu bestiario para ver sus detalles o para iniciar un combate.</p>
+              <p className="text-lg text-center text-muted-foreground mb-6">Selecciona una criatura para ver sus detalles o para iniciar un combate.</p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {bestiary.filter(c => c.status !== 'Muerto').map((creature, index) => (
                   <Card 
                     key={index} 
                     className={cn(
-                        "flex flex-col hover:shadow-lg hover:border-primary/50 transition-all",
+                        "flex flex-col hover:shadow-lg hover:border-primary/50 transition-all relative",
                         creature.status !== 'Saludable' && "bg-muted/30 border-dashed"
                     )}
                   >
+                    {index === 0 && (
+                      <div className="absolute -top-3 -left-3 transform -rotate-12">
+                        <Trophy className="h-8 w-8 text-yellow-400 fill-yellow-400" />
+                      </div>
+                    )}
                     <CardHeader>
                       <CardTitle className="flex justify-between items-center">
                         <span className={cn(creature.status !== 'Saludable' && "text-muted-foreground")}>{creature.nombre}</span>
@@ -430,7 +436,7 @@ export default function GalleryPage() {
                   id="betAmount"
                   type="number"
                   value={betAmount}
-                  onChange={(e) => setBetAmount(parseInt(e.target.value, 10) || 0)}
+                  onChange={(e) => setBetAmount(parseInt(e.target.value) || 0)}
                   min="1"
                   max={capital}
                 />
@@ -465,7 +471,7 @@ export default function GalleryPage() {
               <Card className="w-full mt-4 bg-muted/20">
                 <CardHeader>
                   <CardTitle className="text-base flex justify-between">
-                     <span className="flex items-center gap-2"><Users size={16}/>Favorito</span>
+                     <span className="flex items-center gap-2"><Trophy size={16}/>Favorito</span>
                      <span className="flex items-center gap-2"><Ticket size={16}/>Probabilidades</span>
                   </CardTitle>
                 </CardHeader>

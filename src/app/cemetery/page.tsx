@@ -11,7 +11,7 @@ import {
   CardDescription,
   CardFooter,
 } from '@/components/ui/card';
-import { Skull, Swords, Shield, Star } from 'lucide-react';
+import { Skull, Star, Award } from 'lucide-react';
 import { type DescribeCreatureOutput } from '@/ai/flows/describe-creature-flow';
 import {
   Accordion,
@@ -19,6 +19,16 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+
+const getLegacyTitle = (wins: number): string => {
+  if (wins >= 15) return "Mito Universal";
+  if (wins >= 10) return "Héroe Legendario";
+  if (wins >= 6) return "Maestro del Combate";
+  if (wins >= 3) return "Luchador Veterano";
+  if (wins >= 1) return "Contendiente";
+  return "Carne de Cañón";
+};
+
 
 export default function CemeteryPage() {
   const [fallen, setFallen] = useState<DescribeCreatureOutput[]>([]);
@@ -63,23 +73,13 @@ export default function CemeteryPage() {
                 className="flex flex-col bg-card/50 border-border/50"
               >
                 <CardHeader>
-                  <CardTitle className="flex justify-between items-center text-muted-foreground">
+                  <CardTitle className="flex justify-between items-start text-muted-foreground">
                     <span>{creature.nombre}</span>
                     <Skull className="h-5 w-5" />
                   </CardTitle>
-                  <CardDescription className="flex items-center gap-2 pt-1">
-                    <div className="flex items-center">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`h-4 w-4 ${
-                            i < creature.starRating
-                              ? 'text-muted-foreground/50 fill-muted-foreground/50'
-                              : 'text-muted-foreground/20'
-                          }`}
-                        />
-                      ))}
-                    </div>
+                   <CardDescription className="flex items-center gap-2 pt-2">
+                     <Award className="h-4 w-4 text-primary"/>
+                     <span className="font-semibold text-primary">{getLegacyTitle(creature.wins || 0)}</span>
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-grow space-y-4">
