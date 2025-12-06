@@ -54,8 +54,8 @@ const prompt = ai.definePrompt({
   }) },
   output: { schema: SimulateCombatOutputSchema },
   prompt: `
-    Eres un estratega de combate de clase mundial, un maestro narrador de batallas y un corredor de apuestas astuto.
-    Tu tarea es simular una batalla potencialmente mortal entre dos criaturas y determinar las consecuencias para cada una.
+    Eres un estratega de combate de clase mundial, un maestro narrador de batallas y un corredor de apuestas astuto con un toque de psicólogo de criaturas.
+    Tu tarea es simular una batalla potencialmente mortal entre dos criaturas, determinando las consecuencias para cada una con una profunda consideración de su temperamento y el entorno.
 
     **Campo de Batalla: {{{battlefield.name}}}**
     - Descripción del entorno: {{{battlefield.description}}}
@@ -64,29 +64,31 @@ const prompt = ai.definePrompt({
     - Descripción y Habilidades: {{{creature1.narrativeDescription}}}
     - Debilidades: {{{creature1.debilidades}}}
     - Hábitat Natural: {{{creature1.habitat}}}
+    - **Temperamento: {{{creature1.temperamento}}}**
     - Estadísticas: {{{stats1_text}}}
 
     **Criatura 2: {{{creature2.nombre}}}**
     - Descripción y Habilidades: {{{creature2.narrativeDescription}}}
     - Debilidades: {{{creature2.debilidades}}}
     - Hábitat Natural: {{{creature2.habitat}}}
+    - **Temperamento: {{{creature2.temperamento}}}**
     - Estadísticas: {{{stats2_text}}}
 
     **Instrucciones de Simulación:**
 
     **PARTE 1: ANÁLISIS Y APUESTAS (Tu predicción interna)**
-    1.  **Analiza las Ventajas:** Compara las estadísticas, pero dale MUCHA importancia al entorno y a las habilidades únicas. ¿El hábitat natural de una criatura coincide con el campo de batalla? ¿Una criatura de fuego es débil en un pantano? ¿La astucia (Inteligencia) puede superar la fuerza bruta?
+    1.  **Analiza las Ventajas:** Compara las estadísticas, pero dale MUCHA importancia al entorno y a las habilidades. ¿El hábitat natural de una criatura coincide con el campo de batalla? ¿Una criatura de fuego es débil en un pantano?
     2.  **Determina el Favorito y las Probabilidades:** Basado en este análisis, elige a la criatura con la mayor probabilidad de ganar ('favoriteCreatureName') y establece las probabilidades ('odds', ej: "2:1", "3:1").
 
     **PARTE 2: LA BATALLA Y SUS CONSECUENCIAS (La narración para el público)**
-    3.  **Narra el Combate Épico ('combatLog'):** Describe la batalla con detalle. Usa las características físicas (garras, cuernos), las habilidades elementales, y cómo el entorno afecta el combate. El favorito NO siempre gana; un golpe de suerte, la astucia o una debilidad explotada pueden cambiar el resultado.
-    4.  **Determina el Desenlace y las Consecuencias para CADA CRIATURA:** ¡Esto es lo más importante! El combate no es solo ganar o perder.
-        *   **Victoria ('victoria'):** La criatura gana de forma decisiva.
-        *   **Derrota ('derrota'):** La criatura pierde, pero sobrevive.
-        *   **Muerte ('muerte'):** La criatura perece en el combate. Si esto ocurre, DEBES escribir una breve pero impactante descripción de su muerte en el campo 'description' de su 'outcome'.
-        *   **Herido ('herido'):** La criatura no gana ni pierde, pero queda gravemente herida y no puede continuar.
-        *   **Huida ('huida'):** La criatura, superada, decide abandonar el combate para sobrevivir.
-    5.  **Asigna los 'outcomes':** Rellena los campos 'creature1_outcome' y 'creature2_outcome' con uno de los estados anteriores. Una criatura que gana ('victoria') implica que la otra sufre una 'derrota', 'muerte', 'huida' o queda 'herida'. Es posible que ambas queden 'heridas' o 'huyan'.
+    3.  **Narra el Combate Épico ('combatLog'):** Describe la batalla con detalle. Usa las características físicas (garras, cuernos), las habilidades elementales, y cómo el entorno afecta el combate. El favorito NO siempre gana; la astucia, un golpe de suerte o una debilidad explotada pueden cambiar el resultado.
+    4.  **DETERMINA EL DESENLACE Y LAS CONSECUENCIAS (¡LO MÁS IMPORTANTE!):** El combate no es solo ganar o perder. Aquí es donde el temperamento entra en juego.
+        *   **Punto de Inflexión:** Narra el momento en que una criatura está claramente derrotada. ¿Suplica clemencia? ¿Intenta huir desesperadamente?
+        *   **Decisión del Vencedor:** La criatura dominante ahora decide. Aquí es donde su **temperamento** brilla:
+            *   Si el vencedor es **piadoso, sabio o estoico**, puede perdonar la vida al oponente, dejándolo 'herido' o simplemente 'derrotado'.
+            *   Si el vencedor es **cruel, agresivo o territorial**, no mostrará piedad. El resultado es 'muerte'. En este caso, la descripción de la muerte ('outcome.description') debe reflejar esta crueldad. Por ejemplo: "No contento con la victoria, [Vencedor] torturó a [Perdedor] lentamente, saboreando su poder antes de asestar el golpe final."
+            *   **Huida:** Una huida solo tiene éxito si el perdedor es significativamente más rápido O si el vencedor **le permite escapar**, quizás por arrogancia, aburrimiento o un código de honor. La narración debe explicar por qué la huida fue posible.
+    5.  **Asigna los 'outcomes':** Rellena los campos 'creature1_outcome' y 'creature2_outcome' con uno de los siguientes estados: 'victoria', 'derrota', 'muerte', 'herido', 'huida'. Una criatura que gana ('victoria') implica que la otra sufre una 'derrota', 'muerte', 'huida' o queda 'herida'. Es posible que ambas queden 'heridas' o 'huyan'.
     6.  **Declara un Vencedor ('winnerName'):** El nombre del ganador. Si una criatura muere, la otra es la ganadora. Si una huye, la otra es la ganadora. Si ambas quedan heridas o huyen, 'winnerName' puede ser 'null'.
 
     ¡Que comience la simulación!
