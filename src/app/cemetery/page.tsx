@@ -22,27 +22,30 @@ import {
 
 const getLegacyTitle = (wins: number): string => {
   if (wins >= 1000) return "Criatura Universal";
-  if (wins >= 100) return "El Fin de los Tiempos";
-  if (wins >= 80) return "Calamidad Cósmica";
-  if (wins >= 70) return "Avatar de la Destrucción";
-  if (wins >= 60) return "Leyenda Inmortal";
-  if (wins >= 50) return "Singularidad Combativa";
-  if (wins >= 40) return "Fuerza de la Naturaleza";
-  if (wins >= 35) return "Entidad Primordial";
-  if (wins >= 30) return "Icono Cósmico";
-  if (wins >= 25) return "Mito Universal";
-  if (wins >= 20) return "Demiurgo del Caos";
-  if (wins >= 16) return "Señor de las Bestias";
-  if (wins >= 13) return "Señor de la Guerra";
-  if (wins >= 10) return "Héroe Legendario";
-  if (wins >= 8) return "Conquistador Implacable";
-  if (wins >= 6) return "Maestro de la Arena";
-  if (wins >= 5) return "Campeón de Fosos";
-  if (wins >= 4) return "Gladiador de Renombre";
+  if (wins >= 500) return "El Fin de los Tiempos";
+  if (wins >= 200) return "Calamidad Cósmica";
+  if (wins >= 100) return "Avatar de la Destrucción";
+  if (wins >= 90) return "Leyenda Inmortal";
+  if (wins >= 80) return "Singularidad Combativa";
+  if (wins >= 70) return "Fuerza de la Naturaleza";
+  if (wins >= 60) return "Rey de los Mundos";
+  if (wins >= 50) return "Entidad Primordial";
+  if (wins >= 40) return "Icono Cósmico";
+  if (wins >= 35) return "Mito Universal";
+  if (wins >= 30) return "Demiurgo del Caos";
+  if (wins >= 25) return "Rey de las Criaturas";
+  if (wins >= 20) return "Señor de las Bestias";
+  if (wins >= 16) return "Señor de la Guerra";
+  if (wins >= 13) return "Héroe Legendario";
+  if (wins >= 10) return "Conquistador Implacable";
+  if (wins >= 8) return "Maestro de la Arena";
+  if (wins >= 6) return "Campeón de Fosos";
+  if (wins >= 5) return "Gladiador de Renombre";
+  if (wins >= 4) return "El Guerrero";
   if (wins >= 3) return "Luchador Veterano";
-  if (wins >= 2) return "Superviviente de la Arena";
+  if (wins >= 2) return "Maestro Novato";
   if (wins >= 1) return "Contendiente";
-  return "Carne de Cañón";
+  return "Principiante";
 };
 
 
