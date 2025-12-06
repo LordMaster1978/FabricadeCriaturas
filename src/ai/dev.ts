@@ -1,3 +1,4 @@
 // Flows will be imported for their side effects in this file.
 import './flows/describe-creature-flow';
 import './flows/generate-sound-flow';
+import './flows/simulate-combat-flow';
