@@ -32,6 +32,7 @@ const DescribeCreatureInputSchema = z.object({
 export type DescribeCreatureInput = z.infer<typeof DescribeCreatureInputSchema>;
 
 const DescribeCreatureOutputSchema = z.object({
+  nombre: z.string().describe("El nombre de la criatura."),
   narrativeDescription: z.string().describe("La descripción narrativa completa y el lore de la criatura, escrita en un tono épico de bestiario. Debe tener al menos 5 párrafos."),
   combatStats: z.object({
     Ataque: z.number().min(0).max(100),
@@ -60,14 +61,15 @@ const prompt = ai.definePrompt({
     Eres un maestro narrador, un diseñador de juegos de rol y un crítico experto. Tu tarea es crear una ficha de valoración completa para una nueva criatura.
 
     **Instrucciones:**
-    1.  **Genera Estadísticas de Combate (0-100):** Basándote en todos los detalles proporcionados (tamaño, complexión, composición, etc.), asigna valores numéricos de 0 a 100 para Ataque, Defensa, Velocidad, Inteligencia, Resistencia, Fuerza y Precisión.
-    2.  **Escribe la Descripción Narrativa:** Redacta una descripción evocadora y una historia de origen (lore) para la criatura. **Dentro de esta narrativa, justifica brevemente por qué has elegido los valores de las estadísticas**. Por ejemplo, una criatura 'gigante' y 'robusta' debería tener alta Fuerza y Resistencia.
-    3.  **Determina la Rareza:** Clasifica la criatura como "Común", "Poco Común", "Raro", "Épico" o "Legendario" basándote en su origen, poder y unicidad.
-    4.  **Escribe las Reseñas:**
+    1.  **Devuelve el Nombre:** Asegúrate de que el campo 'nombre' en la salida sea el mismo que el proporcionado en la entrada.
+    2.  **Genera Estadísticas de Combate (0-100):** Basándote en todos los detalles proporcionados (tamaño, complexión, composición, etc.), asigna valores numéricos de 0 a 100 para Ataque, Defensa, Velocidad, Inteligencia, Resistencia, Fuerza y Precisión.
+    3.  **Escribe la Descripción Narrativa:** Redacta una descripción evocadora y una historia de origen (lore) para la criatura. **Dentro de esta narrativa, justifica brevemente por qué has elegido los valores de las estadísticas**. Por ejemplo, una criatura 'gigante' y 'robusta' debería tener alta Fuerza y Resistencia.
+    4.  **Determina la Rareza:** Clasifica la criatura como "Común", "Poco Común", "Raro", "Épico" o "Legendario" basándote en su origen, poder y unicidad.
+    5.  **Escribe las Reseñas:**
         *   **Valoración de Expertos:** Escribe una reseña desde la perspectiva de un erudito, analizando sus capacidades de forma técnica.
         *   **Valoración del Público:** Escribe una reseña como si fueras un aventurero o un ciudadano común, basándote en rumores o encuentros.
         *   **Valoración de la IA:** Escribe una breve autocrítica sobre el concepto de la criatura, comentando su originalidad y coherencia.
-    5.  **Asigna Puntuación de Estrellas:** Otorga una puntuación final de 1 a 5 estrellas, resumiendo su poder, originalidad y diseño general.
+    6.  **Asigna Puntuación de Estrellas:** Otorga una puntuación final de 1 a 5 estrellas, resumiendo su poder, originalidad y diseño general.
 
     **Tono:** Épico, descriptivo y como si fuera una entrada en un bestiario legendario para la descripción; analítico para los expertos; coloquial para el público; y objetivo para la IA.
 
@@ -101,7 +103,10 @@ const describeCreatureFlow = ai.defineFlow(
       throw new Error("La IA no pudo generar una respuesta estructurada.");
     }
     
-    return response.output;
+    return {
+      ...response.output,
+      nombre: input.nombre, // Ensure the name is passed through
+    };
   }
 );
 
