@@ -725,7 +725,7 @@ export default function CraftPage() {
                   </Button>
                    <Button onClick={handleSaveCreature} disabled={!generatedValuation}>
                     <Save className="h-4 w-4" />
-                    Guardar
+                    Guardar Criatura
                   </Button>
                 </div>
               </div>
@@ -743,7 +743,7 @@ export default function CraftPage() {
                   <div className="lg:col-span-3 space-y-6">
                     <Card>
                       <CardHeader>
-                        <CardTitle>Descripción y Reseñas</CardTitle>
+                        <CardTitle>Descripción Narrativa</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <p className="text-muted-foreground whitespace-pre-wrap">{generatedValuation.narrativeDescription}</p>
