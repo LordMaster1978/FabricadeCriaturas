@@ -407,7 +407,7 @@ export default function GalleryPage() {
         <div className="w-full max-w-6xl">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-4xl font-bold">Elige un Oponente</h1>
+              <h1 className="text-3xl md:text-4xl font-bold">Elige un Oponente</h1>
               <p className="text-muted-foreground">Has seleccionado a <span className="font-bold text-primary">{selectedCreature.nombre}</span>. Ahora, elige a su rival.</p>
             </div>
             <Button onClick={resetSelection} variant="outline">
@@ -480,8 +480,8 @@ export default function GalleryPage() {
     <>
       <main className="flex min-h-screen w-full flex-col items-center bg-background p-4 md:p-8">
         <div className="w-full max-w-7xl">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-4xl font-bold">Ranking y Arena</h1>
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+            <h1 className="text-3xl md:text-4xl font-bold">Ranking y Arena</h1>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <CircleDollarSign className="h-5 w-5 text-foreground/70" />

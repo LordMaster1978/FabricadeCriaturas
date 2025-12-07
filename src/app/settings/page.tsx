@@ -131,7 +131,7 @@ export default function SettingsPage() {
     <main className="flex min-h-screen w-full flex-col items-center bg-background p-4 md:p-8">
       <div className="w-full max-w-2xl space-y-8">
         <div className="flex justify-between items-center">
-            <h1 className="text-4xl font-bold">Ajustes</h1>
+            <h1 className="text-3xl md:text-4xl font-bold">Ajustes</h1>
             <Link href="/">
               <Button variant="outline">Volver al Menú</Button>
             </Link>
@@ -144,12 +144,12 @@ export default function SettingsPage() {
               Exporta los datos de tu juego a un fichero para guardarlos, o importa un fichero para restaurar una partida.
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex gap-4">
-            <Button onClick={handleExportData}>
+          <CardContent className="flex flex-col sm:flex-row gap-4">
+            <Button onClick={handleExportData} className="w-full sm:w-auto">
                 <Download className="mr-2 h-4 w-4" />
                 Exportar Datos a Fichero
             </Button>
-            <Button asChild variant="outline">
+            <Button asChild variant="outline" className="w-full sm:w-auto">
                <Label htmlFor="import-file">
                  <Upload className="mr-2 h-4 w-4" />
                  Importar Datos desde Fichero

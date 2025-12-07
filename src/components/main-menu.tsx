@@ -20,7 +20,7 @@ export function MainMenu() {
           <Cog className="absolute h-16 w-16 animate-spin-fast text-accent" />
         </div>
 
-        <h1 className="font-headline text-6xl md:text-8xl font-bold tracking-tighter text-primary drop-shadow-[0_0_1rem_hsl(var(--primary)/0.6)]">
+        <h1 className="font-headline text-5xl md:text-8xl font-bold tracking-tighter text-primary drop-shadow-[0_0_1rem_hsl(var(--primary)/0.6)]">
           Fábrica de Criaturas
         </h1>
         <p className="mt-2 text-lg text-foreground/70 max-w-md">
@@ -29,31 +29,31 @@ export function MainMenu() {
 
         <nav className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 items-center gap-4">
           <Link href="/craft" passHref>
-            <Button size="lg" className="w-64 justify-center bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/40 transition-all duration-300 transform hover:scale-105">
+            <Button size="lg" className="w-full sm:w-64 justify-center bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/40 transition-all duration-300 transform hover:scale-105">
               <Hammer className="mr-2 h-5 w-5" />
               Empezar a Crear
             </Button>
           </Link>
           <Link href="/gallery" passHref>
-            <Button size="lg" variant="outline" className="w-64 justify-center border-accent/50 text-accent/80 hover:border-accent hover:bg-accent hover:text-accent-foreground transition-all duration-300 transform hover:scale-105">
+            <Button size="lg" variant="outline" className="w-full sm:w-64 justify-center border-accent/50 text-accent/80 hover:border-accent hover:bg-accent hover:text-accent-foreground transition-all duration-300 transform hover:scale-105">
               <Trophy className="mr-2 h-5 w-5" />
               Ranking y Arena
             </Button>
           </Link>
           <Link href="/events" passHref>
-            <Button size="lg" variant="outline" className="w-64 justify-center border-accent/50 text-accent/80 hover:border-accent hover:bg-accent hover:text-accent-foreground transition-all duration-300 transform hover:scale-105">
+            <Button size="lg" variant="outline" className="w-full sm:w-64 justify-center border-accent/50 text-accent/80 hover:border-accent hover:bg-accent hover:text-accent-foreground transition-all duration-300 transform hover:scale-105">
               <Globe className="mr-2 h-5 w-5" />
               Eventos Universales
             </Button>
           </Link>
            <Link href="/cemetery" passHref>
-            <Button size="lg" variant="outline" className="w-64 justify-center border-accent/50 text-accent/80 hover:border-accent hover:bg-accent hover:text-accent-foreground transition-all duration-300 transform hover:scale-105">
+            <Button size="lg" variant="outline" className="w-full sm:w-64 justify-center border-accent/50 text-accent/80 hover:border-accent hover:bg-accent hover:text-accent-foreground transition-all duration-300 transform hover:scale-105">
               <Skull className="mr-2 h-5 w-5" />
               Cementerio
             </Button>
           </Link>
           <Link href="/settings" passHref>
-            <Button size="lg" variant="outline" className="w-64 justify-center border-accent/50 text-accent/80 hover:border-accent hover:bg-accent hover:text-accent-foreground transition-all duration-300 transform hover:scale-105">
+            <Button size="lg" variant="outline" className="w-full sm:w-64 justify-center border-accent/50 text-accent/80 hover:border-accent hover:bg-accent hover:text-accent-foreground transition-all duration-300 transform hover:scale-105">
               <Cog className="mr-2 h-5 w-5" />
               Ajustes
             </Button>

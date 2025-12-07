@@ -329,7 +329,7 @@ export default function CraftPage() {
       <div className="w-full max-w-6xl">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
             <div className="flex items-center gap-4">
-              <h1 className="text-4xl font-bold">Taller de Criaturas</h1>
+              <h1 className="text-3xl md:text-4xl font-bold">Taller de Criaturas</h1>
               <Link href="/" passHref>
                 <Button variant="outline" size="icon">
                     <Home className="h-5 w-5" />
@@ -337,23 +337,23 @@ export default function CraftPage() {
                 </Button>
               </Link>
             </div>
-            <div className="flex items-center gap-6 text-sm md:text-lg">
+            <div className="flex flex-wrap items-center gap-4 md:gap-6 text-sm">
               <div className="flex items-center gap-2">
                 <CircleDollarSign className="h-5 w-5 text-foreground/70" />
                 <span className="text-foreground/90 font-semibold">{capital.toLocaleString('es-ES')} €</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="hidden sm:flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-foreground/70" />
                 <span className="text-foreground/90">{currentDate}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="h-5 w-5 text-foreground/70" />
-                <span className="font-mono text-xl text-primary">{formatGameTime()}</span>
+                <span className="font-mono text-lg md:text-xl text-primary">{formatGameTime()}</span>
               </div>
             </div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Identidad y Materiales */}
           <Card className="bg-card/50 border-border/50 lg:col-span-1">
             <CardHeader>
@@ -389,7 +389,7 @@ export default function CraftPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="tamano">Tamaño</Label>
                   <Select value={creature.tamano} onValueChange={handleSelectChange('tamano')}>
@@ -415,7 +415,7 @@ export default function CraftPage() {
                   </Select>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div className="space-y-2">
                   <Label htmlFor="altura">Altura</Label>
                   <Input id="altura" placeholder="Ej: 3m" value={creature.altura} onChange={handleInputChange} />
@@ -425,7 +425,7 @@ export default function CraftPage() {
                   <Input id="peso" placeholder="Ej: 500kg" value={creature.peso} onChange={handleInputChange} />
                 </div>
               </div>
-               <div className="grid grid-cols-3 gap-2">
+               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                  <div className="space-y-2">
                   <Label htmlFor="anchura">Anchura</Label>
                   <Input id="anchura" placeholder="Ej: 2m" value={creature.anchura} onChange={handleInputChange} />
@@ -488,7 +488,7 @@ export default function CraftPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <div className="space-y-2">
                   <Label htmlFor="envergadura" className="flex items-center gap-1 text-xs"><MoveHorizontal size={12}/>Envergadura</Label>
                   <Input id="envergadura" placeholder="Ej: 15m" value={creature.envergadura} onChange={handleInputChange} />
@@ -502,7 +502,7 @@ export default function CraftPage() {
                   <Input id="circunferencia" placeholder="Ej: 5m" value={creature.circunferencia} onChange={handleInputChange} />
                 </div>
               </div>
-               <div className="grid grid-cols-3 gap-2">
+               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <div className="space-y-2">
                   <Label htmlFor="velocidadVuelo" className="flex items-center gap-1 text-xs"><Bird size={12}/>Vel. Vuelo</Label>
                   <Input id="velocidadVuelo" placeholder="Ej: 120km/h" value={creature.velocidadVuelo} onChange={handleInputChange} />
@@ -516,7 +516,7 @@ export default function CraftPage() {
                   <Input id="capacidadSalto" placeholder="Ej: 20m" value={creature.capacidadSalto} onChange={handleInputChange} />
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <div className="space-y-2">
                   <Label htmlFor="fuerzaMordida" className="flex items-center gap-1 text-xs"><Hand size={12}/>Fuerza Mordida</Label>
                   <Input id="fuerzaMordida" placeholder="Ej: 1500 PSI" value={creature.fuerzaMordida} onChange={handleInputChange} />
@@ -692,7 +692,7 @@ export default function CraftPage() {
           </Card>
 
           {/* Historia de Origen */}
-          <Card className="bg-card/50 border-border/50 lg:col-span-2">
+          <Card className="bg-card/50 border-border/50 md:col-span-2 lg:col-span-2">
              <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-primary" />
@@ -711,19 +711,19 @@ export default function CraftPage() {
           </Card>
 
           {/* Generador de Lore */}
-          <Card className="bg-card/50 border-border/50 lg:col-span-3">
+          <Card className="bg-card/50 border-border/50 col-span-1 md:col-span-2 lg:col-span-3">
              <CardHeader>
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <CardTitle className="flex items-center gap-2">
                   <WandSparkles className="h-5 w-5 text-primary" />
                   <span>Ficha de Valoración: {generatedValuation ? <span className="font-bold text-primary">{generatedValuation.nombre}</span> : 'IA'}</span>
                 </CardTitle>
-                <div className="flex items-center gap-2">
-                  <Button onClick={handleGenerateDescription} disabled={isGenerating}>
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <Button onClick={handleGenerateDescription} disabled={isGenerating} className="w-full sm:w-auto">
                     <WandSparkles className="h-4 w-4" />
                     {isGenerating ? 'Generando...' : 'Generar Valoración'}
                   </Button>
-                   <Button onClick={handleSaveCreature} disabled={!generatedValuation}>
+                   <Button onClick={handleSaveCreature} disabled={!generatedValuation} className="w-full sm:w-auto">
                     <Save className="h-4 w-4" />
                     Guardar Criatura
                   </Button>
@@ -750,7 +750,7 @@ export default function CraftPage() {
                       </CardContent>
                     </Card>
                     <Tabs defaultValue="expert">
-                      <TabsList className="grid w-full grid-cols-3">
+                      <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 h-auto sm:h-10">
                         <TabsTrigger value="expert">Valoración Experta</TabsTrigger>
                         <TabsTrigger value="public">Valoración del Público</TabsTrigger>
                         <TabsTrigger value="ai">Reseña de la IA</TabsTrigger>
